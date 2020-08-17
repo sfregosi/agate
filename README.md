@@ -1,6 +1,6 @@
 AGATE
 
-Acoustic Glider Analysis Tool Environment
+Acoustic Glider Analysis Tools Environment
 
 These are the collection of tools I use for piloting acoustic gliders, 
 processing glider positional and environmental data, and analyzing 
