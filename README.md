@@ -1,4 +1,5 @@
-agate
+AGATE
+
 Acoustic Glider Analysis Tool Environment
 
 These are the collection of tools I use for piloting acoustic gliders, 
@@ -11,4 +12,5 @@ system. I hope to make them more broadly usable for other acoustic
 glider groups. But, for now...they come as is :)
 
 Please contact me if you have any questions, feedback, or suggestions!
+
 selene.fregosi@gmail.com
