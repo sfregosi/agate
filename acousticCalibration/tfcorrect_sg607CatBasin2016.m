@@ -1,0 +1,26 @@
+function createTF(instrument)
+% create a transfer function
+% for a glider or Quephone
+
+freq =[1        2    5    10   20   50   100  200  500  1000 ...
+    2000 5000 10000 20000 30000 40000 50000 60000 62500 64500 ...
+    70000 80000 90000 100000 110000 120000];
+HP50 =  [-34   -28 -20 -14 -8.6  -3   -1   -0.3  ...
+    0   0    0    0    0     0     0     0     0    ...
+    0      0     0     0      0     0     0      0     0 ];
+AntAli= [0      0    0   0   0    0    0    0    0    0   ...
+    0    0    0     0     0     0     0   ...
+    -5    -15   -40   -108  -108  -108  -108   -110   -112];
+PAGain= [-2.3  1.6 7.6 11.5 13.6 14.6 14.8 15.3 17.7 21.4 26.4 ...
+    33.4  38.3  41.6  42.5  42.8  42.8  42.7 42.7  42.6 ...
+    42.5  42.3  41.9   41.6   41.2   40.8];
+hydrosens=-175;
+vref = 5.0;
+ADgain = 20 * log10(2^16 / 5) ;
+hydro = hydrosens * ones(1,26);
+%
+tf = -1*(hydro + PAGain + HP50 + AntAli + ADgain);
+freqtf = [freq' tf'];
+figure(99)
+plot(freq,tf)
+save('Glider607inversetf.txt','freqtf','-ascii')

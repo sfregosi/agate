@@ -1,0 +1,27 @@
+# Preamp data for use in Raven-X, Note: follow strict format for this file
+Preamp_type	EOS_HM1_1507
+Preamp_serial   EOS_HM1_1507
+# start gain table		
+Freq_Hz	Gain_dB
+1	-2.9
+2	6.8
+5	13.6
+10	15.7
+20	16.3
+50	16.6
+100	16.8
+200	17.3
+500	19.9
+1000	23.9
+2000	29.1
+5000	36.3
+10000	41.2
+20000	44.5
+50000	45.6
+60000	45.5
+70000	45.2
+80000	44.9
+90000	44.6
+100000	44.3
+110000	44
+120000	43.5

@@ -1,0 +1,15 @@
+# Hydrophone data for use in Raven-X, Note: follow strict format for this file
+Phone_type HARP
+Phone_serial   NA 
+Sens_dB -200
+Pref    1V_per_uPa
+# start gain table		
+Freq_Hz	Gain_dB	
+1	0
+1000	0
+2000	0
+20000	0
+50000	0
+100000	0
+150000	0
+200000	0

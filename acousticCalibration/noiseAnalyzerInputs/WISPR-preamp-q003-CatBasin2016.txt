@@ -1,0 +1,31 @@
+# Preamp data for use in Raven-X, Note: follow strict format for this file
+Preamp_type	WBPA_Rev4A
+Preamp_serial   WBPA_Rev4A_001
+# start gain table		
+Freq_Hz	Gain_dB
+1	-16.1
+2	-7.2
+5	1.9
+10	7.5
+20	12.8
+50	17.7
+100	19.3
+200	20.1
+500	22.5
+1000	26.5
+2000	31.4
+5000	38.8
+10000	43.9
+20000	47.8
+30000	49.1
+40000	49.7
+50000	49.8
+60000	49.8
+62500	49.7
+64500	49.7
+70000	49.6
+80000	49.4
+90000	49.1
+100000	48.8
+110000	48.4
+120000	48.1
