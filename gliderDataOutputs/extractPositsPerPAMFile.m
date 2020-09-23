@@ -1,4 +1,3 @@
-
 function filePosits = extractPositsPerPAMFile(gldr, lctn, dplymnt, ...
     pam, locCalcT,secs, path_out)
 % extract instrument positional data for each PAM file, including depth,
@@ -44,10 +43,10 @@ for f = 1:height(pam)
         filePosits(f,2:width(locCalcT)+1) = locCalcT(i,:);
     elseif m > seconds(secs) % if closest positional data is greater than buffer
         fprintf(1,'file %s closest time is > %i seconds\n',pam.fileStart(f),secs)
-        filePosits(1,2:width(locCalcT)+1) = noMatch;
+        filePosits(f,2:width(locCalcT)+1) = noMatch;
     else
         fprintf(1,'file %s error\n',pam.fileStart(f))
-        filePosits(1,2:width(locCalcT)+1) = noMatch;
+        filePosits(f,2:width(locCalcT)+1) = noMatch;
     end
 end
 
