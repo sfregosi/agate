@@ -76,7 +76,7 @@ vertSpeed_gsm = []; horzSpeed_gsm = []; speed_gsm = [];
 pitch = [];glideAngle = []; glideAngle_gsm = []; heading = [];
 
 % start at 2 bc issue with dive 1?
-for f = 2:length(files)
+for f = 1:length(files)
     try
         fname = [path_in 'basestationfiles\' files(f,1).name];
         %how many data points
