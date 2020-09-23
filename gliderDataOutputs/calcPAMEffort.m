@@ -9,6 +9,7 @@ function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
 % other instruments in the water, otherwise make [] and will pull from dive
 % data
 if isempty(expLimits)
+    clearvars expLimits
     expLimits(1) = gpsSurfT.startDateTime(1);
     expLimits(2) = gpsSurfT.endDateTime(end);
 end
