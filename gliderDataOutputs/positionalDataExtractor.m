@@ -15,10 +15,10 @@ if nargin < 5
 end
 
 %% BY INDIVIDUAL FILE - GET SURFACE LOCATIONS ONLY
-files=dir([path_in 'basestationFiles\p*.nc']);
+files = dir([path_in 'basestationFiles\p*.nc']);
 
 for f = 1:length(files)
-    fname=[path_in 'basestationFiles\' files(f,1).name];
+    fname = [path_in 'basestationFiles\' files(f,1).name];
     % ncdisp(fname,'/','min');
     try
         latgps=ncread(fname,'log_gps_lat');
@@ -63,7 +63,7 @@ if saveOn == 1
     save([path_in gldr '_' lctn '_' dplymnt '_gpsSurfaceTable.mat'],'gpsSurfT');
     writetable(gpsSurfT,[path_in gldr '_' lctn '_' dplymnt '_gpsSurfaceTable.csv'])
 end
-%% GET EVERY sample  LOCATION
+%% GET EVERY sample LOCATION
 files=dir([path_in 'basestationFiles\p*.nc']);
 
 dive = [];time = [];
