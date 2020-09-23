@@ -13,7 +13,9 @@ function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(gldr, lctn, dplymnt,
 % dplymnt = 'Jul16';
 % fileLength = 120; % in seconds; either 120 or 80 for wispr
 % sampleRate = 1000; % in Hz, runs fastest on downsampled 1 kHz data
-% dateFormat = 'yyMMdd-HHmmss';
+% dateFormat = 'yyMMdd-HHmmss'; 
+        % this needs to be in datetime input format sytnax
+        % https://www.mathworks.com/help/matlab/ref/datetime.html#d122e273617
 % dateStart = 1; % what part of file name starts the date format
 
 
@@ -22,10 +24,12 @@ function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(gldr, lctn, dplymnt,
 warning off
 
 % get num of samples per file (if max file length)
-if fileLength == 120
+if fileLength == 120 % wispr
     numSamples = 119931; % for 2 min file
-elseif fileLength == 80
+elseif fileLength == 80 % wispr
     numSamples = 79954; % for 1 min 20 sec files downsampled to 1000 hz
+elseif fileLength == 600 % PMARXL
+    numSamples = 600000;
 else
     fprintf('Unknown fileLength...aborting\n')
     return
@@ -35,13 +39,14 @@ end
 % (sometimes test files recorded in lab are in dataset)
 deplDate = gpsSurfT.startDateTime(1);
 
-% select folder with sound files and were to save
+% select folder with sound files and where to save
 % path_in = uigetdir('G:\','Select base folder');
 path_acous = uigetdir('C:\', 'Select folder with 1 kHz acoustic data');
+% pick 1 kHz data because it will run faster...but could change in future. 
 path_out = uigetdir(path_acous, 'Select profiles folder to save outputs');
 
 %% Read in files and extract duration information
-files=dir([path_acous '\*.wav']);
+files = dir([path_acous '\*.wav']);
 if isempty(files)
     fprintf('No .wav files found...aborting\n');
     return
@@ -50,19 +55,19 @@ if isempty(files)
     
 end
 
-pam=table;
-shortfiles=[];
+pam = table;
+shortfiles = [];
 fprintf(1,'%i files:\n',length(files));
 
 % make matrix with start and end times for all PAM files
-for f=1:length(files)
+for f = 1:length(files)
     % calc duration in sec using sampling rate..slow but works - more accurate
     try
         wavInfo = audioinfo([path_acous '\' files(f,1).name]); % faster
         y = [1:wavInfo.TotalSamples];
         Fs = wavInfo.SampleRate;
         files(f,1).dur=length(y)./Fs;
-        if length(y) ~= numSamples % this is for 2 min files...
+        if length(y) < numSamples % specify this in function inputs. may vary by recording system
             shortfiles=[shortfiles; f length(y)];
             fprintf(1,'%s is short: %i\n',files(f,1).name,length(y));
         end
@@ -123,23 +128,30 @@ pamByDive = table;
 pamByDive.dive = gpsSurfT.dive;
 pamByDive.diveStart = gpsSurfT.startDateTime;
 pamByDive.diveEnd = gpsSurfT.endDateTime;
+pamByDive.numFiles = nan(height(pamByDive),1);
 
 for f = 1:height(pamByDive)
-    [r, ~] = find(pam.fileStart > pamByDive.diveStart(f),1,'first');
-    pamByDive.pamStart(f,1) = pam.fileStart(r);
-    [r, ~] = find(pam.fileEnd < pamByDive.diveEnd(f),1,'last');
-    pamByDive.pamEnd(f,1) = pam.fileEnd(r);
+    [r, ~] = find(isbetween(pam.fileStart, pamByDive.diveStart(f), ...
+        pamByDive.diveEnd(f)));
+    if ~isempty(r)
+        pamByDive.numFiles(f,1) = length(r);
+        pamByDive.pamDur(f,1) = sum(pam.dur(r));
+        pamByDive.pamStart(f,1) = pam.fileStart(r(1));
+        pamByDive.pamEnd(f,1) = pam.fileEnd(r(end));
+    end
+    
 end
-pamByDive.pamDur = pamByDive.pamEnd - pamByDive.pamStart;
+    
 pamByDive.lagStart = pamByDive.pamStart - pamByDive.diveStart;
 pamByDive.lagEnd = pamByDive.diveEnd - pamByDive.pamEnd;
 
 save([path_out '\' gldr '_' lctn '_' dplymnt '_pamByFile.mat'],'pam','totDur','totDurHrs','pamByDive');
 
 % append to gpsSurfT and save
+gpsSurfT.pamDur = pamByDive.pamDur;
+gpsSurfT.pamNumFiles = pamByDive.numFiles;
 gpsSurfT.pamStart = pamByDive.pamStart;
 gpsSurfT.pamEnd = pamByDive.pamEnd;
-gpsSurfT.pamDur = pamByDive.pamDur;
 
 save([path_out '\' gldr '_' lctn '_' dplymnt '_gpsSurfaceTable_pam.mat'],'gpsSurfT');
 writetable(gpsSurfT, [path_out '\' gldr '_' lctn '_' dplymnt '_gpsSurfaceTable_pam.csv']);
