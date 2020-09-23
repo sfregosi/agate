@@ -15,7 +15,8 @@ if isempty(expLimits)
 end
 
 % build empty table for whole deployment
-dm = [expLimits(1):minutes(1):expLimits(2)]';
+dm = [dateshift(expLimits(1),'start','minute'):minutes(1):...
+    dateshift(expLimits(2),'end','minute')]';
 pamByMin = table;
 pamByMin.min = dm;
 
@@ -39,7 +40,8 @@ pamHrPerDay.day = ddh;
 fprintf(1,'Calculating PAM status by min: %s\n', gldr)
 
 load([path_profiles gldr '_' lctn '_' dplymnt '_pamByFile.mat']);
-pamCheck = [pamByDive.pamStart pamByDive.pamEnd];
+% pamCheck = [pamByDive.pamStart pamByDive.pamEnd]; % this works when not duty cycling
+pamCheck = [pam.fileStart pam.fileEnd];
 diveCheck = [pamByDive.diveStart pamByDive.diveEnd];
 
 % by Minute - NaN if not deployed or at surface, 0 if PAM OFF, 1 if ON
@@ -57,6 +59,8 @@ for f = 1:length(dm)
     end
 end
 fprintf(1, '%s: %i minutes with PAM on\n', gldr, nansum(pamByMin.pam));
+% this is not perfect...not always full minutes (at end of a recording 
+% and misses some partial minutes (At the start of a recording) 
 
 % by Hour
 for f = 1:length(dh)
