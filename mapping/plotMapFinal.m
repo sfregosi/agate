@@ -13,26 +13,26 @@ function plotMapFinal(glider, gpsSurfT, path_out, path_shp, path_piloting, ...
 %   path_shp: path to etopo bathymetry file
 %   path_piloting: location of piloting files - need for plotting targets
 %   latlim: latitude limits for plot
-%   lonlim: longitude limits for plot 
+%   lonlim: longitude limits for plot
 %   targetsFile: specify targetFile if you want to plot waypoints/planned
 %               track
 
-% TO DO: 
-%   build default lat/lon lims from gpsSurfTable 
+% TO DO:
+%   build default lat/lon lims from gpsSurfTable
 %   allow for legend, north arrow, labeling bathymetry, etc.
 %   - for now that customization has to be pretty "manual" because it depends
 %   on the survey location.
 %   - allow for more interactive setting of the bathymetry extent - that
-%   might vary largely by deployment area! 
+%   might vary largely by deployment area!
 
 % glider = 'sg607';
-% 
+%
 
 %% set up figure
 figure(202);
-mapFig = gcf;
-mapFigPosition = [100   100   1200    1000];
-mapFig.Position = mapFigPosition;
+% mapFig = gcf;
+% mapFigPosition = [5200   -1350   1200    900];
+% mapFig.Position = mapFigPosition;
 
 %% map clean-up
 % clear figure (in case previously plotted)
@@ -87,10 +87,9 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %% plot waypoints
 if ~isempty(targetsFile)
-plotm(targetsFile.lat, targetsFile.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor', [0 0 0], ...
-    'MarkerFaceColor', [0 0 0], 'Color', [0 0 0])
-textm(targetsFile.lat, targetsFile.lon, targetsFile.name)
-
+    plotm(targetsFile.lat, targetsFile.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor', [0 0 0], ...
+        'MarkerFaceColor', [0.4 0.4 0.4], 'Color', [0.4 0.4 0.4])
+    textm(targetsFile.lat, targetsFile.lon, targetsFile.name, 'Color', [0.4 0.4 0.4])
 end
 
 %% plot glider track
