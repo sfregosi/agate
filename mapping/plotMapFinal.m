@@ -67,10 +67,25 @@ colormap(cmap)
 caxis([-6000 100])
 brighten(.4);
 
-[c,h] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]);
-[c,h] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
-[c,h] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]);
-[c,h] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+% 
+[c,h] = contourm(Z, refvec, [-5000:1000:-1000], 'LineColor', [0.6 0.6 0.6]);
+[c,h] = contourm(Z, refvec, [-900:100:100], 'LineColor', [0.8 0.8 0.8]);
+[C1,H1] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
+[C5,H5] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+
+% "filled" contours with more discrete color bolocks
+% levels = [(-5000:1000:-1000)];
+% [C, h] = contourfm(Z, refvec, levels,'LineColor', repmat(0.6,1,3), 'LineWidth', 0.2);
+% [C1000, h1000] = contourm(Z, refvec, -1000, 'LineColor', repmat(0.4,1,3), ...
+%     'LineWidth', 0.5);
+
+% contour labels
+cl1 = clabelm(C1, H1, -1000, 'LabelSpacing', 1000);
+set(cl1, 'Color', repmat(0.6,1,3), 'BackgroundColor', 'none');
+cl5 = clabelm(C5, H5, -500, 'LabelSpacing', 1000);
+set(cl5, 'Color', repmat(0.6,1,3), 'BackgroundColor', 'none');
+
+
 
 %% plot land
 
@@ -87,9 +102,10 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %% plot waypoints
 if ~isempty(targetsFile)
-    plotm(targetsFile.lat, targetsFile.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor', [0 0 0], ...
-        'MarkerFaceColor', [0.4 0.4 0.4], 'Color', [0.4 0.4 0.4])
-    textm(targetsFile.lat, targetsFile.lon, targetsFile.name, 'Color', [0.4 0.4 0.4])
+    plotm(targetsFile.lat, targetsFile.lon, 'Marker', 'o', 'MarkerSize', 4, ...
+        'MarkerEdgeColor', [0.3 0.3 0.3], 'MarkerFaceColor', [0.3 0.3 0.3], ...
+        'Color', [0.3 0.3 0.3])
+    textm(targetsFile.lat, targetsFile.lon, targetsFile.name, 'Color', [0.3 0.3 0.3])
 end
 
 %% plot glider track
