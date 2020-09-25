@@ -1,10 +1,20 @@
-function sgInterp = interpGlider(gldr, lctn, dplymnt, path_out)
+function sgInterp = interpGlider(gldr, lctn, dplymnt, expLimits, path_out)
 
 % interpolate between GPS points and depth readings for glider
 
 load([path_out gldr '_' lctn '_' dplymnt '_gpsSurfaceTable_pam.mat']);
 load([path_out gldr '_' lctn '_' dplymnt '_locCalcT_pam.mat']);
-load([path_out 'experimentLimits.mat']);
+load([path_out gldr '_' lctn '_' dplymnt '_pamByMinHourDay.mat']);
+% 
+try
+    load([path_out 'experimentLimits.mat']);
+end
+
+if isempty(expLimits)
+    clearvars expLimits
+    expLimits(1) = dateshift(gpsSurfT.startDateTime(1),'start','minute');
+    expLimits(2) = dateshift(gpsSurfT.endDateTime(end),'end','minute');
+end
 
 di = [expLimits(1):minutes(1):expLimits(2)]';
 
@@ -44,9 +54,19 @@ sgInterp.latitude(nanSet) = nan;
 sgInterp.longitude(nanSet) = nan;
 sgInterp.depth(nanSet) = nan;
 
+if height(pamByMin) == height(sgInterp)
+    sgInterp.pam = pamByMin.pam;
+else
+    fprintf(1,'pamByMin length does not match interpolated length. No PAM column\n');
+end
+
 % plot check
 % figure;
 % plot(sgInterp.dateTime,-sgInterp.depth,'k.')
+
+if ~isempty(path_out)
+    save([path_out gldr '_' lctn '_' dplymnt '_interpolatedTrack.mat'], 'sgInterp');
+end
 
 end
 
