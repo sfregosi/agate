@@ -21,7 +21,7 @@ for f = 1:height(gpsSurfT)
     pts(r).Time =  cellstr(datestr(gpsSurfT.startDateTime(f)));
     pts(r).Dive = diveNum;
     pts(r).Status = 'start';
-    pts(r).PAMDur = gpsSurfT.pamDur(f);
+    pts(r).PAMDur_hr = hours(gpsSurfT.pamDur(f));
 
     % dive end gps location
     pts(r+1).Lat = gpsSurfT.endLatitude(f);
@@ -29,7 +29,7 @@ for f = 1:height(gpsSurfT)
     pts(r+1).Time =  cellstr(datestr(gpsSurfT.endDateTime(f)));
     pts(r+1).Dive = diveNum;
     pts(r+1).Status = 'end';
-    pts(r+1).PAMDur = gpsSurfT.pamDur(f);
+    pts(r+1).PAMDur_hr = hours(gpsSurfT.pamDur(f));
 
 end
 
