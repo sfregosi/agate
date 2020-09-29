@@ -1,16 +1,17 @@
 function interpTrackToShapefile(glider, deploymentStr, path_profile)
 
+% import glider interpolated locations (1 min) and make a shapefile
+% for Navy deliverables/import into ArcGIS
 
-% Convert the glider track to a shape file that can be read in ARC
-% load in the data from .mat files I already made (from gliderDataOutputs functions)
-% build strucutures, and save them as shapefiles
+% creates a points shape file
+    % with pam status on/off, depth, dive num, and time. 
+% and a track shape file
+    % with 
 
-
-% IMPORT GLIDER LOCATIONS AND MAKE SHAPEFILE
 load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
 t = sgInterp;
 
-% harder to build because cells are annoying....
+%% points output
 [pts(1:height(t)).Geometry] = deal('Point');
 latTmp = num2cell(t.latitude);
 [pts(:).Lat] = latTmp{:};
@@ -28,18 +29,20 @@ depthTmp = num2cell(t.depth);
 pamTmp = num2cell(t.pam);
 [pts(:).PAM] = pamTmp{:};
 clearvars latTmp lonTmp minStrTmp diveTmp depthTmp pamTmp
-shpBaseName = [path_profile glider '_' deploymentStr '_points'];
+shpBaseName = [path_profile glider '_' deploymentStr '_interpPoints'];
 shapewrite(pts, shpBaseName);
 % could remove nans this way...
 % [nanTestx nanTesty] = removeExtraNanSeparators(SG607LocLL(:,1), SG607LocLL(:,2));
 
+
+%% track output 
 % now make SG tracklines shape file (plot faster, get lengths, durations,
 % etc)
 % first split the bits up
 [ty, tx] = polysplit(t.latitude, t.longitude);
 t.dateTime(isnan(t.dive)) = NaT;
 t.dn = datenum(t.dateTime);
-[~, tm] = polysplit(t.dive, t.dn);
+% [~, tm] = polysplit(t.dive, t.dn);
 
 % specify as line, length of split bits
 [trk(1:length(ty)).Geometry] = deal('Line');
@@ -48,6 +51,7 @@ t.dn = datenum(t.dateTime);
 tmpDive = num2cell(unique(t.dive(~isnan(t.dive))));
 [trk(:).Name] = tmpDive{:};
 [trk(:).Dive] = tmpDive{:};
+% [trk(:).Min] = tm{:};
 
 for f = 1:length(ty)
     len_km = deg2km(distance(trk(f).Lat(1), trk(f).Lon(1), ...
@@ -58,12 +62,8 @@ for f = 1:length(ty)
     trk(f).StartTime = datestr(tm{f}(1));
     trk(f).EndTime = datestr(tm{f}(end));
 end
-shpBaseName = [path_profile glider '_' deploymentStr '_tracks'];
-shapewrite(trk, shpBaseName);
 
-% want to save individual minutes for each lat/lon point that makes up each
-% track line, but cannot save cells as attributes in geo structures
-save([path_profile glider '_' deploymentStr '_trackMinutes.mat'], 'tm')
-% so save it on its own
+shpBaseName = [path_profile glider '_' deploymentStr '_intperTracks'];
+shapewrite(trk, shpBaseName);
 
 
