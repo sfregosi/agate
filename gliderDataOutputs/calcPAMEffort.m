@@ -1,5 +1,5 @@
 function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
-    calcPAMEffort(gldr, lctn, dplymnt, expLimits, gpsSurfT, path_profiles)
+    calcPAMEffort(glider, deploymentStr, expLimits, gpsSurfT, path_profiles)
 
 % make a table of PAM on or off by minute for single glider
 % and build up by hour and by day table with total minutes of recording in
@@ -10,13 +10,13 @@ function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
 % data
 if isempty(expLimits)
     clearvars expLimits
-    expLimits(1) = gpsSurfT.startDateTime(1);
-    expLimits(2) = gpsSurfT.endDateTime(end);
+    expLimits(1) = dateshift(gpsSurfT.startDateTime(1),'start','minute');
+    expLimits(2) = dateshift(gpsSurfT.endDateTime(end),'end','minute');
 end
 
 % build empty table for whole deployment
-dm = [dateshift(expLimits(1),'start','minute'):minutes(1):...
-    dateshift(expLimits(2),'end','minute')]';
+dm = [expLimits(1):minutes(1):expLimits(2)]';
+
 pamByMin = table;
 pamByMin.min = dm;
 
@@ -37,9 +37,9 @@ pamHrPerDay.day = ddh;
 
 
 % now loop through each instrument
-fprintf(1,'Calculating PAM status by min: %s\n', gldr)
+fprintf(1,'Calculating PAM status by min: %s\n', glider)
 
-load([path_profiles gldr '_' lctn '_' dplymnt '_pamByFile.mat']);
+load([path_profiles glider '_' deploymentStr '_pamByFile.mat']);
 % pamCheck = [pamByDive.pamStart pamByDive.pamEnd]; % this works when not duty cycling
 pamCheck = [pam.fileStart pam.fileEnd];
 diveCheck = [pamByDive.diveStart pamByDive.diveEnd];
@@ -58,7 +58,7 @@ for f = 1:length(dm)
         pamByMin.pam(f,1) = 1;
     end
 end
-fprintf(1, '%s: %i minutes with PAM on\n', gldr, nansum(pamByMin.pam));
+fprintf(1, '%s: %i minutes with PAM on\n', glider, nansum(pamByMin.pam));
 % this is not perfect...not always full minutes (at end of a recording 
 % and misses some partial minutes (At the start of a recording) 
 
@@ -69,7 +69,7 @@ for f = 1:length(dh)
     pamMinPerHour.pam(f,1) = nansum(hourTmp);
 end
 pamMinPerHour.pam(pamMinPerHour.pam == 0) = nan; % if all zeros, make nan
-fprintf(1, '%s: %i partial hours with PAM on, total %.2f hours\n', gldr, ...
+fprintf(1, '%s: %i partial hours with PAM on, total %.2f hours\n', glider, ...
     sum(~isnan(pamMinPerHour.pam)), nansum(pamMinPerHour.pam)/60);
 
 % by Day
@@ -88,12 +88,12 @@ for f = 1:length(ddh)
 end
 pamHrPerDay.pam(pamHrPerDay.pam == 0) = nan;
 
-fprintf(1, '%s: %i partial days with PAM on, total %.2f days\n', gldr, ...
+fprintf(1, '%s: %i partial days with PAM on, total %.2f days\n', glider, ...
     sum(~isnan(pamMinPerDay.pam)), nansum(pamMinPerDay.pam)/(60*24));
 
-save([path_profiles gldr '_' lctn '_' dplymnt '_pamByMinHourDay.mat'], ...
+save([path_profiles glider '_' deploymentStr '_pamByMinHourDay.mat'], ...
     'pamByMin', 'pamMinPerHour', 'pamMinPerDay', 'pamHrPerDay');
-writetable(pamByMin, [path_profiles gldr '_' lctn '_' dplymnt '_pamByMin.csv']);
+writetable(pamByMin, [path_profiles glider '_' ldeploymentStr '_pamByMin.csv']);
 
 end
 
