@@ -1,4 +1,4 @@
-function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(gldr, lctn, dplymnt, ...
+function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(glider, deploymentStr, ...
     fileLength, dateFormat, dateStart, gpsSurfT, locCalcT)
 
 % PAM ON/OFF information for WISPR board Gliders
@@ -88,13 +88,13 @@ if ~isempty(r)
     pam = pam(r+1:end,:);
 end
 
-save([path_out '\' gldr '_' lctn '_' dplymnt '_pamByFile.mat'],'pam');
+save([path_out '\' glider '_' deploymentStr '_pamByFile.mat'],'pam');
 
 %% Specify 1's and 0s per locCalcT row
 % 1 if pam on, 0 if off
 
 locCalcT.pam = zeros(height(locCalcT),1);
-fprintf(1,'%s - %d samples:\n', [gldr '_' lctn '_' dplymnt], height(locCalcT));
+fprintf(1,'%s - %d samples:\n', [glider '_' deploymentStr], height(locCalcT));
 for f = 1:height(locCalcT)
     idx = find(isbetween(locCalcT.dateTime(f),pam.fileStart,pam.fileEnd),1);
     if ~isempty(idx)
@@ -106,8 +106,8 @@ for f = 1:height(locCalcT)
     if (rem(f,80) == 0), fprintf(1,'\n%3d',floor((height(locCalcT)-f)/80)); end
 end
 
-save([path_out '\' gldr '_' lctn '_' dplymnt '_locCalcT_pam.mat'],'locCalcT');
-writetable(locCalcT, [path_out '\' gldr '_' lctn '_' dplymnt '_locCalcT_pam.csv']);
+save([path_out '\' glider '_' deploymentStr '_locCalcT_pam.mat'],'locCalcT');
+writetable(locCalcT, [path_out '\' glider '_' deploymentStr '_locCalcT_pam.csv']);
 
 % % plotting test
 %  plotDiveProfile(locCalcT)
@@ -120,7 +120,7 @@ totDurHrs = hours(totDur);
 
 fprintf('Total PAM duration: %.2f hours\n', totDurHrs);
 
-save([path_out '\' gldr '_' lctn '_' dplymnt '_pamByFile.mat'],'pam','totDur','totDurHrs');
+save([path_out '\' glider '_' deploymentStr '_pamByFile.mat'],'pam','totDur','totDurHrs');
 
 %% duration per dive
 
@@ -145,7 +145,7 @@ end
 pamByDive.lagStart = pamByDive.pamStart - pamByDive.diveStart;
 pamByDive.lagEnd = pamByDive.diveEnd - pamByDive.pamEnd;
 
-save([path_out '\' gldr '_' lctn '_' dplymnt '_pamByFile.mat'],'pam','totDur','totDurHrs','pamByDive');
+save([path_out '\' glider '_' deploymentStr '_pamByFile.mat'],'pam','totDur','totDurHrs','pamByDive');
 
 % append to gpsSurfT and save
 gpsSurfT.pamDur = pamByDive.pamDur;
@@ -153,7 +153,7 @@ gpsSurfT.pamNumFiles = pamByDive.numFiles;
 gpsSurfT.pamStart = pamByDive.pamStart;
 gpsSurfT.pamEnd = pamByDive.pamEnd;
 
-save([path_out '\' gldr '_' lctn '_' dplymnt '_gpsSurfaceTable_pam.mat'],'gpsSurfT');
-writetable(gpsSurfT, [path_out '\' gldr '_' lctn '_' dplymnt '_gpsSurfaceTable_pam.csv']);
+save([path_out '\' glider '_' deploymentStr '_gpsSurfaceTable_pam.mat'],'gpsSurfT');
+writetable(gpsSurfT, [path_out '\' glider '_' deploymentStr '_gpsSurfaceTable_pam.csv']);
 
 

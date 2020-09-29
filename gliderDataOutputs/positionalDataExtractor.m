@@ -1,4 +1,4 @@
-function [gpsSurfT, locCalcT] = positionalDataExtractor(gldr, lctn, dplymnt, saveOn, path_in)
+function [gpsSurfT, locCalcT] = positionalDataExtractor(glider, deploymentStr, saveOn, path_in)
 
 % *** USE THIS ONE!!!!!!!!!!!!!****
 % 2019 09 03 S. Fregosi
@@ -60,8 +60,8 @@ text(gpsSurfT.startLongitude+0.002,gpsSurfT.startLatitude+0.002,num2str(gpsSurfT
 
 
 if saveOn == 1
-    save([path_in gldr '_' lctn '_' dplymnt '_gpsSurfaceTable.mat'],'gpsSurfT');
-    writetable(gpsSurfT,[path_in gldr '_' lctn '_' dplymnt '_gpsSurfaceTable.csv'])
+    save([path_in glider '_' deploymentStr '_gpsSurfaceTable.mat'],'gpsSurfT');
+    writetable(gpsSurfT,[path_in glider '_' deploymentStr '_gpsSurfaceTable.csv'])
 end
 %% GET EVERY sample LOCATION
 files=dir([path_in 'basestationFiles\p*.nc']);
@@ -132,8 +132,8 @@ plot(locCalcT.longitude_gsm, locCalcT.latitude_gsm)
 % USE GSM!!! it adjusts for surfacings (clicks back to where it should be)
 
 if saveOn == 1
-    save([path_in gldr '_' lctn '_' dplymnt '_locCalcT.mat'],'locCalcT');
-    writetable(locCalcT,[path_in gldr '_' lctn '_' dplymnt '_locCalcT.csv']);
+    save([path_in glider '_' deploymentStr '_locCalcT.mat'],'locCalcT');
+    writetable(locCalcT,[path_in glider '_' deploymentStr '_locCalcT.csv']);
 end
 
 end
