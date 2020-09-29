@@ -9,9 +9,13 @@ function interpTrackToShapefile(glider, deploymentStr, path_profile)
     % with 
 
 load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
-t = sgInterp;
 
 %% points output
+
+% make temporary table to remove nans (need nans for track below)
+t = sgInterp;
+t = t(~isnan(t.latitude),:);
+
 [pts(1:height(t)).Geometry] = deal('Point');
 latTmp = num2cell(t.latitude);
 [pts(:).Lat] = latTmp{:};
@@ -28,27 +32,26 @@ depthTmp = num2cell(t.depth);
 [pts(:).Depth] = depthTmp{:};
 pamTmp = num2cell(t.pam);
 [pts(:).PAM] = pamTmp{:};
+
 clearvars latTmp lonTmp minStrTmp diveTmp depthTmp pamTmp
+
 shpBaseName = [path_profile glider '_' deploymentStr '_interpPoints'];
 shapewrite(pts, shpBaseName);
-% could remove nans this way...
-% [nanTestx nanTesty] = removeExtraNanSeparators(SG607LocLL(:,1), SG607LocLL(:,2));
-
 
 %% track output 
 % now make SG tracklines shape file (plot faster, get lengths, durations,
 % etc)
 % first split the bits up
-[ty, tx] = polysplit(t.latitude, t.longitude);
-t.dateTime(isnan(t.dive)) = NaT;
-t.dn = datenum(t.dateTime);
-% [~, tm] = polysplit(t.dive, t.dn);
+[ty, tx] = polysplit(sgInterp.latitude, sgInterp.longitude);
+sgInterp.dateTime(isnan(sgInterp.dive)) = NaT;
+sgInterp.dn = datenum(sgInterp.dateTime);
+[~, tm] = polysplit(sgInterp.dive, sgInterp.dn);
 
 % specify as line, length of split bits
 [trk(1:length(ty)).Geometry] = deal('Line');
 [trk(:).Lat] = ty{:};
 [trk(:).Lon] = tx{:};
-tmpDive = num2cell(unique(t.dive(~isnan(t.dive))));
+tmpDive = num2cell(unique(sgInterp.dive(~isnan(sgInterp.dive))));
 [trk(:).Name] = tmpDive{:};
 [trk(:).Dive] = tmpDive{:};
 % [trk(:).Min] = tm{:};
@@ -63,7 +66,7 @@ for f = 1:length(ty)
     trk(f).EndTime = datestr(tm{f}(end));
 end
 
-shpBaseName = [path_profile glider '_' deploymentStr '_intperTracks'];
+shpBaseName = [path_profile glider '_' deploymentStr '_interpTracks'];
 shapewrite(trk, shpBaseName);
 
 
