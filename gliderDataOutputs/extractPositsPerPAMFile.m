@@ -1,4 +1,4 @@
-function filePosits = extractPositsPerPAMFile(gldr, lctn, dplymnt, ...
+function filePosits = extractPositsPerPAMFile(glider, deploymentStr, ...
     pam, locCalcT,secs, path_out)
 % extract instrument positional data for each PAM file, including depth,
 % lat, lon, vertical velocity, horizontal velocity, speed, and sound speed
@@ -23,7 +23,7 @@ if nargin < 7
 end
 
 filePosits = table;
-if strcmp(gldr,'q003')
+if strcmp(glider,'q003')
     noMatch = locCalcT(1,:);
     noMatch.dateTime = NaT;
     noMatch(1,2:end) = array2table(NaN(1,width(locCalcT) - 1));
@@ -53,8 +53,8 @@ end
 filePosits.Properties.VariableNames(2:end) = locCalcT.Properties.VariableNames;
 
 if ~isempty(path_out)
-    save([path_out '\' gldr '_' lctn '_' dplymnt '_pamFilePosits.mat'],'filePosits');
-    writetable(filePosits, [path_out '\' gldr '_' lctn '_' dplymnt '_pamFilePosits.csv']);
+    save([path_out '\' glider '_' deploymentStr '_pamFilePosits.mat'],'filePosits');
+    writetable(filePosits, [path_out '\' glider '_' deploymentStr '_pamFilePosits.csv']);
 end
 
 end

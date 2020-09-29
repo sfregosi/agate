@@ -1,10 +1,10 @@
-function sgInterp = interpGlider(gldr, lctn, dplymnt, expLimits, path_out)
+function sgInterp = interpGlider(glider, deploymentStr, expLimits, path_out)
 
 % interpolate between GPS points and depth readings for glider
 
-load([path_out gldr '_' lctn '_' dplymnt '_gpsSurfaceTable_pam.mat']);
-load([path_out gldr '_' lctn '_' dplymnt '_locCalcT_pam.mat']);
-load([path_out gldr '_' lctn '_' dplymnt '_pamByMinHourDay.mat']);
+load([path_out glider '_' deploymentStr '_gpsSurfaceTable_pam.mat']);
+load([path_out glider '_' deploymentStr '_locCalcT_pam.mat']);
+load([path_out glider '_' deploymentStr '_pamByMinHourDay.mat']);
 % 
 try
     load([path_out 'experimentLimits.mat']);
@@ -65,7 +65,7 @@ end
 % plot(sgInterp.dateTime,-sgInterp.depth,'k.')
 
 if ~isempty(path_out)
-    save([path_out gldr '_' lctn '_' dplymnt '_interpolatedTrack.mat'], 'sgInterp');
+    save([path_out glider '_' deploymentStr '_interpolatedTrack.mat'], 'sgInterp');
 end
 
 end
