@@ -22,7 +22,7 @@ pamByMin.min = dm;
 
 % build minutes per hour empty table
 dh = [dateshift(expLimits(1), 'start', 'hour'):hours(1): ...
-    dateshift(expLimits(2), 'start', 'hour')]';
+    dateshift(expLimits(2), 'end', 'hour')]';
 pamMinPerHour = table;
 pamMinPerHour.hour = dh;
 
