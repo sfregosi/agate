@@ -93,7 +93,7 @@ fprintf(1, '%s: %i partial days with PAM on, total %.2f days\n', glider, ...
 
 save([path_profiles glider '_' deploymentStr '_pamByMinHourDay.mat'], ...
     'pamByMin', 'pamMinPerHour', 'pamMinPerDay', 'pamHrPerDay');
-writetable(pamByMin, [path_profiles glider '_' ldeploymentStr '_pamByMin.csv']);
+writetable(pamByMin, [path_profiles glider '_' deploymentStr '_pamByMin.csv']);
 
 end
 
