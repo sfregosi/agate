@@ -2,7 +2,7 @@ function plotSurfaceTrack(glider, gpsSurfT, path_shp, latlim, lonlim, targetsFil
 
 % plot map of glider track
 % plots with straightline interpolation between surface positions
-
+% only plots dive surface positions. 
 
 % INPUTS:
 %   glider: glider number e.g., 'sg607' for making title
@@ -103,7 +103,7 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %% plot waypoints
 if ~isempty(targetsFile)
-    plotm(targetsFile.lat, targetsFile.lon, 'Marker', 'o', 'MarkerSize', 4, ...
+    plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
         'MarkerEdgeColor', [0.3 0.3 0.3], 'MarkerFaceColor', [0.3 0.3 0.3], ...
         'Color', [0.3 0.3 0.3])
     textm(targetsFile.lat, targetsFile.lon, targetsFile.name, 'Color', [0.3 0.3 0.3])
