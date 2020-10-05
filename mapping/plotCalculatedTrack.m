@@ -106,7 +106,7 @@ if ~isempty(targetsFile)
     plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
         'MarkerEdgeColor', [0.3 0.3 0.3], 'MarkerFaceColor', [0.3 0.3 0.3], ...
         'Color', [0.3 0.3 0.3])
-    textm(targetsFile.lat, targetsFile.lon, targetsFile.name, 'Color', [0.3 0.3 0.3])
+    textm(targetsFile.lat, targetsFile.lon + 0.02, targetsFile.name, 'Color', [0.3 0.3 0.3])
 end
 
 %% plot glider track
@@ -124,8 +124,8 @@ surfPts = [];
 for f = 1:length(diveNums)
     surfPts(f) = find(locCalcT.dive == diveNums(f), 1, 'first');
 end
-plotm(locCalcT.latitude(surfPts), locCalcT.longitude(surfPts), 'k.')
-
+scatterm(locCalcT.latitude(surfPts), locCalcT.longitude(surfPts), 4, ...
+    'Marker', 'o', 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0])
 
 %% basic title (glider name)
 title(glider, 'FontSize', 18)

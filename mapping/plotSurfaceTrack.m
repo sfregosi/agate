@@ -113,7 +113,8 @@ end
 
 plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 'LineWidth', 2, ...
     'Color', [1 0.4 0.2])
-plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, '.y')
+scatterm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 4, ...
+    'Marker', 'o', 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0])
 
 
 %% basic title (glider name)
