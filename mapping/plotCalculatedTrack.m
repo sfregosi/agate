@@ -1,21 +1,21 @@
 function plotCalculatedTrack(glider, locCalcT, path_shp, latlim, lonlim, targetsFile)
 
 % plot map of glider track
-% plots with dead reckoned/calculated track
+% plots with dead reckoned/calculated track (from the hydrodynamic model)
+% could add ability to toggle to the glide slope model in the future. 
 
 
 % INPUTS:
 %   glider: glider number e.g., 'sg607' for making title
 %   locCalcT: load locCalcT matrix (table) with all calculated locations
 %   path_shp: path to etopo bathymetry file
-%   path_piloting: location of piloting files - need for plotting targets
 %   latlim: latitude limits for plot
 %   lonlim: longitude limits for plot
 %   targetsFile: specify targetFile if you want to plot waypoints/planned
 %               track
 
 % TO DO:
-%   build default lat/lon lims from gpsSurfTable if not specified
+%   build default lat/lon lims from locCalcT if not specified
 %   allow for legend, north arrow, labeling bathymetry, to be moved etc.
 %   - for now that customization has to be pretty "manual" because it depends
 %   on the survey location.
@@ -30,7 +30,7 @@ if nargin < 6
 end
 
 %% set up figure
-figure(202);
+figure(204);
 % mapFig = gcf;
 % mapFigPosition = [5200   -1350   1200    900];
 % mapFig.Position = mapFigPosition;
@@ -103,7 +103,7 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %% plot waypoints
 if ~isempty(targetsFile)
-    plotm(targetsFile.lat, targetsFile.lon, 'Marker', 'o', 'MarkerSize', 4, ...
+    plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
         'MarkerEdgeColor', [0.3 0.3 0.3], 'MarkerFaceColor', [0.3 0.3 0.3], ...
         'Color', [0.3 0.3 0.3])
     textm(targetsFile.lat, targetsFile.lon, targetsFile.name, 'Color', [0.3 0.3 0.3])
@@ -111,9 +111,20 @@ end
 
 %% plot glider track
 
-plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 'LineWidth', 2, ...
+plotm(locCalcT.latitude, locCalcT.longitude, 'LineWidth', 2, ...
     'Color', [1 0.4 0.2])
-plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, '.y')
+
+% plotm(locCalcT.latitude_gsm, locCalcT.longitude_gsm, 'LineWidth', 2, ...
+%     'Color', 'y')
+% canc heck GSM model to see if they are vastly different?
+
+% first pt for each dive as a dot
+diveNums = unique(locCalcT.dive);
+surfPts = [];
+for f = 1:length(diveNums)
+    surfPts(f) = find(locCalcT.dive == diveNums(f), 1, 'first');
+end
+plotm(locCalcT.latitude(surfPts), locCalcT.longitude(surfPts), 'k.')
 
 
 %% basic title (glider name)
