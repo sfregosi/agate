@@ -1,5 +1,5 @@
 function filePosits = extractPositsPerPAMFile(glider, deploymentStr, ...
-    pam, locCalcT,secs, path_out)
+    pam, locCalcT, secs, path_out)
 % extract instrument positional data for each PAM file, including depth,
 % lat, lon, vertical velocity, horizontal velocity, speed, and sound speed
 %
@@ -18,7 +18,7 @@ function filePosits = extractPositsPerPAMFile(glider, deploymentStr, ...
 % S. Fregosi 2018/07/26
 % updated 2019/09/04
 
-if nargin < 7
+if nargin < 6
     path_out = [];
 end
 
