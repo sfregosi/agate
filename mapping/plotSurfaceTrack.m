@@ -1,15 +1,12 @@
-function plotSurfaceTrack(glider, gpsSurfT, path_out, path_shp, path_piloting, ...
-    latlim, lonlim, targetsFile)
+function plotSurfaceTrack(glider, gpsSurfT, path_shp, latlim, lonlim, targetsFile)
 
-% plot map of glider track, color coded by PAM system on or off
+% plot map of glider track
 % plots with straightline interpolation between surface positions
-% includes current vectors but those can be turned off
 
 
 % INPUTS:
-%   glider: glider number e.g., 'sg607'
+%   glider: glider number e.g., 'sg607' for making title
 %   gpsSurfT: load gpsSurfT matrix (table) with all surface locations
-%   path_out: path to save
 %   path_shp: path to etopo bathymetry file
 %   path_piloting: location of piloting files - need for plotting targets
 %   latlim: latitude limits for plot
@@ -18,8 +15,8 @@ function plotSurfaceTrack(glider, gpsSurfT, path_out, path_shp, path_piloting, .
 %               track
 
 % TO DO:
-%   build default lat/lon lims from gpsSurfTable
-%   allow for legend, north arrow, labeling bathymetry, etc.
+%   build default lat/lon lims from gpsSurfTable if not specified
+%   allow for legend, north arrow, labeling bathymetry, to be moved etc.
 %   - for now that customization has to be pretty "manual" because it depends
 %   on the survey location.
 %   - allow for more interactive setting of the bathymetry extent - that
@@ -27,6 +24,10 @@ function plotSurfaceTrack(glider, gpsSurfT, path_out, path_shp, path_piloting, .
 
 % glider = 'sg607';
 %
+
+if nargin < 6
+    targetsFile = [];
+end
 
 %% set up figure
 figure(202);
@@ -113,6 +114,10 @@ end
 plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 'LineWidth', 2, ...
     'Color', [1 0.4 0.2])
 plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, '.y')
+
+
+%% basic title (glider name)
+title(glider, 'FontSize', 18)
 
 
 end
