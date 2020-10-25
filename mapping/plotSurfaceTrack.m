@@ -56,7 +56,7 @@ setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
 
 
 %%  plot bathymetry - slow step
-[Z, refvec] = etopo([path_shp 'etopo1_ice_c_i2\etopo1_ice_c_i2.bin'], 1, latlim, lonlim);
+[Z, refvec] = etopo([path_shp 'etopo1\etopo1_ice_c_i2.bin'], 1, latlim, lonlim);
 
 % Z(Z >= 10) = NaN;
 Z(Z >= 10) = 100;
