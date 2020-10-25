@@ -1,4 +1,5 @@
-function plotInterpolatedTrack_PAM(glider, sgInterp, path_shp, latlim, lonlim, targetsFile)
+function plotInterpolatedTrack_PAM(glider, sgInterp, path_shp, ...
+    latlim, lonlim, targetsFile, surfOn)
 
 % plot map of glider track interpolated every minute. colored by pam status
 
@@ -23,9 +24,14 @@ function plotInterpolatedTrack_PAM(glider, sgInterp, path_shp, latlim, lonlim, t
 % glider = 'sg607';
 %
 
+if nargin < 7
+    surfOn = 0; % don't plot surface positions
+end
+
 if nargin < 6
     targetsFile = [];
 end
+
 
 %% set up figure
 figure(206);
@@ -45,7 +51,7 @@ plabel('PLabelLocation', 1, 'PLabelRound', -1, 'FontSize', 14);
 mlabel('MLabelLocation', 1, 'MLabelRound', -1, ...
     'MLabelParallel', 'south', 'FontSize', 14);
 tightmap
-na = northarrow('latitude', 33.4, 'longitude', -121);
+na = northarrow('latitude', 31.06, 'longitude', -118.2);
 scaleruler on
 % showaxes
 setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
@@ -54,7 +60,7 @@ setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
 
 
 %%  plot bathymetry - slow step
-[Z, refvec] = etopo([path_shp 'etopo1_ice_c_i2\etopo1_ice_c_i2.bin'], 1, latlim, lonlim);
+[Z, refvec] = etopo([path_shp 'etopo1\etopo1_ice_c_i2.bin'], 1, latlim, lonlim);
 
 % Z(Z >= 10) = NaN;
 Z(Z >= 10) = 100;
@@ -66,7 +72,7 @@ colormap(cmap)
 caxis([-6000 100])
 brighten(.4);
 
-% 
+%
 [c,h] = contourm(Z, refvec, [-5000:1000:-1000], 'LineColor', [0.6 0.6 0.6]);
 [c,h] = contourm(Z, refvec, [-900:100:100], 'LineColor', [0.8 0.8 0.8]);
 [C1,H1] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
@@ -101,37 +107,47 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %% plot waypoints
 if ~isempty(targetsFile)
-    plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
+    h(4) = plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
         'MarkerEdgeColor', [0.3 0.3 0.3], 'MarkerFaceColor', [0.3 0.3 0.3], ...
-        'Color', [0.3 0.3 0.3])
+        'Color', [0.3 0.3 0.3], 'DisplayName', sprintf('planned waypoints\n  and track'));
     textm(targetsFile.lat, targetsFile.lon + 0.02, targetsFile.name, 'Color', [0.3 0.3 0.3])
 end
 
 %% plot glider track
 
-plotm(locCalcT.latitude, locCalcT.longitude, 'LineWidth', 2, ...
-    'Color', [1 0.4 0.2])
+% plot as single color whole track.
+% plotm(sgInterp.latitude, sgInterp.longitude, 'LineWidth', 2, ...
+%     'Color', [1 0.4 0.2])
 
-[x, y] = projfwd('Mercator', sgInterp.latitude, sgInterp.longitude);
+%plot when PAM off
+h(1) = plotm(sgInterp.latitude(sgInterp.pam == 0 | isnan(sgInterp.pam)), ...
+    sgInterp.longitude(sgInterp.pam == 0 | isnan(sgInterp.pam)), ...
+    'LineWidth', 1, 'Color', [0 0 0], ...
+    'DisplayName', 'PAM off');
 
-color_line3(sgInterp.longitude, sgInterp.latitude, ...
-        datenum(sgInterp.dateTime), datenum(sgInterp.dateTime),'LineWidth', 2);
-
-% plotm(locCalcT.latitude_gsm, locCalcT.longitude_gsm, 'LineWidth', 2, ...
-%     'Color', 'y')
-% canc heck GSM model to see if they are vastly different?
+% plot when PAM on
+h(2) = plotm(sgInterp.latitude(sgInterp.pam == 1 | isnan(sgInterp.pam)), ...
+    sgInterp.longitude(sgInterp.pam == 1 | isnan(sgInterp.pam)), ...
+    'LineWidth', 2, 'Color', [1 0.4 0.2], ...
+    'DisplayName', 'PAM on');
 
 % first pt for each dive as a dot
-diveNums = unique(locCalcT.dive);
-surfPts = [];
-for f = 1:length(diveNums)
-    surfPts(f) = find(locCalcT.dive == diveNums(f), 1, 'first');
+if surfOn == 1
+    diveNums = unique(locCalcT.dive);
+    surfPts = [];
+    for f = 1:length(diveNums)
+        surfPts(f) = find(locCalcT.dive == diveNums(f), 1, 'first');
+    end
+    
+    h(3) = scatterm(locCalcT.latitude(surfPts), locCalcT.longitude(surfPts), 4, ...
+        'Marker', 'o', 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0], ...
+    'DisplayName', 'surface location');
+
 end
-scatterm(locCalcT.latitude(surfPts), locCalcT.longitude(surfPts), 4, ...
-    'Marker', 'o', 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0])
 
 %% basic title (glider name)
 title(glider, 'FontSize', 18)
 
+legend(h, 'Location', 'northwest')
 
 end

@@ -47,7 +47,7 @@ plabel('PLabelLocation', 1, 'PLabelRound', -1, 'FontSize', 14);
 mlabel('MLabelLocation', 1, 'MLabelRound', -1, ...
     'MLabelParallel', 'south', 'FontSize', 14);
 tightmap
-na = northarrow('latitude', 33.4, 'longitude', -121);
+na = northarrow('latitude', 31.06, 'longitude', -118.2);
 scaleruler on
 % showaxes
 setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
@@ -103,22 +103,29 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %% plot waypoints
 if ~isempty(targetsFile)
-    plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
+   h(4) = plotm(targetsFile.lat, targetsFile.lon, 'Marker', '^', 'MarkerSize', 6, ...
         'MarkerEdgeColor', [0.3 0.3 0.3], 'MarkerFaceColor', [0.3 0.3 0.3], ...
-        'Color', [0.3 0.3 0.3])
-    textm(targetsFile.lat, targetsFile.lon + 0.02, targetsFile.name, 'Color', [0.3 0.3 0.3])
+        'Color', [0.3 0.3 0.3], 'DisplayName', sprintf('planned waypoints\n  and track'));
+    textm(targetsFile.lat-0.02, targetsFile.lon + 0.03, targetsFile.name, 'Color', [0.3 0.3 0.3])
 end
 
 %% plot glider track
 
-plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 'LineWidth', 2, ...
-    'Color', [1 0.4 0.2])
-scatterm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 4, ...
-    'Marker', 'o', 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0])
+h(1) = plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, ...
+    'LineWidth', 1, 'Color', [0 0 0], ...
+    'DisplayName', 'PAM off');
+h(2) = plotm(gpsSurfT.startLatitude(~isnan(gpsSurfT.pamNumFiles)), ...
+    gpsSurfT.startLongitude(~isnan(gpsSurfT.pamNumFiles)), ...
+    'LineWidth', 2, 'Color', [1 0.4 0.2], ...
+    'DisplayName', 'PAM on');
+h(3) = scatterm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 2, ...
+    'Marker', 'o', 'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0], ...
+    'DisplayName', 'surface location');
 
 
-%% basic title (glider name)
+%% basic title (glider name) and legend
 title(glider, 'FontSize', 18)
 
+legend(h, 'Location', 'northwest')
 
 end
