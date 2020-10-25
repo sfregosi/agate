@@ -1,13 +1,11 @@
-function plotCalculatedTrack_PAM(glider, locCalcT, path_shp, latlim, lonlim, targetsFile)
+function plotInterpolatedTrack_PAM(glider, sgInterp, path_shp, latlim, lonlim, targetsFile)
 
-% plot map of glider track
-% plots with dead reckoned/calculated track (from the hydrodynamic model)
-% could add ability to toggle to the glide slope model in the future. 
+% plot map of glider track interpolated every minute. colored by pam status
 
 
 % INPUTS:
 %   glider: glider number e.g., 'sg607' for making title
-%   locCalcT: load locCalcT matrix (table) with all calculated locations
+%   sgInter: interpolated glider track (straight line between surface pts)
 %   path_shp: path to etopo bathymetry file
 %   latlim: latitude limits for plot
 %   lonlim: longitude limits for plot
@@ -30,7 +28,7 @@ if nargin < 6
 end
 
 %% set up figure
-figure(204);
+figure(206);
 % mapFig = gcf;
 % mapFigPosition = [5200   -1350   1200    900];
 % mapFig.Position = mapFigPosition;
@@ -113,6 +111,11 @@ end
 
 plotm(locCalcT.latitude, locCalcT.longitude, 'LineWidth', 2, ...
     'Color', [1 0.4 0.2])
+
+[x, y] = projfwd('Mercator', sgInterp.latitude, sgInterp.longitude);
+
+color_line3(sgInterp.longitude, sgInterp.latitude, ...
+        datenum(sgInterp.dateTime), datenum(sgInterp.dateTime),'LineWidth', 2);
 
 % plotm(locCalcT.latitude_gsm, locCalcT.longitude_gsm, 'LineWidth', 2, ...
 %     'Color', 'y')
