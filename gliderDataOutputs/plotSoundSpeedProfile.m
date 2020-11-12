@@ -1,10 +1,17 @@
 function plotSoundSpeedProfile(locCalcT, savePath)
 % read in glider locCalc file and create a plot of sound speed.
-% plot mean and 95% CI around it.
+% plot mean and median thicker on top of profiles for every individual dive
 
 % inputs:
-%           instrDeplStr:
+% locCalcT: .mat file (with full path) with table of glider sensor data
+% extracted using positionalDataExtractor - needs to have cols for
+% soundVelocity and depth
+% if file not specified, will prompt for file
+% savePath: path to save .fig and .png. leave empty to not save
+% automatically
+% If saving, will prompt input for figure title in Command Window
 
+% S. Fregosi updated 2020/11/12
 
 if nargin < 2
     savePath = [];
@@ -24,27 +31,10 @@ hold on
 ylim([-1010 10]);
 xlabel('sound speed [m/s]')
 ylabel('depth [m]')
-titleString = input('Figure title string: ','s');
-title(titleString,'Interpreter','none');
 set(gca,'FontSize',14)
 grid on
 
-
-% % get mean for each depth, 1 meter resolution
-% meanSSP = zeros(1001,2);
-% medianSSP = zeros(1001,2);
-
-% for d = 0:1000 % to 1000 m
-%     meanSSP(d+1,1) = -d;
-%     medianSSP(d+1,1) = -d;
-%     [r, ~] =  find(locCalcT.depth >= d & locCalcT.depth < (d + 1));
-%     meanTmp = nanmean(locCalcT.soundVelocity(r));
-%     medianTmp = nanmedian(locCalcT.soundVelocity(r));
-%     meanSSP(d+1,2) = meanTmp;
-%     medianSSP(d+1,2) = medianTmp;
-% end
-
-% get mean for each depth, 10 meter resolution
+% get mean for each depth, 'res' meter resolution
 res = 5;
 meanSSP = zeros(1000/res + 1,2);
 medianSSP = zeros(1000/res + 1,2);
@@ -66,6 +56,8 @@ plot(medianSSP(:,2), medianSSP(:,1), 'k--', 'LineWidth',2)
 
 legend('mean', 'median', 'Location', 'southeast')
 if ~isempty(savePath)
+    titleString = input('Figure title string: ','s');
+    title(titleString,'Interpreter','none');
     print([savePath titleString '_SSP.png'],'-dpng')
     savefig([savePath titleString '_SSP.fig'])
 end
