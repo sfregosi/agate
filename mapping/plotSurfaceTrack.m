@@ -69,7 +69,7 @@ caxis([-6000 100])
 brighten(.4);
 
 % 
-[c,h] = contourm(Z, refvec, [-5000:1000:-1000], 'LineColor', [0.6 0.6 0.6]);
+[CD, HD] = contourm(Z, refvec, [-5000:1000:-2000], 'LineColor', [0.6 0.6 0.6]);
 [c,h] = contourm(Z, refvec, [-900:100:100], 'LineColor', [0.8 0.8 0.8]);
 [C1,H1] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
 [C5,H5] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
@@ -85,6 +85,8 @@ cl1 = clabelm(C1, H1, -1000, 'LabelSpacing', 1000);
 set(cl1, 'Color', repmat(0.6,1,3), 'BackgroundColor', 'none');
 cl5 = clabelm(C5, H5, -500, 'LabelSpacing', 1000);
 set(cl5, 'Color', repmat(0.6,1,3), 'BackgroundColor', 'none');
+clD = clabelm(CD, HD, 'LabelSpacing', 1000);
+set(clD, 'Color', repmat(0.6,1,3), 'BackgroundColor', 'none');
 
 
 
@@ -126,6 +128,6 @@ h(3) = scatterm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, 2, ...
 %% basic title (glider name) and legend
 title(glider, 'FontSize', 18)
 
-legend(h, 'Location', 'northwest')
+legend(h, 'Location', 'northwest', 'FontSize', 14)
 
 end
