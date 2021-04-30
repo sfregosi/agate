@@ -107,7 +107,7 @@ elseif strcmp(instrDeplStr,'sg607_GoMex')
     % -------------- GoMex 2018 --------------
     % SG639 @ GoMex 2018
 elseif strcmp(instrDeplStr,'sg639_GoMex')
-    hydSens = -164.5; % HTI92 # 653013 physical label on phone
+    hydSens = -164.5; % HTI92 # 635013 physical label on phone
     hydHP = 50; % from Haru email 1/28/2019
     preAmp = 'EOS_HM1_1507';
     paGain = [-2.9 6.8 13.6 15.7 16.3 16.6 16.8 17.3 19.9 23.9 ...
