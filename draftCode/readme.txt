@@ -1,0 +1,1 @@
+This folder contains bits of working code (from various projects/deployments) that need to be checked, updated, organized, etc. but DO have to do with gliders and may have something to offer to the toolbox! 
