@@ -1,4 +1,4 @@
-function interpTrackToShapefile(glider, deploymentStr, path_profile)
+function interpTrackToShapefile(glider, deploymentStr, path_profile, path_save)
 
 % import glider interpolated locations (1 min) and make a shapefile
 % for Navy deliverables/import into ArcGIS
@@ -8,6 +8,10 @@ function interpTrackToShapefile(glider, deploymentStr, path_profile)
 % and a track shape file
     % with 
 
+    if nargin < 4
+        path_save = path_profile;
+    end
+    
 load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
 
 %% points output
@@ -66,7 +70,7 @@ for f = 1:length(ty)
     trk(f).EndTime = datestr(tm{f}(end));
 end
 
-shpBaseName = [path_profile glider '_' deploymentStr '_interpTracks'];
+shpBaseName = [path_save glider '_' deploymentStr '_interpTracks'];
 shapewrite(trk, shpBaseName);
 
 
