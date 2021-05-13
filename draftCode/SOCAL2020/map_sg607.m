@@ -138,3 +138,20 @@ T = shaperead([path_profile glider '_' deploymentStr '_gpsSurfacePoints.shp']);
 T = shaperead([path_profile glider '_' deploymentStr '_interpTracks.shp']);
 sum([T. Length_km])
 
+% write gpsSurfT as CSV
+% first trim out matlab/piloting stuff
+gpsSurfTS = removevars(gpsSurfT, {'startTime', 'endTime', 'dac_n_gsm', ...
+    'dac_e_gsm', 'dac_qc', 'avg_speed_n', 'avg_speed_e', 'avg_speed_n_gsm', ...
+    'avg_speed_e_gsm', 'hdm_qc'});
+
+writetable(gpsSurfTS, [path_deliverables glider '_' deploymentStr '_gpsSurfaceTable.csv']);
+
+% write locCalcT as CSV
+% first trim out matlab/piloting stuff
+locCalcTS = removevars(locCalcT, {'time', 'latitude_gsm', 'longitude_gsm', ...
+    'north_displacement', 'east_displacement', 'north_displacement_gsm', ...
+    'east_displacement_gsm', 'vertSpeed', 'horzSpeed', 'speed', 'speed_qc', ...
+    'vertSpeed_gsm', 'horzSpeed_gsm', 'speed_gsm', 'pitch', 'glideAngle', ...
+    'glideAngle_gsm', 'heading'});
+
+writetable(locCalcTS, [path_deliverables glider '_' deploymentStr '_calculatedLocationTable.csv']);
