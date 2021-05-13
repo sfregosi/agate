@@ -4,6 +4,7 @@ function plotSurfaceTrack_withHarps(glider, gpsSurfT, path_shp, latlim, lonlim, 
 % plot map of glider track
 % plots with straightline interpolation between surface positions
 % only plots dive surface positions. 
+% ADDS in HARPs in the area if applicable
 
 % INPUTS:
 %   glider: glider number e.g., 'sg607' for making title
