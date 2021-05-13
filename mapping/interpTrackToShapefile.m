@@ -4,14 +4,14 @@ function interpTrackToShapefile(glider, deploymentStr, path_profile, path_save)
 % for Navy deliverables/import into ArcGIS
 
 % creates a points shape file
-    % with pam status on/off, depth, dive num, and time. 
+% with pam status on/off, depth, dive num, and time.
 % and a track shape file
-    % with 
+% with
 
-    if nargin < 4
-        path_save = path_profile;
-    end
-    
+if nargin < 4
+    path_save = path_profile;
+end
+
 load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
 
 %% points output
@@ -42,7 +42,7 @@ clearvars latTmp lonTmp minStrTmp diveTmp depthTmp pamTmp
 shpBaseName = [path_profile glider '_' deploymentStr '_interpPoints'];
 shapewrite(pts, shpBaseName);
 
-%% track output 
+%% track output
 % now make SG tracklines shape file (plot faster, get lengths, durations,
 % etc)
 % first split the bits up

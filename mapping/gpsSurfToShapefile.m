@@ -1,10 +1,14 @@
-function gpsSurfToShapefile(glider, deploymentStr, path_profile)
+function gpsSurfToShapefile(glider, deploymentStr, path_profile, path_save)
 
 % import glider surface GPS locations and make a shapefile
 % for Navy deliverables/import into ArcGIS
 
 % points are labeled as either start or end of dive so drift at surface can
-% be seen. Could just plot starts or ends to not have double points. 
+% be seen. Could just plot starts or ends to not have double points.
+
+if nargin < 4
+    path_save = path_profile;
+end
 
 load([path_profile glider '_' deploymentStr '_gpsSurfaceTable_pam.mat']);
 
@@ -22,7 +26,7 @@ for f = 1:height(gpsSurfT)
     pts(r).Dive = diveNum;
     pts(r).Status = 'start';
     pts(r).PAMDur_hr = hours(gpsSurfT.pamDur(f));
-
+    
     % dive end gps location
     pts(r+1).Lat = gpsSurfT.endLatitude(f);
     pts(r+1).Lon = gpsSurfT.endLongitude(f);
@@ -30,10 +34,10 @@ for f = 1:height(gpsSurfT)
     pts(r+1).Dive = diveNum;
     pts(r+1).Status = 'end';
     pts(r+1).PAMDur_hr = hours(gpsSurfT.pamDur(f));
-
+    
 end
 
-shpBaseName = [path_profile glider '_' deploymentStr '_gpsSurfacePoints'];
+shpBaseName = [path_save glider '_' deploymentStr '_gpsSurfacePoints'];
 shapewrite(pts, shpBaseName);
 
 end
