@@ -1,4 +1,10 @@
+% master script for running necessary piloting bits for SOCAL2020 flight
 
+% downloads/processes new basestation files for each glider
+% speed/dive duration scratch pad
+% recording space and power used/available calcs/scratchpad
+% project expected progress forward
+% plot mAmps over time
 
 addpath(genpath('C:\Users\selene\OneDrive\MATLAB\gliderTools\'));
 addpath(genpath('C:\Users\selene\Box\HDR-SOCAL-2018\piloting\SeagliderPilotingTools_1.3.R3\Matlab\'));
