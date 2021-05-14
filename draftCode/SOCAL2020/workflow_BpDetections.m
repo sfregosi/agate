@@ -6,23 +6,28 @@ addpath(genpath('C:\Users\selene\OneDrive\MATLAB\utils\'));
 addpath(genpath('C:\Users\selene\OneDrive\MATLAB\osprey\'));
 addpath(genpath('C:\Users\selene\OneDrive\MATLAB\gliderTools\'));
 
-glider = 'sg607';
-% glider = 'sg639'; 
+% glider = 'sg607';
+glider = 'sg639'; 
 species = 'Bp';
+deploymentStr = 'SOCAL_Feb20';
 
 path_out = ['E:\SoCal2020\largeWhaleAnalysis\' species '\' species '_' glider '\'];
 path_wav = ['E:\SoCal2020\' glider '_downsampled\' glider '-1kHz\'];
 indexFile = [path_wav 'file_dates-' glider '_SoCal_Feb20-1kHz.txt'];
 fileExt = 'wav';
+path_profile = ['E:\SoCal2020\profiles\' glider '\'];
+path_shp = 'C:\Users\selene\OneDrive\GIS\';
 
 if ~exist(indexFile, 'file')
     makeFileDatesFunction(fileExt, path_wav, 1, indexFile);
 end
 hIndex = readHarufileDateIndex(indexFile);
 
-% logFileName = [glider '_Bp_20201022.log'];
 logFileName = [glider '_Bp_20201022-checked_10min.log'];
+% logFileName = [glider '_Bp_20201022-checked_10min.log'];
 
+
+path_deliverables = 'E:\SoCal2020\deliverables\';
 
 %% check detections prep/run
 
@@ -190,6 +195,26 @@ savefig([path_out species '_' glider '_DetHoursPerDay_10minBins_final.fig'])
 
 
 
+%% Save outputs for deliverables
+
+load([path_out logFileName(1:end-4) '_byHour.mat']);
+load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
+
+for f = 1:height(byHour)
+    tmp = sgInterp(isbetween(sgInterp.dateTime, byHour.hour(f), ...
+        byHour.hour(f) + minutes(59)),:);
+    byHour.latitude(f,1) = nanmean(tmp.latitude);
+    byHour.longitude(f,1) = nanmean(tmp.longitude);  
+end
+
+% save byHour with locations as table and shapefile for deliverables
+% for fin whales, detections are a 10 min bin with calls present
+writetable(byHour, [path_deliverables glider '_' deploymentStr '_' species '_byHour.csv']);
+
+% points shape file with points every hour with total recorded minutes in
+% that hour and the number of detections, presence, and normalized dets per
+% hour
+byHourDetsToShapefile(glider, deploymentStr, species, byHour, path_deliverables);
 
 
 

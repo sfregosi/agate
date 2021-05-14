@@ -8,11 +8,14 @@ addpath(genpath('C:\Users\selene\OneDrive\MATLAB\gliderTools\'));
 glider = 'sg607';
 % glider = 'sg639'; % NO Detections in SG639.
 species = 'Bm';
+deploymentStr = 'SOCAL_Feb20';
 
 path_out = ['E:\SoCal2020\largeWhaleAnalysis\Bm\Bm_' glider '\'];
 path_wav = ['E:\SoCal2020\' glider '_downsampled\' glider '-1kHz\'];
 indexFile = [path_wav 'file_dates-' glider '_SoCal_Feb20-1kHz.txt'];
 fileExt = 'wav';
+path_profile = ['E:\SoCal2020\profiles\' glider '\'];
+path_shp = 'C:\Users\selene\OneDrive\GIS\';
 
 if ~exist(indexFile, 'file')
     makeFileDatesFunction(fileExt, path_wav, 1, indexFile);
@@ -142,40 +145,8 @@ print([path_out 'map_' glider '_blueWhale_detsPerHour_final.png'], '-dpng')
 export_fig([path_out 'map_' glider '_blueWhale_detsPerHour_final.eps'], '-eps', '-painters');
 savefig([path_out 'map_' glider '_blueWhale_detsPerHour_final.fig'])
 
-%% Save outputs for deliverables
-% save byHour with locations as table and shapefile for deliverables
-writetable(byHour, [path_deliverables glider '_' species '_byHour.csv']);
-
-% points shape file with points every hour with total recorded minutes in
-% that hour and the number of detections, presence, and normalized dets per
-% hour
-byHourDetsToShapefile(glider, deploymentStr, species, byHour, path_deliverables);
-
-[pts(1:height(byHour)).Geometry] = deal('Point');
-latTmp = num2cell(byHour.latitude);
-[pts(:).Lat] = latTmp{:};
-lonTmp = num2cell(byHour.longitude);
-[pts(:).Lon] = lonTmp{:};
-[pts(:).Name] = deal(glider);
-% minTmp = num2cell(t.min); % can't use datetimes in geostructures
-% [SGPts(:).Min] = minTmp{:};
-hrStrTmp = cellstr(datestr(byHour.hour));
-[pts(:).Hour] = hrStrTmp{:};
-recMinsTmp = num2cell(byHour.recMins);
-[pts(:).RecordedMinutes] = recMinsTmp{:};
-presenceTmp = num2cell(byHour.presence);
-[pts(:).Presence] = presenceTmp{:};
-numDetsTmp = num2cell(byHour.numDets);
-[pts(:).Detections] = numDetsTmp{:};
-detsPerHrTmp = num2cell(byHour.detsPerHour);
-[pts(:).DetectionsPerHour] = detsPerHrTmp{:};
 
 
-shpBaseName = [path_deliverables glider '_' deploymentStr '_' species '_byHour'];
-shapewrite(pts, shpBaseName);
-
-
-% 
 %% plot - bar plot
 
 figure(10); clf
@@ -249,3 +220,16 @@ savefig([path_out species '_' glider '_DetHoursPerDay_final.fig'])
 % colorbar
 % 
 % print([path_detOut species '_exampleCall.png'], '-dpng');
+
+
+%% Save outputs for deliverables
+
+load([path_out logFileName(1:end-4) '_byHour.mat']);
+
+% save byHour with locations as table and shapefile for deliverables
+writetable(byHour, [path_deliverables glider '_' deploymentStr '_' species '_byHour.csv']);
+
+% points shape file with points every hour with total recorded minutes in
+% that hour and the number of detections, presence, and normalized dets per
+% hour
+byHourDetsToShapefile(glider, deploymentStr, species, byHour, path_deliverables);
