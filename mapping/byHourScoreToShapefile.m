@@ -23,7 +23,7 @@ recMinsTmp = num2cell(byHour.recMins);
 presenceTmp = num2cell(byHour.presence);
 [pts(:).Presence] = presenceTmp{:};
 scoreTmp = num2cell(byHour.score);
-[pts(:).Detections] = scoreTmp{:};
+[pts(:).Score] = scoreTmp{:};
 
 
 shpBaseName = [path_save glider '_' deploymentStr '_' species '_byHour'];

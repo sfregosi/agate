@@ -8,14 +8,17 @@ addpath(genpath('C:\Users\selene\OneDrive\MATLAB\GPL\'));
 addpath(genpath('C:\Users\selene\OneDrive\MATLAB\osprey\'));
 
 
-% glider = 'sg607';
-glider = 'sg639';
+glider = 'sg607';
+% glider = 'sg639';
 species = 'Mn';
+deploymentStr = 'SOCAL_Feb20';
 
 path_wav = ['E:\SoCal2020\' glider '_downsampled\' glider '-5kHz\'];
 path_out = ['E:\SoCal2020\largeWhaleAnalysis\' species '\' species '_' glider '\'];
 indexFile = [path_wav 'file_dates-' glider '_SoCal_Feb20-5kHz.txt'];
 fileExt = 'wav';
+path_profile = ['E:\SoCal2020\profiles\' glider '\'];
+path_shp = 'C:\Users\selene\OneDrive\GIS\';
 
 if ~exist(indexFile, 'file')
     makeFileDatesFunction(fileExt, path_wav, 1, indexFile);
@@ -27,6 +30,8 @@ hIndex = readHarufileDateIndex(indexFile);
 % detFile = 'detections_GPL_v2_150_1000_sg607_SOCAL_Feb20_exampleFiles.mat';
 
 tritonFile = [glider '_Mn_manualLog.xls'];
+
+path_deliverables = 'E:\SoCal2020\deliverables\';
 
 %% convert GPL output to "Ishmael" log file
 
@@ -209,7 +214,25 @@ savefig([path_out species '_' glider '_DetHoursPerDay_final.fig'])
 
 
 
+%% Save outputs for deliverables
 
+load([path_out glider '_' species '_manualLog_byHour.mat']);
+load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
+
+for f = 1:height(byHour)
+    tmp = sgInterp(isbetween(sgInterp.dateTime, byHour.hour(f), ...
+        byHour.hour(f) + minutes(59)),:);
+    byHour.latitude(f,1) = nanmean(tmp.latitude);
+    byHour.longitude(f,1) = nanmean(tmp.longitude);  
+end
+
+% save byHour with locations as table and shapefile for deliverables
+writetable(byHour, [path_deliverables glider '_' deploymentStr '_' species '_byHour.csv']);
+
+% points shape file with points every hour with total recorded minutes in
+% that hour and the score of vocalization density (1 to 5) of calls were
+% present
+byHourScoreToShapefile(glider, deploymentStr, species, byHour, path_deliverables);
 
 
 

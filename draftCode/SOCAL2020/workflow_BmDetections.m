@@ -225,6 +225,14 @@ savefig([path_out species '_' glider '_DetHoursPerDay_final.fig'])
 %% Save outputs for deliverables
 
 load([path_out logFileName(1:end-4) '_byHour.mat']);
+load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
+
+for f = 1:height(byHour)
+    tmp = sgInterp(isbetween(sgInterp.dateTime, byHour.hour(f), ...
+        byHour.hour(f) + minutes(59)),:);
+    byHour.latitude(f,1) = nanmean(tmp.latitude);
+    byHour.longitude(f,1) = nanmean(tmp.longitude);  
+end
 
 % save byHour with locations as table and shapefile for deliverables
 writetable(byHour, [path_deliverables glider '_' deploymentStr '_' species '_byHour.csv']);
