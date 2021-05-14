@@ -26,6 +26,8 @@ logFileName = 'sg607_Bm_20200918-checked.log';
 % % logFileName = 'sg639_Bm_20201007.log';
 % logFileName = 'sg639_Bm_20201007_run2.log';
 
+path_deliverables = 'E:\SoCal2020\deliverables\';
+
 %% Check Detections
 % 
 % checkDetections SoCal_2020_sg607_Bm
@@ -100,7 +102,7 @@ load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
 plotInterpolatedTrack_PAM(glider, sgInterp, path_shp, latlim, lonlim, [], 0)
 
 mapFig = gcf;
-mapFigPosition = [5200   -1350   900    900];
+mapFigPosition = [50 50  900  900];
 mapFig.Position = mapFigPosition;
 
 % add labels
@@ -121,6 +123,7 @@ for f = 1:height(byHour)
     byHour.longitude(f,1) = nanmean(tmp.longitude);  
 end
 
+
 % turn legend plotting back on (off for landmarks)**I don't know why I have
 % to do it twice..but just do it...
 h = scatterm(byHour.latitude(byHour.numDets > 0), ...
@@ -139,6 +142,40 @@ print([path_out 'map_' glider '_blueWhale_detsPerHour_final.png'], '-dpng')
 export_fig([path_out 'map_' glider '_blueWhale_detsPerHour_final.eps'], '-eps', '-painters');
 savefig([path_out 'map_' glider '_blueWhale_detsPerHour_final.fig'])
 
+%% Save outputs for deliverables
+% save byHour with locations as table and shapefile for deliverables
+writetable(byHour, [path_deliverables glider '_' species '_byHour.csv']);
+
+% points shape file with points every hour with total recorded minutes in
+% that hour and the number of detections, presence, and normalized dets per
+% hour
+byHourDetsToShapefile(glider, deploymentStr, species, byHour, path_deliverables);
+
+[pts(1:height(byHour)).Geometry] = deal('Point');
+latTmp = num2cell(byHour.latitude);
+[pts(:).Lat] = latTmp{:};
+lonTmp = num2cell(byHour.longitude);
+[pts(:).Lon] = lonTmp{:};
+[pts(:).Name] = deal(glider);
+% minTmp = num2cell(t.min); % can't use datetimes in geostructures
+% [SGPts(:).Min] = minTmp{:};
+hrStrTmp = cellstr(datestr(byHour.hour));
+[pts(:).Hour] = hrStrTmp{:};
+recMinsTmp = num2cell(byHour.recMins);
+[pts(:).RecordedMinutes] = recMinsTmp{:};
+presenceTmp = num2cell(byHour.presence);
+[pts(:).Presence] = presenceTmp{:};
+numDetsTmp = num2cell(byHour.numDets);
+[pts(:).Detections] = numDetsTmp{:};
+detsPerHrTmp = num2cell(byHour.detsPerHour);
+[pts(:).DetectionsPerHour] = detsPerHrTmp{:};
+
+
+shpBaseName = [path_deliverables glider '_' deploymentStr '_' species '_byHour'];
+shapewrite(pts, shpBaseName);
+
+
+% 
 %% plot - bar plot
 
 figure(10); clf
