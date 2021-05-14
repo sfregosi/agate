@@ -7,11 +7,14 @@ addpath(genpath('C:\Users\selene\OneDrive\MATLAB\utils\'));
 species = 'Pm';
 glider = 'sg607';
 % glider = 'sg639';
+deploymentStr = 'SOCAL_Feb20';
 
 path_out = ['E:\SoCal2020\largeWhaleAnalysis\Pm\Pm_' glider '\'];
 path_wav = ['E:\SoCal2020\' glider '_downsampled\' glider '-5kHz\'];
 indexFile = [path_wav 'file_dates-' glider '_SoCal_Feb20-5kHz.txt'];
 fileExt = 'wav';
+path_profile = ['E:\SoCal2020\profiles\' glider '\'];
+path_shp = 'C:\Users\selene\OneDrive\GIS\';
 
 
 if ~exist(indexFile, 'file')
@@ -24,6 +27,8 @@ if strcmp(glider, 'sg607')
 elseif strcmp(glider, 'sg639')
     logFileName = [glider '_Pm_20201022_soundClips.log'];
 end
+
+path_deliverables = 'E:\SoCal2020\deliverables\';
 
 %% check detections prep/run
 %
@@ -278,3 +283,23 @@ save([path_out logFileName(1:end-4) '_burstPulses_byHour.mat'], ...
 fprintf(1, 'Burst pulses detected by %s during %i hours over %i days\n', ...
     glider, sum(byHour.presence), length(unique(day(hourlyPresence.hour))));
 
+
+%% Save outputs for deliverables
+
+load([path_out logFileName(1:end-4) '_spermClicks_byHour.mat']);
+load([path_profile glider '_' deploymentStr '_interpolatedTrack.mat']);
+
+for f = 1:height(byHour)
+    tmp = sgInterp(isbetween(sgInterp.dateTime, byHour.hour(f), ...
+        byHour.hour(f) + minutes(59)),:);
+    byHour.latitude(f,1) = nanmean(tmp.latitude);
+    byHour.longitude(f,1) = nanmean(tmp.longitude);  
+end
+
+% save byHour with locations as table and shapefile for deliverables
+writetable(byHour, [path_deliverables glider '_' deploymentStr '_' species '_byHour.csv']);
+
+% points shape file with points every hour with total recorded minutes in
+% that hour and the number of detections, presence, and normalized dets per
+% hour
+byHourDetsToShapefile(glider, deploymentStr, species, byHour, path_deliverables);
