@@ -1,7 +1,4 @@
 # agate_public
- agate - for public release!
- 
-# agate_public
 agate - for public release!
 Acoustic Glider Analysis Tools and Environment
 
