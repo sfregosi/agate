@@ -1,5 +1,0 @@
-# acoustic glider tools basestation parameters
-# used to privately store username and password info for individual basestation
-bsConfig.host = 'url.com';
-bsConfig.username = 'pilot';
-bsConfig.password = 'PsWrD';
