@@ -172,7 +172,7 @@ if eventGap > 0
     
     fprintf(1, ['Events merged within %i minutes: %i unqiue species, ' ...
         '%i unique call types, %i unique events\n'], ...
-        eventGap, length(uSp), length(uCall), height(tl))
+        eventGap, length(uSp), length(uCall), height(tlm))
     
 end
 
