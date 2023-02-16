@@ -45,6 +45,10 @@ t = readtable(logFile);
 % make sure sorted by start time
 t = sortrows(t, 'StartTime');
 
+% clean up EventNumber dates (these can vary depending on how the xls was
+% saved/opened/viewed during the logging process)
+t.EventNumber = dateshift(t.EventNumber, 'start', 'second');
+
 % get unique species codes
 uSp = unique(t.SpeciesCode);
 % unique call types
@@ -86,8 +90,10 @@ if eventGap > 0
         stopYes = stopYes(stopYes ~= tlmIdx); % ignore actual event
         
         % do stuff depending on outcome
+        
+        % if no overlaps
         if isempty(startYes) && isempty(stopYes)
-            % if no overlaps, just copy this entry to output
+            % just copy this entry to output
             tlm(tlmIdx,:) = tlt(tlmIdx, :);
             tlmIdx = tlmIdx + 1;
             
@@ -122,30 +128,36 @@ if eventGap > 0
                     % next entry starts before end of this entry
                     % so replace end time with end time of next entry
                     tlm.stop(tlmIdx) = tlt.stop(startYes);
-                    tlm.call{tlmIdx} = unique([tlt.call{tlmIdx}(:); 
+                    tlm.call{tlmIdx} = unique([tlt.call{tlmIdx}(:);
                         tlt.call{startYes}(:)]);
                 end
                 % remove the overlapping entry and update tlt to match tlm
                 tlt(startYes,:) = [];
                 tlt(tlmIdx,:) = tlm(tlmIdx,:);
                 tlmIdx = tlmIdx + 1;
+            elseif length(startYes) > 1
+                fprintf('more than 1 overlap!')
             end
             
             % overlap only on stop
         elseif isempty(startYes) && ~isempty(stopYes)
             % single overlap
             if length(stopYes) == 1
-                if stopYes < tlmIdx && tlm.stop(stopYes) < tlt.stop(tlmIdx) 
-                    % entry before previous entry ends before start or within 
+                if stopYes < tlmIdx && tlm.stop(stopYes) < tlt.stop(tlmIdx)
+                    % entry before previous entry ends before start or within
                     % buffer of this entry so update previous entry end time
                     tlm.stop(stopYes) = tlt.stop(tlmIdx);
-                    tlm.call{stopYes} = unique([tlt.call{stopYes}(:); 
+                    tlm.call{stopYes} = unique([tlt.call{stopYes}(:);
                         tlt.call{tlmIdx}(:)]);
                     % remove overlapping entry, update tlt, do NOT advance
                     tlt(tlmIdx,:) = [];
-                    tlt(stopYes,:) = tlm(stopYes,:); 
+                    tlt(stopYes,:) = tlm(stopYes,:);
                 end
+            elseif length(stopYes) > 1
+                fprintf('more than 1 overlap!')
             end
+        elseif length(startYes) > 1 && length(stopYes) > 1
+            fprintf('more than 1 overlap!')
         end
     end
     
