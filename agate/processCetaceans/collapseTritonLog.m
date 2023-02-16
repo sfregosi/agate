@@ -48,6 +48,13 @@ t = sortrows(t, 'StartTime');
 % clean up EventNumber dates (these can vary depending on how the xls was
 % saved/opened/viewed during the logging process)
 t.EventNumber = dateshift(t.EventNumber, 'start', 'second');
+% this can still end up with single events listed as 1 sec apart
+for f = 1:height(t)-1
+    diff = t.EventNumber(f+1) - t.EventNumber(f);
+    if diff <= seconds(1) && diff > seconds(0) 
+        t.EventNumber(f+1) = t.EventNumber(f);
+    end
+end
 
 % get unique species codes
 uSp = unique(t.SpeciesCode);
@@ -157,6 +164,8 @@ if eventGap > 0
                 fprintf('more than 1 overlap!')
             end
         elseif length(startYes) > 1 && length(stopYes) > 1
+            fprintf('more than 1 overlap!')
+        elseif length(startYes) > 1 || length(stopYes) > 1
             fprintf('more than 1 overlap!')
         end
     end
