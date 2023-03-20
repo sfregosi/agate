@@ -1,9 +1,9 @@
 ---
 title: 'AGATE'
-subtitle: 'Documentation for AGATE: Acoustic Glider Tools and Environment'
-page-layout: full
 ---
 
+<!-- subtitle: 'Documentation for AGATE: Acoustic Glider Tools and Environment' -->
+<!-- page-layout: full -->
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
