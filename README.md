@@ -28,10 +28,8 @@ marine mammals.
 
 Please contact me if you have any questions, feedback, or suggestions!
 
-<selene.fregosi@gmail.com> or <selene.fregosi@noaa.gov>
-
-![diagram showing the different components of
-agate](docs/images/tool_workflow_v5-01.png)
+\[dot\] fregosi \[at\] noaa.gov or [Report an issue on
+GitHub](https://github.com/sfregosi/agate-public/issues/new)
 
 ## Disclaimer
 

@@ -29,9 +29,9 @@ As part of the NOAA Uncrewed Systems Initiative (UxS) we received funding to dev
 
 Please contact me if you have any questions, feedback, or suggestions!
 
-selene.fregosi@gmail.com or selene.fregosi@noaa.gov
+ [dot] fregosi [at] noaa.gov or [Report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new)
 
-![diagram showing the different components of agate](docs/images/tool_workflow_v5-01.png)
+
 
 ## Disclaimer
 
