@@ -123,3 +123,19 @@ targetsFile = targetsOut;
 mapPlannedTrack(targetsFile, latLim, lonLim, CONFIG.glider, bathyOn, figNum)
 
 
+%% 2 - print/save interpolated track map
+set(gcf, 'InvertHardCopy', 'off', 'color', 'w');
+
+print(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+    '_plannedTrack.png']), '-dpng')
+savefig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+    '_plannedTrack.fig']))
+
+% exporting to EPS or PDF requires the export_fig toolbox available at 
+%  https://github.com/altmany/export_fig
+export_fig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+    '_plannedTrack.eps']), '-eps', '-painters');
+export_fig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+    '_plannedTrack.pdf']), '-pdf', '-painters');
+
+
