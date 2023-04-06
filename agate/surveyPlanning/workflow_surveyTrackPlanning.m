@@ -31,10 +31,15 @@
 %	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+global CONFIG
 
 %% %%%%% SET UP %%%%%%
+
+glider = CONFIG.glider; %'sg639';
+deployment = CONFIG.deployment; %'MHI_Apr2023';
+
 % Select .kml file
-[kmlFileName, kmlPath] = uigetfile('*.kml', 'Select .kml track');
+[kmlFileName, kmlPath] = uigetfile([CONFIG.path.survey '\*.kml'], 'Select .kml track');
 kmlFile = fullfile(kmlPath, kmlFileName);
 [~, kmlName, kmlExt] = fileparts(kmlFileName);
 
@@ -101,15 +106,20 @@ fclose(fid);
 
 
 %% %%%%%% CREATE PLOT %%%%%%
-glider = ['sg639']; % leeward
-% glider = 'sg680'; % windward
-latLim = [17 22];
-lonLim = [-157 -152];
-path_shp = 'C:\Users\Selene.Fregosi\Documents\GIS\';
 
-plotGliderPath_etopo(glider, latLim, lonLim, pp, path_out, path_shp, figNum)
+% Set up map configuration
+% **Need to make a function to play with these??
+CONFIG.map.latLim = [18 23];
+CONFIG.map.lonLim = [-160 -154];
+CONFIG.map.naLat = 22.3;
+CONFIG.map.naLon = -154.4;
+CONFIG.map.scalePos = [-0.045 0.325]; % ['XLoc' 'YLoc']
+CONFIG.map.scaleMajor = 0:50:100;
+CONFIG.map.scaleMinor = 0:12.5:25;
+bathyOn = 1;
+figNum = 26;
 
-
-
+targetsFile = targetsOut;
+mapPlannedTrack(targetsFile, latLim, lonLim, CONFIG.glider, bathyOn, figNum)
 
 

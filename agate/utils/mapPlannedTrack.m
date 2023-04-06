@@ -1,4 +1,4 @@
-function output = mapPlannedTrack(targetsFile, latLim, lonLim, bathyOn, figNum)
+function mapPlannedTrack(targetsFile, latLim, lonLim, trackName, bathyOn, figNum)
 % MAPPLANNEDTRACK	Create static map of planned survey track
 %
 %	Syntax:
@@ -19,6 +19,8 @@ function output = mapPlannedTrack(targetsFile, latLim, lonLim, bathyOn, figNum)
 %		targetsFile     fullpath to targets file
 %       latLim          latitude limits in decimal degrees e.g., [18 23]
 %       lonLim          longitude limits in decimal degrees e.g., [-160 -154]
+%       trackName       optional argument for the legend entry. If empty
+%                       will just say 'glider', e.g., 'sg639'
 %       bathyOn         optional arg to plot bathymetry data 1 = plot, 0 = no
 %                       requires a `path_shp` in the `PREFS` variable that 
 %                       points to a downloaded etopo_2022_v1_60s_N90W180_surface.tif
@@ -36,6 +38,7 @@ function output = mapPlannedTrack(targetsFile, latLim, lonLim, bathyOn, figNum)
 %
 % TO DOs:
 %       - [ ] make it possible to customize the north arrow and scale info
+%       - [ ] make possible to plot multiple gliders for one survey
 %
 %
 %	Authors:
@@ -43,29 +46,23 @@ function output = mapPlannedTrack(targetsFile, latLim, lonLim, bathyOn, figNum)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	22 March 2023
-%	Updated:
+%	Updated:        06 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+global CONFIG
 
-
-
-% testing inputs
-latLim = [18 23];
-lonLim = [-160 -154];
-naLat = 22.3;
-naLim = -154.4;
-scalePos = [-0.045 0.325]; % ['XLoc' 'YLoc']
-scaleMajor = 0:50:100;
-scaleMinor = 0:12.5:25;
-bathyOn = 1;
-path_shp = 'C:\Users\Selene.Fregosi\Documents\GIS\';
-PREFS = struct;
-PREFS.path_shp = path_shp;
-
-if nargin < 5
+% argument checks
+if nargin < 6
     figNum = 210;
 end
 
+if isempty(bathyOn)
+    bathyOn = 0;
+end
+
+if isempty(trackName)
+    trackName = 'glider';
+end
 
 % set up figure
 figure(figNum);
@@ -88,21 +85,22 @@ mlabel('MLabelLocation', 1, 'MLabelRound', -1, ...
 tightmap
 
 % add north arrow and scale bar
-na = northarrow('latitude', naLat, 'longitude', naLim, ...
-    'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
+CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
+    CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
 scaleruler on
 % showaxes
 setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
-    'XLoc', scalePos(1), 'YLoc', scalePos(2), 'MajorTick', scaleMajor, ...
-    'MinorTick', scaleMinor, 'FontSize', 14);
+    'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
+    'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
+    'FontSize', 14);
 
 %  plot bathymetry - slow step - optional
 if bathyOn
     % try this default path
-    bathyFile = fullfile(PREFS.path_shp, 'etopo2022', 'ETOPO_2022_v1_60s_N90W180_surface.tif');
+    bathyFile = fullfile(CONFIG.path.shp, 'etopo2022', 'ETOPO_2022_v1_60s_N90W180_surface.tif');
     % if that's no good, prompt to select correct file
     if ~exist(bathyFile, 'file')
-        [fn, path] = uigetfile([PREFS.path_shp '*.tif'], 'Select etop .tif file');
+        [fn, path] = uigetfile([CONFIG.path.shp '*.tif'], 'Select etop .tif file');
         bathyFile = fullfile(path, fn);
     end
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
@@ -127,10 +125,10 @@ end
 
 % plot land
 % try this default path
-landFile = fullfile(PREFS.path_shp, 'NaturalEarthData', 'ne_10m_land_scale_rank', 'ne_10m_land_scale_rank.shp');
+landFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_land_scale_rank.shp');
 % if that's no good, prompt for new file 
 if ~exist(landFile, 'file')
-    [fn, path] = uigetfile([PREFS.path_shp '*.shp'], 'Select ne_10m_land_scale_rank.shp');
+    [fn, path] = uigetfile([CONFIG.path.shp '*.shp'], 'Select ne_10m_land_scale_rank.shp');
     landFile = fullfile(path, fn);
 end
 land = shaperead(landFile, 'BoundingBox', [lonLim' latLim'], ...
@@ -138,10 +136,10 @@ land = shaperead(landFile, 'BoundingBox', [lonLim' latLim'], ...
 
 % and any minor islands if needed (e.g., for SBI)
 % try this default path
-minIslFile = fullfile(PREFS.path_shp, 'NaturalEarthData', 'ne_10m_minor_islands', 'ne_10m_minor_islands.shp');
+minIslFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_minor_islands.shp');
 % if that's no good, prompt for new file 
 if ~exist(minIslFile, 'file')
-    [fn, path] = uigetfile([PREFS.path_shp '*.shp'], 'Select ne_10m_minor_islands.shp');
+    [fn, path] = uigetfile([CONFIG.path_shp '*.shp'], 'Select ne_10m_minor_islands.shp');
     minIslFile = fullfile(path, fn);
 end
 landmi = shaperead(minIslFile, 'BoundingBox', [lonLim' latLim'], ...
@@ -149,6 +147,22 @@ landmi = shaperead(minIslFile, 'BoundingBox', [lonLim' latLim'], ...
 
 geoshow(land, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
+
+
+% plot glider track from targets file
+targets = readTargetsFile(targetsFile); 
+
+plotm(targets.lat, targets.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor', [0 0 0], ...
+    'MarkerFaceColor', [0 0 0], 'Color', [0 0 0])
+textm(targets.lat, targets.lon, targets.name)
+
+h(1) = linem(targets.lat, targets.lon, 'LineWidth', 2, 'Color', [1 0.4 0],...
+    'DisplayName', trackName);
+
+legend(h, {trackName}, 'Location', 'southeast', 'FontSize', 14)
+
+% add title
+title(sprintf('%s %s', CONFIG.glider, CONFIG.deployment), 'Interpreter', 'none')
 
 
 
