@@ -1,0 +1,4 @@
+# acoustic glider tools paths configuration
+# used to set necessary paths for each end user
+
+PREFS.path_shp = 'C:\Users\User.Name\Documents\GIS\';

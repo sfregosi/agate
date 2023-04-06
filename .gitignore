@@ -9,6 +9,8 @@ SeagliderPilotingTools
 *.mat
 # configuration files
 *.cnf
+!basetation_example.cnf
+!paths_example.cnf
 
 # R STUFF # 
 ###########
