@@ -1,4 +1,4 @@
-function agate
+function agate(surveyCnf)
 % AGATE	Initialize a new session of agate
 %
 %	Syntax:
@@ -7,7 +7,8 @@ function agate
 %	Description:
 %		Detailed description here, please
 %	Inputs:
-%		input 	describe, please
+%		surveyCnf   optional argument to specific configuration file for a
+%                   particular survey e.g., 'sg639_MHI_Apr2023.cnf'
 %
 %	Outputs:
 %		output 	describe, please
@@ -25,10 +26,26 @@ function agate
 %	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+clear global;  % clear out old globals
+warning off % this is turned off for plotting messages
 
 global CONFIG
 
+CONFIG.ver = '0.0.20230406 github.com/sfregosi/agate-public';
+disp(' ')
+disp(['         agate version ', CONFIG.ver])
+
+if nargin < 1
+    CONFIG.surveyCnf = [];
+else
+    CONFIG.surveyCnf = surveyCnf;
+end
+
+% get matlab version for differences and backwards capatibility
+CONFIG.mver = version;
+
 checkPath
 
-setCONFIG
+CONFIG = setCONFIG;
 
+end

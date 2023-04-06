@@ -1,28 +1,25 @@
-function output = checkPath(input)
-% CHECKPATH	One-line description here, please
+function checkPath
+% CHECKPATH	Check the necessasry folders are there and on the path
 %
 %	Syntax:
 %		OUTPUT = CHECKPATH(INPUT)
 %
 %	Description:
-% % only in MATLAB mode, are paths to various subfolders checked, if not
-% present make the subfolders.
-% subfolders check here are Remoras and Settings
-% other subfolders not used here are Extras, ExampleRemoras
-%if settings and java folder are in the search path for Matlab. If
-% it is not in there, it is added in
-% should also clear remoras to be added when installedRemoras.txt is read
-% in...remove this comment when done
+%       Called from the agate initialization. Sets up the necessary paths 
+%       in the CONFIG variable, while checking that all needed subfolders 
+%       are present and on the path. If not, it makes them. 
+%
 %	Inputs:
-%		input 	describe, please
+%		input 	none
 %
 %	Outputs:
-%		output 	describe, please
+%		output 	none
 %
 %	Examples:
+%       checkPath
 %
 %	See also
-%
+%       agate
 %
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
@@ -39,17 +36,19 @@ function output = checkPath(input)
 global CONFIG
 
 % root directory
-CONFIG.path_agate = fileparts(which('agate'));
+CONFIG.path.agate = fileparts(which('agate'));
 
-% Settings folder
-CONFIG.path_settings = fullfile(CONFIG.path_agate,'Settings');
-if ~exist(CONFIG.path_settings, 'dir')
+% make sure utils is on path
+CONFIG.path.utils = fullfile(CONFIG.path.agate, 'utils');
+addpath(CONFIG.path.utils)
+
+% check/create settings folder
+CONFIG.path.settings = fullfile(CONFIG.path.agate,'settings');
+if ~exist(CONFIG.path.settings, 'dir')
     disp(' ')
     disp('Settings directory is missing, creating it ...')
-    mkdir(CONFIG.path_settings);
-    if ~isdeployed % standard in MATLAB mode
-        addpath(CONFIG.path_settings)
-    end
+    mkdir(CONFIG.path.settings);
+    addpath(CONFIG.path.settings)
 end
 
 end
