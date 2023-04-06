@@ -1,20 +1,29 @@
-# Folders #
+# FOLDERS #
 ###########
 # tools from HII
 SeagliderPilotingTools
 
-# Configuration Files #
-# basestation configuration file
-basestation.cfg
+# MATLAB #
+##########
+*.asv
+*.mat
+# configuration files
+*.cnf
 
-# Compiled source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
+# R STUFF # 
+###########
+
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+/.quarto/
+/_site/
+
+
+
 
 # Packages #
 ############
@@ -44,15 +53,7 @@ basestation.cfg
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# R STUFF # 
-###########
-
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-*.Rproj
-
-/.quarto/
-/_site/
+# Folder config file
+Desktop.ini
+# Windows shortcuts
+*.lnk
