@@ -74,9 +74,15 @@ degMinLons = decdeg2degmin(decDegCoords(:,1));
 degMinLats = decdeg2degmin(decDegCoords(:,2)); 
 
 % define waypoint names
-wpNames = {'WW01', 'WW02', 'WW03', 'WW04', 'WW05', 'WW06', 'WW07', 'WW08', ...
-    'WW09', 'WW10', 'WW11', 'WW12', 'WW13', 'WW14', 'WW15', 'WW16', ...
-    'WW17', 'RECV'}';
+% wpNames = {'WW01', 'WW02', 'WW03', 'WW04', 'WW05', 'WW06', 'WW07', 'WW08', ...
+%     'WW09', 'WW10', 'WW11', 'WW12', 'WW13', 'WW14', 'WW15', 'WW16', ...
+%     'WW17', 'RECV'}';
+
+wpNames = {'WW01', 'WWaa', 'WW02', 'WWab', 'WW03', 'WW04', 'WW05', 'WWaa', ... 
+    'WW06', 'WWac', 'WW07', 'WWad', 'WW08', 'WWae', 'WW09', 'WWaf', 'WW10', ... 
+    'WWag', 'WW11', 'WWah', 'WW12', 'WWai', 'WW13', 'WWaj', 'WW14', 'WWak', ...
+    'WW15', 'WWal', 'WWam', 'WW16', 'WWan', 'WWao', 'WW17', 'WWap', 'WWaq', ...
+    'RECV'}';
 
 %% %%%%% WRITE TARGETS FILE %%%%%
 % now write it into a targets file
@@ -120,22 +126,23 @@ bathyOn = 1;
 figNum = 26;
 
 targetsFile = targetsOut;
-mapPlannedTrack(targetsFile, latLim, lonLim, CONFIG.glider, bathyOn, figNum)
+mapPlannedTrack(targetsFile, CONFIG.map.latLim, CONFIG.map.lonLim, ...
+    CONFIG.glider, bathyOn, figNum)
 
 
 %% 2 - print/save interpolated track map
 set(gcf, 'InvertHardCopy', 'off', 'color', 'w');
 
 print(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
-    '_plannedTrack.png']), '-dpng')
+    '_plannedTrack_' kmlName, '.png']), '-dpng')
 savefig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
-    '_plannedTrack.fig']))
+    '_plannedTrack_' kmlName, '.fig']))
 
 % exporting to EPS or PDF requires the export_fig toolbox available at 
 %  https://github.com/altmany/export_fig
 export_fig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
-    '_plannedTrack.eps']), '-eps', '-painters');
+    '_plannedTrack_' kmlName, '.eps']), '-eps', '-painters');
 export_fig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
-    '_plannedTrack.pdf']), '-pdf', '-painters');
+    '_plannedTrack_' kmlName, '.pdf']), '-pdf', '-painters');
 
 
