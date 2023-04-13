@@ -41,6 +41,7 @@ global CONFIG
 CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
 CONFIG.path.survey = 'C:\Desktop\glider_survey\';
 % basestation configuration
+CONFIG.bs.cnfFile = 'basestation.cnf';
 CONFIG.bs.host = 'url.com';
 CONFIG.bs.username = 'pilot';
 CONFIG.bs.password = 'PsWrD';
@@ -60,10 +61,10 @@ else
     fprintf(1, 'No survey configuration file selected. Using defaults.\n')
 end
 
-userBSCnf = fullfile(CONFIG.path.settings, 'basestation.cnf');
-if exist(userBSCnf, 'file')
-    CONFIG.bs.cnfFid = fopen(userBSCnf,'r');
-    parseCnf(userBSCnf)
+% userBSCnf = fullfile(CONFIG.path.settings, 'basestation.cnf');
+if exist(CONFIG.bs.cnfFile, 'file')
+    CONFIG.bs.cnfFid = fopen(CONFIG.bs.cnfFile,'r');
+    parseCnf(CONFIG.bs.cnfFile)
 end
 
 end
@@ -87,7 +88,7 @@ else
     frewind(fid);
     for i = 1:nl
         line = fgets(fid);
-        if ~strcmp(line(1), '#')
+        if ~strcmp(line(1), '%')
             eval(line);
         end
     end
