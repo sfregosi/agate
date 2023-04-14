@@ -12,7 +12,7 @@ development.
 
 <img
 src="README_files/figure-gfm/fa-icon-ef3463a0984ba0e303f1b25b6e50a309.svg"
-style="width:0.88em;height:1em" /> *Last Update: 13 Apr 2023*
+style="width:0.88em;height:1em" /> *Last Update: 14 Apr 2023*
 
 ## Background
 
@@ -37,10 +37,24 @@ target="_blank">Report an issue on GitHub</a>
 
 ## Dependencies
 
-This package requires a few resources from Matlab File Exchange:
+Matlab toolboxes:
+
+-   Mapping Toolbox
+    -   `agate` requires the Matlab Mapping toolbox. In the future, we
+        may try modify the mapping tools to work with the freely
+        available `m_map` package to make it more accessible, but are
+        not there yet!
+
+This package requires a few resources from Matlab File Exchange. They
+come packaged within the utils/fileExchange folder. More info about each
+can be found below:
 
 -   [SSH/SFTP/SCP For Matlab
     (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)
+-   [LatLon
+    Distance](https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance)
+-   [hline and
+    vline](https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline)
 
 ## Disclaimer
 
