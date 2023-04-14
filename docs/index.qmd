@@ -13,23 +13,32 @@ knitr::opts_chunk$set(
 library(fontawesome)
 ```
 
-# agate_public
-agate - for public release!
-Acoustic Glider Analysis Tools and Environment
+
+# Acoustic Glider Analysis Tools and Environment
 
 A collection of tools to be used for piloting acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected acoustic data for surveys of marine mammals. 
 
+This is the public release version and it is very much under development.
+
 `r fa(name = "calendar-check")` *Last Update: `r format(Sys.Date(), "%d %b %Y")`*
 
-These tools were initally developed for use with passive acoustic glider surveys conducted by the OSU/NOAA CIMERS Bioacoustics Lab (bioacoustics.us) and as part of my PhD. Initial development was for surveys using Seaglider platforms and either the Wideband Intelligent Signal Processor and Recorder (WISPR) or PMAR-XL recording systems. 
+## Background
 
-As part of the NOAA Uncrewed Systems Initiative (UxS) we received funding to develop and improve these tools into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals. 
+These tools were initially developed for use with passive acoustic glider surveys conducted by the OSU/NOAA CIMERS Bioacoustics Lab [bioacoustics.us](https://bioacoustics.us){index='_blank'} and as part of my PhD. Initial development was for surveys using Seaglider platforms and either the Wideband Intelligent Signal Processor and Recorder (WISPR) or PMAR-XL recording systems. 
+
+Through NOAA's Uncrewed Systems Initiative (UxS) we received funding to develop and improve these tools into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals. 
 
 Please contact me if you have any questions, feedback, or suggestions!
 
-selene [dot] fregosi [at] noaa.gov or [Report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new)
+selene [dot] fregosi [at] noaa.gov or [Report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
 
 ![diagram showing the different components of agate](images/tool_workflow_v5-01.png){width=75%}
+
+## Dependencies
+
+This package requires a few resources from Matlab File Exchange:
+
+- [SSH/SFTP/SCP For Matlab (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)
 
 ## Disclaimer
 
