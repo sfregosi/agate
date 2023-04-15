@@ -1,6 +1,6 @@
 ---
-title: 'AGATE'
-subtitle: 'Documentation for AGATE: Acoustic Glider Tools and Environment'
+title: 'agate'
+subtitle: 'Documentation for agate: Acoustic Glider Tools and Environment'
 page-layout: full
 ---
 
@@ -18,7 +18,7 @@ library(fontawesome)
 
 A collection of tools to be used for piloting acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected acoustic data for surveys of marine mammals. 
 
-This is the public release version and it is very much under development.
+This is the public release version and it is very much under development. 
 
 `r fa(name = "calendar-check")` *Last Update: `r format(Sys.Date(), "%d %b %Y")`*
 
@@ -28,13 +28,13 @@ These tools were initially developed for use with passive acoustic glider survey
 
 Through NOAA's Uncrewed Systems Initiative (UxS) we received funding to develop and improve these tools into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals. 
 
+Ready? [Get started](https://sfregosi.github.io/agate-public/get-started.html)
+
 Please contact me if you have any questions, feedback, or suggestions!
 
 selene [dot] fregosi [at] noaa.gov or [Report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
 
 ![diagram showing the different components of agate](images/tool_workflow_v5-01.png){width=75%}
-
-## Dependencies
 
 ## Dependencies
 
