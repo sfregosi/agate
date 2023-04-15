@@ -44,14 +44,13 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile)
 %	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 % set fig number so you can place it in one spot on your desktop and not
 % have to keep resizing, moving, etc. 
 figNum = CONFIG.figNumList(4);
 mapFigPosition = [100    100    800    600];
 
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
-    'BoundingBox', [CONFIG.lonLim' CONFIG.latLim']);
+    'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
 
 targets = readTargetsFile(targetsFile);
 
@@ -62,8 +61,8 @@ mapFig.Position = mapFigPosition;
 % clear figure
 clf
 cla reset; clear g
-ax = axesm('mercator', 'MapLatLim', CONFIG.latLim, 'MapLonLim', CONFIG.lonLim, ...
-    'Frame', 'on');
+ax = axesm('mercator', 'MapLatLim', CONFIG.map.latLim, ...
+    'MapLonLim', CONFIG.map.lonLim, 'Frame', 'on');
 
 %% map clean-up
 gridm('PLineLocation', 1, 'MLineLocation', 1);
@@ -83,7 +82,8 @@ tightmap
 % geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 %%  plot bathymetry - slow step
-[Z, refvec] = etopo([CONFIG.path.shp 'etopo1\etopo1_ice_c_i2.bin'], 1, CONFIG.latLim, CONFIG.lonLim);
+[Z, refvec] = etopo([CONFIG.path.shp 'etopo1\etopo1_ice_c_i2.bin'], 1, ...
+    CONFIG.map.latLim, CONFIG.map.lonLim);
 
 Z(Z >= 1) = NaN;
 geoshow(Z, refvec, 'DisplayType', 'surface', ...

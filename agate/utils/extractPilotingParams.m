@@ -1,4 +1,4 @@
-function pp = extractPilotingParams(dPARAMS, path_bsLocal, path_status, preload)
+function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % to calculate battery usage during the GoMex 2017 deployment
@@ -9,7 +9,7 @@ function pp = extractPilotingParams(dPARAMS, path_bsLocal, path_status, preload)
 % release
 
 % Inputs:
-% dPARAMS       deployment parameters - glider serial, deployment string, pmcard
+% CONFIG       deployment parameters - glider serial, deployment string, pmcard
 % path_bsLocal  location of locally saved basetation files
 % path_status   output directory to save status plots and tables
 % preload       optional argument to preload an existing table. default is
@@ -24,7 +24,7 @@ end
 %% Get file lists and dive numbers
 
 % log files - also get the dive numbers they are available for.
-logFileList = dir(fullfile(path_bsLocal, ['p' dPARAMS.glider(3:end) '*.log']));
+logFileList = dir(fullfile(path_bsLocal, ['p' CONFIG.glider(3:end) '*.log']));
 logFileNames = {logFileList.name}';
 logFileNums = zeros(length(logFileNames),1);
 for f = 1:length(logFileNames)
@@ -32,7 +32,7 @@ for f = 1:length(logFileNames)
 end
 
 % ncfiles - also get the dive numbers they are available for.
-ncFileList = dir(fullfile(path_bsLocal, ['p' dPARAMS.glider(3:end) '*.nc']));
+ncFileList = dir(fullfile(path_bsLocal, ['p' CONFIG.glider(3:end) '*.nc']));
 ncFileNames = {ncFileList.name}';
 ncFileNums = zeros(length(ncFileNames),1);
 for f = 1:length(ncFileNames)
@@ -41,7 +41,7 @@ end
 % ncCompFile = dir([base_path 'sg' glider(3:end) '*.nc']);
 
 % pamFolders = dir([path_bsLocal 'pm*']);
-% pdos_files = dir([path_bsLocal 'p' dPARAMS.glider(3:end) '*.pdos']);
+% pdos_files = dir([path_bsLocal 'p' CONFIG.glider(3:end) '*.pdos']);
 
 % check that length .nc files matches length logs/numDives
 % may not if conversion/processing problems with one of the binaries
@@ -50,9 +50,9 @@ numDives = max([logFileNums; ncFileNums]); % get max of list of dive nums
 diveList = [1:numDives]';
 
 % set up output table
-if preload && exist(fullfile(path_status, ['diveTracking_' dPARAMS.glider '.mat']), 'file')
+if preload && exist(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']), 'file')
     % if it already exists...preload it to save time.
-    pptmp = load(fullfile(path_status, ['diveTracking_' dPARAMS.glider '.mat']));
+    pptmp = load(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']));
     fieldNames = fields(pptmp);
     pp = pptmp.(fieldNames{1}); %pp(148:150,:) = [];
     % which dives need to be newly processed?
@@ -60,7 +60,7 @@ if preload && exist(fullfile(path_status, ['diveTracking_' dPARAMS.glider '.mat'
     % any need to be reprocessed?
     loopNums = [loopNums find(isnat(pp.diveStartTime))'];
     pp.diveNum(loopNums) = diveList(loopNums);
-elseif ~preload || ~exist(fullfile(path_status, ['diveTracking_' dPARAMS.glider '.mat']), 'file')
+elseif ~preload || ~exist(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']), 'file')
     pp = table;
     pp.diveNum = [1:numDives]';
     loopNums = [1:numDives];
@@ -140,12 +140,12 @@ for d = loopNums
     idxBreak = regexp(x(idx:end),'\n','once') + idx;
     pp.desVertVel(d) = str2num(x(idxComma(4)+idx:idxComma(5)+idx-2));
     pp.desPitch(d) = str2num(x(idxComma(3)+idx:idxComma(4)+idx-2));
-    if dPARAMS.sgVer == 66.12
+    if CONFIG.sgVer == 66.12
         pp.desGlideAngle(d) = str2num(x(idxComma(5)+idx:idxComma(6)+idx-2));
         pp.dBdW(d) = str2num(x(idxComma(6)+idx:idxBreak-2));
         % could probably comment this out I don't actually know what it
         % means
-    elseif dPARAMS.sgVer == 67.00
+    elseif CONFIG.sgVer == 67.00
         pp.desGlideAngle(d) = str2num(x(idxComma(5)+idx:idxBreak-2));
         %         pp.dBdW(d) = nan; %str2num(x(idxComma(6)+idx:idxBreak-2));
     end
@@ -202,23 +202,23 @@ for d = loopNums
     pp.PMAR_kJ(d) = pp.PMAR_SEC(d)*pp.PMAR_MAMPS(d)*15/1000000;
     
     % find the current card
-    if dPARAMS.sgVer == 66.12 % active card is listed in log file
+    if CONFIG.sgVer == 66.12 % active card is listed in log file
         idx = strfind(x, '$PM_ACTIVECARD');
         sl = length('$PM_ACTIVECARD');
         idxBreak = regexp(x(idx+sl+1:end),'\n','once') + idx + sl;
         activeCard = str2num(x(idx+sl+1:idxBreak-1));
         activeCardStr = sprintf('0%d', activeCard);
         pp.activeCard(d) = activeCard;
-    elseif dPARAMS.sgVer == 67.00
+    elseif CONFIG.sgVer == 67.00
         % for sgVer 67.00 does it not print the active card - must specify
-        % in dPARAMS
-        if isfield(dPARAMS,'activeCard')
+        % in CONFIG
+        if isfield(CONFIG.pm,'activeCard')
             % which active card for this dive?
-            acIdx = find(d >= dPARAMS.activeCard(:,1), 1, 'last');
-            pp.activeCard(d) = dPARAMS.activeCard(acIdx,2);
-            activeCardStr = sprintf('0%d', dPARAMS.activeCard(acIdx,2));
+            acIdx = find(d >= CONFIG.pm.activeCard(:,1), 1, 'last');
+            pp.activeCard(d) = CONFIG.pm.activeCard(acIdx,2);
+            activeCardStr = sprintf('0%d', CONFIG.pm.activeCard(acIdx,2));
         else
-            fprintf(1, 'Need to specify dPARAMS.activeCard. Exiting.\n')
+            fprintf(1, 'Need to specify CONFIG.pm.activeCard. Exiting.\n')
             return
         end
     end
@@ -254,7 +254,7 @@ for d = loopNums
     end
     
     % free space per card
-    for sdc = 1:dPARAMS.numCards
+    for sdc = 1:CONFIG.pm.numCards
         cardNumStr = sprintf('0%d', sdc-1);
         idx = strfind(x, ['$PM_FREEKB_' cardNumStr]);
         sl = length(['$PM_FREEKB_' cardNumStr]);
@@ -293,7 +293,7 @@ for d = loopNums
     pp.minVolt_10(d) = sVal;
     
     % By Devices *****EXPERIMENTAL******
-    if dPARAMS.sgVer == 66.12
+    if CONFIG.sgVer == 66.12
         % order of devices = pitch, roll, VBD apogee, VBD surf, VBD valve
         idx = strfind(x, '$DEVICE_SECS');
         idxComma = regexp(x(idx:end), '\,');
@@ -318,7 +318,7 @@ for d = loopNums
         vkJ3 = vSec3*vMamps3*15/1000000;
         pp.vkJ(d,1) = vkJ1 + vkJ2 + vkJ3;
         
-    elseif dPARAMS.sgVer == 67.00
+    elseif CONFIG.sgVer == 67.00
         % order of devices = VBD, pitch, roll
         idx = strfind(x, '$DEVICE_SECS');
         idxComma = regexp(x(idx:end), '\,');
