@@ -64,7 +64,7 @@ for f = 1:length(uniqueCards)
 end
 hold off;
 
-grid on; title(['Glider ' dPARAMS.glider ' Battery Usage and Free Space']);
+grid on; title(['Glider ' CONFIG.glider ' Battery Usage and Free Space']);
 yyaxis left
 hline(30, 'k--') % 30% battery safety threshold
 if ~isempty(tmd)

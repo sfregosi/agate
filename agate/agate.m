@@ -1,4 +1,4 @@
-function agate(surveyCnf)
+function agate(missionCnf)
 % AGATE	Initialize a new session of agate
 %
 %	Syntax:
@@ -7,13 +7,13 @@ function agate(surveyCnf)
 %	Description:
 %		Detailed description here, please
 %	Inputs:
-%		surveyCnf   optional argument to specific configuration file for a
-%                   particular survey e.g., 'sg639_MHI_Apr2023.cnf'
+%		missionCnf  optional argument to specific configuration file for a
+%                   particular mission e.g., 'sg639_MHI_Apr2023.cnf'
 %
 %	Outputs:
-%		output 	describe, please
 %
 %	Examples:
+%       agate agate_sgXXX_Location_MonYear_config.cnf
 %
 %	See also
 %
@@ -23,29 +23,29 @@ function agate(surveyCnf)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	06 April 2023
-%	Updated:
+%	Updated:        14 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear global;  % clear out old globals
 warning off % this is turned off for plotting messages
 
 global CONFIG
+% CONFIG = struct;
 
-CONFIG.ver = '0.0.20230406 github.com/sfregosi/agate-public';
-disp(' ')
-disp(['         agate version ', CONFIG.ver])
+CONFIG.ver = '0.0.20230414 github.com/sfregosi/agate-public';
+fprintf('              agate version %s\n\n', CONFIG.ver)
 
 if nargin < 1
-    CONFIG.surveyCnf = [];
+    CONFIG.missionCnf = [];
 else
-    CONFIG.surveyCnf = surveyCnf;
+    CONFIG.missionCnf = missionCnf;
 end
 
 % get matlab version for differences and backwards capatibility
 CONFIG.mver = version;
 
-checkPath
+checkPath;
 
-CONFIG = setCONFIG;
+setCONFIG(CONFIG.missionCnf);
 
 end

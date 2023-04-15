@@ -1,4 +1,4 @@
-function CONFIG = setCONFIG
+function setCONFIG(missionCnf)
 % SETCONFIG	Set up global CONFIG structure for agate
 %
 %	Syntax:
@@ -30,47 +30,61 @@ function CONFIG = setCONFIG
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
 %	FirstVersion: 	06 April 2023
-%	Updated:
+%	Updated:        14 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 global CONFIG
 
 % set defaults in case no config file
-% paths
-CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
-CONFIG.path.survey = 'C:\Desktop\glider_survey\';
-% basestation configuration
-CONFIG.bs.cnfFile = 'basestation.cnf';
-CONFIG.bs.host = 'url.com';
-CONFIG.bs.username = 'pilot';
-CONFIG.bs.password = 'PsWrD';
+% % paths
+% CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
+% CONFIG.path.survey = 'C:\Desktop\glider_mission\';
+% % basestation configuration
+% CONFIG.bs.cnfFile = 'basestation.cnf';
+% CONFIG.bs.host = 'url.com';
+% CONFIG.bs.username = 'pilot';
+% CONFIG.bs.password = 'PsWrD';
 
-% update based on user files if they exist
-if ~isempty(CONFIG.surveyCnf)
-    % default location is within agate\settings folder
-    surveyCnf = fullfile(CONFIG.path.settings, CONFIG.surveyCnf);
-    % otherwise prompt to select one
-    if ~exist(surveyCnf, 'file')
-        [name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], 'Select survey configuration file');
-        surveyCnf = fullfile(path, name);
-    end
-    CONFIG.path.cnfFid = fopen(surveyCnf,'r');
-    parseCnf(surveyCnf)
+
+% update based on user-defined configuration file if it exists
+
+% if none specified, prompt to locate one
+if isempty(CONFIG.missionCnf)
+    [name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select configuration file');
+    CONFIG.missionCnf = fullfile(path, name);
 else
-    fprintf(1, 'No survey configuration file selected. Using defaults.\n')
+    % check if full file or just parts
+    [path, ~, ~] = fileparts(CONFIG.missionCnf);
+    if ~isempty(path)
+        CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
+        parseCnf(CONFIG.missionCnf)
+    else % no path specified
+        % default location is within agate\settings folder, so try that
+        CONFIG.missionCnf = fullfile(CONFIG.path.settings, CONFIG.missionCnf);
+        % otherwise prompt to select one
+        if ~exist(missionCnf, 'file')
+            [name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], 'Select survey configuration file');
+            CONFIG.missionCnf = fullfile(path, name);
+        end
+    end
 end
+CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
+parseCnf(CONFIG.missionCnf);
 
-% userBSCnf = fullfile(CONFIG.path.settings, 'basestation.cnf');
-if exist(CONFIG.bs.cnfFile, 'file')
+% parse the basestation configuration file
+% prompt to select if none specified in mission configuration file
+if ~exist(CONFIG.bs.cnfFile, 'file')
+    [name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select basestation configuration file');
+    CONFIG.bs.cnfFile = fullfile(path, name);
+end
     CONFIG.bs.cnfFid = fopen(CONFIG.bs.cnfFile,'r');
-    parseCnf(CONFIG.bs.cnfFile)
-end
+    parseCnf(CONFIG.bs.cnfFile);
 
 end
 
-
-function parseCnf(userCnf)
+%%%%%% NESTED FUNCTIONS %%%%%%
+function CONFIG = parseCnf(userCnf, CONFIG)
 % parse info from .cnf text files
 
 global CONFIG

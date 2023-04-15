@@ -2,7 +2,7 @@ function checkPath
 % CHECKPATH	Check the necessasry folders are there and on the path
 %
 %	Syntax:
-%		OUTPUT = CHECKPATH(INPUT)
+%		CHECKPATH
 %
 %	Description:
 %       Called from the agate initialization. Sets up the necessary paths 
@@ -16,7 +16,7 @@ function checkPath
 %		output 	none
 %
 %	Examples:
-%       checkPath
+%       CONFIG = checkPath(CONFIG)
 %
 %	See also
 %       agate
@@ -30,7 +30,7 @@ function checkPath
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
 %	FirstVersion: 	06 April 2023
-%	Updated:
+%	Updated:        14 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global CONFIG
