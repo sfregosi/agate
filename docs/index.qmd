@@ -48,7 +48,13 @@ This package requires a few resources from Matlab File Exchange. They come packa
 - [SSH/SFTP/SCP For Matlab (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)
 - [LatLon Distance](https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance)
 - [hline and vline](https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline)
+- [cmocean](https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps)
 
+Basemap rasters:
+
+A raster file is needed to plot bathymetry data on any of the maps. Detailed basemaps are available from [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). 
+
+Depending on the needed resolution, the 60 arc second .tiff file may be sufficient, and is a reasonable size for download and plotting, but is a bit slow to load. Alternatively, finer resolution (15-60 arc second resolution options) for the specific area of interest can be extracted using the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) to download .tiff files in a smaller file size for faster loading and plotting. 
 
 ## Disclaimer
 

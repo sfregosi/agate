@@ -30,8 +30,10 @@ website:
     contents:
       - href: index.qmd
         text: Home
-      - href: about.qmd
-        text: About
+      # - href: about.qmd
+      #   text: About
+      - href: get-started.qmd
+        text: Get started
       # - href: content/customizing.qmd
       #   text: Customizing
       # - href: content/rendering.qmd
@@ -40,8 +42,8 @@ website:
       #   text: R Markdown files
       # - href: content/code.qmd
       #   text: Code in your files
-      # - href: content/acknowledgements.qmd
-      #   text: Acknowledgements
+      - href: acknowledgements.qmd
+        text: Acknowledgements
 
 format:
   html:
