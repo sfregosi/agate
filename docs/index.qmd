@@ -34,7 +34,7 @@ Please contact me if you have any questions, feedback, or suggestions!
 
 selene [dot] fregosi [at] noaa.gov or [Report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
 
-![diagram showing the different components of agate](images/tool_workflow_v5-01.png){width=75%}
+![diagram showing the different components of agate](images/tool_workflow_v5-01.png){#fig-components width=75%}
 
 ## Dependencies
 

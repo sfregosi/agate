@@ -14,7 +14,7 @@ website:
     left: '&copy; CC-1.0'
   
   sidebar:
-    background: '#8E9089'
+    background: $beaver-orange
     # logo: "https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png"
     favicon: images/favicon.ico
     pinned: true
@@ -48,12 +48,14 @@ website:
 format:
   html:
     theme:
-      light: [cosmo, theme.scss] 
+      light: [theme.scss] 
       dark: [cosmo, theme-dark.scss]
     code-copy: true
     code-overflow: wrap
     toc: true
-
+    toc-depth: 4
+    link-external-newwindow: true
+    embed-resources: true
 
 filters:
   # - include-files.lua

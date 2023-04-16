@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>AGATE - agate</title>
+<title>AGATE - Get started with agate</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,7 +24,8 @@ ul.task-list{list-style: none;}
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./get-started.html" rel="next">
+<link href="./acknowledgements.html" rel="next">
+<link href="./index.html" rel="prev">
 <link href="./images/favicon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -66,7 +67,7 @@ ul.task-list{list-style: none;}
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">agate</h1>
+      <h1 class="quarto-secondary-nav-title">Get started with agate</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -74,7 +75,7 @@ ul.task-list{list-style: none;}
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
     <div class="pt-lg-2 mt-2 text-center sidebar-header">
@@ -95,12 +96,12 @@ ul.task-list{list-style: none;}
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">Home</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Home</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./get-started.html" class="sidebar-item-text sidebar-link">Get started</a>
+  <a href="./get-started.html" class="sidebar-item-text sidebar-link active">Get started</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -117,22 +118,17 @@ ul.task-list{list-style: none;}
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#acoustic-glider-analysis-tools-and-environment" id="toc-acoustic-glider-analysis-tools-and-environment" class="nav-link active" data-scroll-target="#acoustic-glider-analysis-tools-and-environment">Acoustic Glider Analysis Tools and Environment</a>
-  <ul class="collapse">
-  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
-  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
-  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link" data-scroll-target="#disclaimer">Disclaimer</a></li>
-  </ul></li>
+  <li><a href="#configuration-file" id="toc-configuration-file" class="nav-link active" data-scroll-target="#configuration-file">Configuration file</a></li>
+  <li><a href="#running-agate" id="toc-running-agate" class="nav-link" data-scroll-target="#running-agate">Running agate</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/sfregosi/agate-public/edit/main/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/sfregosi/agate-public/blob/main/index.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/sfregosi/agate-public/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/sfregosi/agate-public/edit/main/get-started.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/sfregosi/agate-public/blob/main/get-started.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/sfregosi/agate-public/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">agate</h1>
-<p class="subtitle lead">Documentation for agate: Acoustic Glider Tools and Environment</p>
+<h1 class="title d-none d-lg-block">Get started with agate</h1>
 </div>
 
 
@@ -146,53 +142,24 @@ ul.task-list{list-style: none;}
 
 </header>
 
-<section id="acoustic-glider-analysis-tools-and-environment" class="level1">
-<h1>Acoustic Glider Analysis Tools and Environment</h1>
-<p>A collection of tools to be used for piloting acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected acoustic data for surveys of marine mammals.</p>
-<p>This is the public release version and it is very much under development.</p>
-<p><svg aria-hidden="true" role="img" viewbox="0 0 448 512" style="height:1em;width:0.88em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M216.1 408.1C207.6 418.3 192.4 418.3 183 408.1L119 344.1C109.7 335.6 109.7 320.4 119 311C128.4 301.7 143.6 301.7 152.1 311L200 358.1L295 263C304.4 253.7 319.6 253.7 328.1 263C338.3 272.4 338.3 287.6 328.1 296.1L216.1 408.1zM128 0C141.3 0 152 10.75 152 24V64H296V24C296 10.75 306.7 0 320 0C333.3 0 344 10.75 344 24V64H384C419.3 64 448 92.65 448 128V448C448 483.3 419.3 512 384 512H64C28.65 512 0 483.3 0 448V128C0 92.65 28.65 64 64 64H104V24C104 10.75 114.7 0 128 0zM400 192H48V448C48 456.8 55.16 464 64 464H384C392.8 464 400 456.8 400 448V192z"></path></svg> <em>Last Update: 15 Apr 2023</em></p>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>These tools were initially developed for use with passive acoustic glider surveys conducted by the OSU/NOAA CIMERS Bioacoustics Lab <a href="https://bioacoustics.us" data-index="_blank">bioacoustics.us</a> and as part of my PhD. Initial development was for surveys using Seaglider platforms and either the Wideband Intelligent Signal Processor and Recorder (WISPR) or PMAR-XL recording systems.</p>
-<p>Through NOAA’s Uncrewed Systems Initiative (UxS) we received funding to develop and improve these tools into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals.</p>
-<p>Ready? <a href="https://sfregosi.github.io/agate-public/get-started.html">Get started</a></p>
-<p>Please contact me if you have any questions, feedback, or suggestions!</p>
-<p>selene [dot] fregosi [at] noaa.gov or <a href="https://github.com/sfregosi/agate-public/issues/new" target="_blank">Report an issue on GitHub</a></p>
-<div id="fig-components" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="images/tool_workflow_v5-01.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<p></p><figcaption class="figure-caption">Figure 1: diagram showing the different components of agate</figcaption><p></p>
-</figure>
-</div>
+<section id="configuration-file" class="level2">
+<h2 class="anchored" data-anchor-id="configuration-file">Configuration file</h2>
+<p>The first step is to create a configuration file for the mission and glider of interest. An example configuration file is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
+<p>This is a text file that can be modified in any text editor or within MATLAB. Start any comment lines with <code>%</code>. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings.</p>
 </section>
-<section id="dependencies" class="level2">
-<h2 class="anchored" data-anchor-id="dependencies">Dependencies</h2>
-<p>Matlab toolboxes:</p>
+<section id="running-agate" class="level2">
+<h2 class="anchored" data-anchor-id="running-agate">Running agate</h2>
 <ul>
-<li>Mapping Toolbox
+<li>Open MATLAB</li>
+<li>Add <code>agate</code> to the path (with subfolders), if not done so</li>
+<li>Type <code>agate agate_config.cnf</code> in the command window and hit enter
 <ul>
-<li><code>agate</code> requires the Matlab Mapping toolbox. In the future, we may try modify the mapping tools to work with the freely available <code>m_map</code> package to make it more accessible, but are not there yet!</li>
+<li>replace &lt;<code>agate_config.cnf</code>&gt; with the name of your configuration file</li>
 </ul></li>
+<li>Alternatively, simply type <code>agate</code> and you will be prompted for a configuration file</li>
 </ul>
-<p>This package requires a few resources from Matlab File Exchange. They come packaged within the utils/fileExchange folder. More info about each can be found below:</p>
-<ul>
-<li><a href="https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2">SSH/SFTP/SCP For Matlab (v2)</a></li>
-<li><a href="https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance">LatLon Distance</a></li>
-<li><a href="https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline">hline and vline</a></li>
-<li><a href="https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps">cmocean</a></li>
-</ul>
-<p>Basemap rasters:</p>
-<p>A raster file is needed to plot bathymetry data on any of the maps. Detailed basemaps are available from <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model">NCEI</a>.</p>
-<p>Depending on the needed resolution, the 60 arc second .tiff file may be sufficient, and is a reasonable size for download and plotting, but is a bit slow to load. Alternatively, finer resolution (15-60 arc second resolution options) for the specific area of interest can be extracted using the <a href="https://www.ncei.noaa.gov/maps/grid-extract/">ETOPO Grid Extract tool</a> to download .tiff files in a smaller file size for faster loading and plotting.</p>
-</section>
-<section id="disclaimer" class="level2">
-<h2 class="anchored" data-anchor-id="disclaimer">Disclaimer</h2>
-<p><sub>The scientific results and conclusions, as well as any views or opinions expressed herein, are those of the author(s) and do not necessarily reflect the views of NOAA or the Department of Commerce.</sub></p>
-<p><sub>This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.</sub></p>
-<p><sub>Software code created by U.S. Government employees is not subject to copyright in the United States (17 U.S.C. §105). The United States/Department of Commerce reserves all rights to seek and obtain copyright protection in countries other than the United States for Software authored in its entirety by the Department of Commerce. To this end, the Department of Commerce hereby grants to Recipient a royalty-free, nonexclusive license to use, copy, and create derivative works of the Software outside of the United States.</sub></p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -410,12 +377,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
 });
 </script>
-<nav class="page-navigation column-body">
+<nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Home</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./get-started.html" class="pagination-link">
-        <span class="nav-page-text">Get started</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./acknowledgements.html" class="pagination-link">
+        <span class="nav-page-text">Acknowledgements</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
