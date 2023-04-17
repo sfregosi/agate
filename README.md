@@ -1,60 +1,8 @@
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # Acoustic Glider Analysis Tools and Environment
 
-A collection of tools to be used for piloting acoustic gliders,
-processing glider positional and environmental data, and analyzing
-glider-collected acoustic data for surveys of marine mammals.
+## Github Pages Branch
 
-This is the public release version and it is very much under
-development.
-
-<img
-src="README_files/figure-gfm/fa-icon-ef3463a0984ba0e303f1b25b6e50a309.svg"
-style="width:0.88em;height:1em" /> *Last Update: 14 Apr 2023*
-
-## Background
-
-These tools were initially developed for use with passive acoustic
-glider surveys conducted by the OSU/NOAA CIMERS Bioacoustics Lab
-<a href="https://bioacoustics.us"
-data-index="_blank">bioacoustics.us</a> and as part of my PhD. Initial
-development was for surveys using Seaglider platforms and either the
-Wideband Intelligent Signal Processor and Recorder (WISPR) or PMAR-XL
-recording systems.
-
-Through NOAA’s Uncrewed Systems Initiative (UxS) we received funding to
-develop and improve these tools into a more broadly applicable and
-user-friendly tool box that could be used by all interested in
-conducting glider-based passive acoustic surveys for marine mammals.
-
-Please contact me if you have any questions, feedback, or suggestions!
-
-selene \[dot\] fregosi \[at\] noaa.gov or
-<a href="https://github.com/sfregosi/agate-public/issues/new"
-target="_blank">Report an issue on GitHub</a>
-
-## Dependencies
-
-Matlab toolboxes:
-
--   Mapping Toolbox
-    -   `agate` requires the Matlab Mapping toolbox. In the future, we
-        may try modify the mapping tools to work with the freely
-        available `m_map` package to make it more accessible, but are
-        not there yet!
-
-This package requires a few resources from Matlab File Exchange. They
-come packaged within the utils/fileExchange folder. More info about each
-can be found below:
-
--   [SSH/SFTP/SCP For Matlab
-    (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)
--   [LatLon
-    Distance](https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance)
--   [hline and
-    vline](https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline)
+Documentation is located at [https://sfregosi.github.io/agate-public](https://sfregosi.github.io/agate-public)
 
 ## Disclaimer
 
