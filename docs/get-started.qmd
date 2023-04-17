@@ -4,7 +4,7 @@ format: html
 ---
 
 ## Configuration file
-The first step is to create a configuration file for the mission and glider of interest. An example configuration file is located in the 'agate/settings' folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/agate/settings/agate_config_example.cnf)
+The first step is to create a configuration file for the mission and glider of interest. An example configuration file is located in the 'agate/settings' folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)
 
 This is a text file that can be modified in any text editor or within MATLAB. Start any comment lines with `%`. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. 
 
