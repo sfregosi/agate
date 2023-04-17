@@ -9,8 +9,9 @@ SeagliderPilotingTools
 *.mat
 # configuration files
 *.cnf
-!basetation_example.cnf
-!paths_example.cnf
+!basestation.cnf
+!agate_config_example.cnf
+
 
 # R STUFF # 
 ###########
