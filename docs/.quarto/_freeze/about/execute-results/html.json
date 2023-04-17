@@ -1,8 +1,10 @@
 {
-  "hash": "a754ce02c0472c0b163d8ffb898e69ac",
+  "hash": "383c1d07ec26b9212362d709a7d8f3c4",
   "result": {
     "markdown": "---\ntitle: \"About\"\n---\n\n\nAbout this site\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n",
-    "supporting": [],
+    "supporting": [
+      "about_files"
+    ],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],

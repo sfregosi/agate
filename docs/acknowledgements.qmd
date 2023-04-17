@@ -1,11 +1,12 @@
 ---
 title: "Acknowledgements"
 format: html
-editor: visual
 ---
 
 Development of this toolbox was funded by:
 
-Initial development - National Defense Science and Engineering Graduate (NDSEG) Fellowship to S. Fregosi's PhD, Oregon State University
+**Initial development** - National Defense Science and Engineering Graduate (NDSEG) Fellowship to S. Fregosi's PhD, Oregon State University
 
-Further development - NOAA's Uncrewed Systems Research Transition Office
+**Further development** - NOAA's Uncrewed Systems Research Transition Office Grant awarded to Pacific Islands Fisheries Science Center and Oregon State University
+
+![Testing and ballasting of SG639 in a saltwater tank before deployment](images/sg639-in-tank-hawaii_2023-04-10.jpg){width=75%}
