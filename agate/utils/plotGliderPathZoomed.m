@@ -25,6 +25,13 @@ function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
 %       plotGliderPathZoomed(CONFIG, pp639, targetsFile, CONFIG.map.bathyFile)
 %	See also
 %       extractPilotingParams
+%   TO DO
+%       - for now, this does not show patches for land/states because that
+%       does not allow to reproject (not sure why but I think because there
+%       isn't anything to show?
+%       - does not show full extent of targets and path bc removes anything
+%       that now would have data points outside the lims. Not sure I can do
+%       anything about this but would like to try to fix. 
 %
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
