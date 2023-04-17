@@ -5,11 +5,11 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %		PLOTGLIDERPATH_ETOPO(CONFIG, PP, TARGETSFILE)
 %
 %	Description:
-%		Plot of battery usage (as a percent, left yaxis) and free space
-%		remaining on the acoustic SD card (right yaxis) over the course of
-%		the deployment. A target mission duration (in days) can be
-%		specified as well as horizontal lines for battery and data space
-%		margins of error (e.g., 7% capacity left on SD card)
+%		Map of glider planned track (from the targets file) and actual 
+%       track, showing surface locations for each dive, a line connecting 
+%       these surface locations (not dead-reckoned positions between 
+%       surfacings) and vectorsmshowing the depth averaged current for 
+%       that dive. 
 %
 %	Inputs:
 %		CONFIG      Mission/agate global configuration variable
@@ -24,7 +24,7 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %		no output, creates figure
 %
 %	Examples:
-%       plotBattUseFreeSpace(CONFIG, pp639, 310, CONFIG.tmd)
+%       plotGliderPath_etopo(CONFIG, pp639, targetsFile, CONFIG.map.bathyFile)
 %	See also
 %       extractPilotingParams
 %
@@ -33,7 +33,7 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	13 April 2023
-%	Updated:        15 April 2023
+%	Updated:        16 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 4
