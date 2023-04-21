@@ -7,3 +7,27 @@ About this site
 ```{r}
 1 + 1
 ```
+
+# Heading 1
+
+Regular text
+
+## Heading 2
+
+Regular text
+
+### Heading 3
+
+Regular text
+
+#### Heading 4
+
+Regular text
+
+##### Heading 5
+
+Regular text
+
+###### Heading 6
+
+Regular text

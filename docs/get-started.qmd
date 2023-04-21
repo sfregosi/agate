@@ -1,18 +1,146 @@
 ---
 title: "Get started with agate"
-format: html
+subtitle: 'Installation and quick start guide'
 ---
 
-## Configuration file
-The first step is to create a configuration file for the mission and glider of interest. An example configuration file is located in the 'agate/settings' folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)
+```{r, include = FALSE}
+library(fontawesome)
+```
 
-This is a text file that can be modified in any text editor or within MATLAB. Start any comment lines with `%`. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. 
+This page is meant to help you get started with `agate` by getting it properly 'installed' on your MATLAB path, setting up the necessary configuration files and folder structure, and a quick start guide for some basic commands. 
 
-## Running agate
+It page is not a detailed list of all available functions and their specific documentation (that might be coming later!). Those details are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window. 
+
+## Installation
+
+- Download `agate` from [GitHub](https://github.com/sfregosi/agate-public) 
+  - **Option 1:** Clone the repository using GitHub or GitHub Desktop 
+    - __*This is the suggested installation!*__ This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub
+    - Click on the green *Code* button and select *Open with GitHub Desktop* 
+    - Specify where to clone the cloned local copy. Suggest the default MATLAB directory (e.g., `C:\Users\User.Name\Documents\MATLAB\`)
+    - For more help with GitHub see this [Git Started Doc](https://github.com/PIFSC-Protected-Species-Division/PSDOS/blob/main/files/git_started.md)
+  - **Option 2:** Download the zip file
+    - Removes requirement of working with GitHub but will need manual updating
+    - Click the green *Code* button at the landing page of the repository and choose *Download ZIP*
+    - Unzip the downloaded folder and place within the default MATLAB directory (e.g., `C:\Users\User.Name\Documents\MATLAB\`)
+- Add `agate` to the MATLAB path
+  - Open MATLAB and click on *Set Path* in the Environment section of the Home tab (@fig-screenshot-matlab-setpath)
+  - In the Set Path dialog box, choose *Add with Subfolders...*, select the `agate-public` folder, and click *Save*, then *Close* (@fig-screenshot-matlab-setpath-save)
+  - This will now be saved for future MATLAB sessions, but would need to be repeated for any installation on a new computer
+
+[![Screenshot of MATLAB Home Tab showing where to click to Set Path](images/screenshot_matlab_setpath.png){#fig-screenshot-matlab-setpath fig-align="center" width='700'}](https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png)
+
+[![Example screenshot of the Set Pat dialog box showing the 'Add with Subfolders\...' and 'Save' buttons.](images/screenshot_matlab_setpath_save.png){#fig-screenshot-matlab-setpath-save fig-align="center" width='400'}](https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png)
+
+<sub>[Back to top](#)</sub>
+
+## Quick Start Guide
+
+### Create configuration files
+
+Running `agate` requires a few configuration files. Both of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB's Editor window
+
+1. An overview [mission configuration file](#mission-configuration-file) for a specific glider/mission
+2. A [basestation configuration file](#basestation-configuration-file) with SSH login info
+
+#### Mission configuration file
+
+An example configuration file is located in the 'agate/settings' folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)
+
+Start any comment lines with `%`. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
+
+To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}.
+
+#### Basestation configuration file
+
+The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the 'agate/settings' folder: [`basestation.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation.cnf). 
+
+This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group's basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the following lines, with the inputs updated for a particular basestation:
+
+```default
+CONFIG.bs.host = 'url.com';
+CONFIG.bs.username = 'pilot';
+CONFIG.bs.password = 'PsWrD';
+```
+
+<sub>[Back to top](#)</sub>
+
+### Set up folder structure
+
+The suggested folder structure for working with `agate` is to specify a 'mission' folder, and then within that have a standardized set of nested folders for the various `agate` inputs and outputs. The path of the 'mission' folder is specified by `CONFIG.path.mission` in the [mission configuration file](#mission-configuration-file) and typically follows the Seaglider naming scheme (e.g., `C:\Users\User.Name\Desktop\sg###_Location_MonYYYY`). 
+
+Within that, should be a 'flightStatus' and a 'basestationFiles' folder; 'flightStatus' will house output figures and tables, and 'basestationFiles' is where downloaded basestation files will be saved. 
+
+These folders can be set up manually, or created in MATLAB: 
+
+```default
+% specify the local piloting folder for this trip
+path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store status outputs 
+path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files
+
+% make the dirs if they don't exist
+mkdir(path_status);
+mkdir(path_bsLocal);
+```
+
+<sub>[Back to top](#)</sub>
+
+### Initialize `agate`
 
 - Open MATLAB
-- Add `agate` to the path (with subfolders), if not done so
+- Add `agate` to the path (with subfolders), if not already done
 - Type `agate agate_config.cnf` in the command window and hit enter
-  - replace <`agate_config.cnf`> with the name of your configuration file
-- Alternatively, simply type `agate` and you will be prompted for a configuration file
+  - replace `agate_config.cnf` with the name of your configuration file (e.g., `agate_config_sg639_MHI_Apr2022.cnf`)
+- Alternatively, simply type `agate` and you will be prompted to select a configuration file
+
+<sub>[Back to top](#)</sub>
+
+### Download all basestation files
+
+Use `basestationFileExtract` to automatically download various basestation files to a local machine for further examination. 
+
+Below is example code to run this step. This can be saved as a script that makes it easy to re-run each time the glider surfaces, or it can be typed directly into the MATLAB Command Window. 
+
+
+```default
+% ensure agate folder is added to the matlab path before proceeding
+% initialize agate; will prompt for configuration file
+agate
+
+% load global configs
+global CONFIG
+
+% specify the local piloting folder for this trip
+path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store status outputs 
+path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files
+% make the dirs if they don't exist
+mkdir(path_status);
+mkdir(path_bsLocal);
+
+% extract basestation files
+basestationFileExtract(CONFIG, path_bslLocal)
+
+```
+
+<sub>[Back to top](#)</sub>
+
+### Extract select piloting parameters and flight metrics
+
+```
+%% extract various piloting parameters and values reported by .log file
+
+pp = extractPilotingParams(CONFIG, path_bsLocal, path_status);
+% print errors for quick glance/check
+pp.ERRORS(end)
+
+% save as .xlsx and .mat 
+writetable(pp, fullfile(path_status, ['diveTracking_' CONFIG.glider '.xlsx'])); % local copy
+save(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']), 'pp');
+
+```
+
+<sub>[Back to top](#)</sub>
+
+
+
 

@@ -9,9 +9,71 @@ $beaver-orange:   #D73F09 !default;
 $stratosphere:    #006A8E !default;
 $star-canvas:     #003B5C !default;
 $rogue-wave:      #0D5257 !default;
+$crater:          #8E9089 !default;
 $primary:         $beaver-orange !default;
 $success:         $star-canvas !default;
-$code-color:      $rogue-wave !default;
 $link-color:      $stratosphere !default;
+$progress-bg:     #e8e8e7 !default;
+$code-color:      $rogue-wave !default;
+$code-bg:         #e8e8e7 !default;
+$code-block-bg:   #e8e8e7 !default;
+$btn-code-copy-color:  $rogue-wave !default;
 
 
+
+/*-- scss:rules --*/
+
+/* code blocks */
+pre {
+  color:            $rogue-wave;
+  background-color: #e8e8e7;
+}
+
+/* Smaller spacing in bullet lists */
+main ul ul {
+  margin-bottom:    0;
+}
+
+main ul ul ul{
+  margin-bottom:    0;
+}
+
+
+/*-- SECTION HEADER STYLING --*/
+h1 {
+letter-spacing:       0.8px;  
+line-height:          1.1em;  
+margin-top:           1.5rem; 
+margin-bottom:        0.5rem;
+}
+
+h2 {
+  line-height:        1.1em;   
+  margin-top:         1.1rem;  
+  margin-bottom:      0.5rem;  
+  padding-bottom:     0.5rem;  
+}
+
+h3 {
+  color:              $star-canvas !important;
+  line-height:        1.1em;  
+  margin-top:         1.4rem;  
+}
+
+h4 {
+  text-transform:     uppercase;
+  font-size:          1.1rem; 
+  color:              $crater !important;
+  line-height:        1.1em;
+}
+
+h5 {
+  font-style:         italic;
+  line-height:        1.1em;     
+}
+
+h6 {
+  color:              $crater !important;
+  line-height:        1.1em;
+  text-decoration:    underline; 
+}

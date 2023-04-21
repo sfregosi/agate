@@ -15,6 +15,69 @@ span.underline{text-decoration: underline;}
 div.column{display: inline-block; vertical-align: top; width: 50%;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -118,8 +181,19 @@ ul.task-list{list-style: none;}
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#configuration-file" id="toc-configuration-file" class="nav-link active" data-scroll-target="#configuration-file">Configuration file</a></li>
-  <li><a href="#running-agate" id="toc-running-agate" class="nav-link" data-scroll-target="#running-agate">Running agate</a></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#quick-start-guide" id="toc-quick-start-guide" class="nav-link" data-scroll-target="#quick-start-guide">Quick Start Guide</a>
+  <ul class="collapse">
+  <li><a href="#create-configuration-files" id="toc-create-configuration-files" class="nav-link" data-scroll-target="#create-configuration-files">Create configuration files</a>
+  <ul class="collapse">
+  <li><a href="#mission-configuration-file" id="toc-mission-configuration-file" class="nav-link" data-scroll-target="#mission-configuration-file">Mission configuration file</a></li>
+  <li><a href="#basestation-configuration-file" id="toc-basestation-configuration-file" class="nav-link" data-scroll-target="#basestation-configuration-file">Basestation configuration file</a></li>
+  </ul></li>
+  <li><a href="#set-up-folder-structure" id="toc-set-up-folder-structure" class="nav-link" data-scroll-target="#set-up-folder-structure">Set up folder structure</a></li>
+  <li><a href="#initialize-agate" id="toc-initialize-agate" class="nav-link" data-scroll-target="#initialize-agate">Initialize <code>agate</code></a></li>
+  <li><a href="#download-all-basestation-files" id="toc-download-all-basestation-files" class="nav-link" data-scroll-target="#download-all-basestation-files">Download all basestation files</a></li>
+  <li><a href="#extract-select-piloting-parameters-and-flight-metrics" id="toc-extract-select-piloting-parameters-and-flight-metrics" class="nav-link" data-scroll-target="#extract-select-piloting-parameters-and-flight-metrics">Extract select piloting parameters and flight metrics</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/sfregosi/agate-public/edit/main/get-started.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/sfregosi/agate-public/blob/main/get-started.qmd" class="toc-action">View source</a></p><p><a href="https://github.com/sfregosi/agate-public/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -129,6 +203,7 @@ ul.task-list{list-style: none;}
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title d-none d-lg-block">Get started with agate</h1>
+<p class="subtitle lead">Installation and quick start guide</p>
 </div>
 
 
@@ -142,24 +217,138 @@ ul.task-list{list-style: none;}
 
 </header>
 
-<section id="configuration-file" class="level2">
-<h2 class="anchored" data-anchor-id="configuration-file">Configuration file</h2>
-<p>The first step is to create a configuration file for the mission and glider of interest. An example configuration file is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
-<p>This is a text file that can be modified in any text editor or within MATLAB. Start any comment lines with <code>%</code>. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings.</p>
+<p>This page is meant to help you get started with <code>agate</code> by getting it properly ‘installed’ on your MATLAB path, setting up the necessary configuration files and folder structure, and a quick start guide for some basic commands.</p>
+<p>It page is not a detailed list of all available functions and their specific documentation (that might be coming later!). Those details are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing <code>doc function</code> or <code>help function</code> within the MATLAB Command Window.</p>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<ul>
+<li>Download <code>agate</code> from <a href="https://github.com/sfregosi/agate-public">GitHub</a>
+<ul>
+<li><strong>Option 1:</strong> Clone the repository using GitHub or GitHub Desktop
+<ul>
+<li><strong><em>This is the suggested installation!</em></strong> This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub</li>
+<li>Click on the green <em>Code</em> button and select <em>Open with GitHub Desktop</em></li>
+<li>Specify where to clone the cloned local copy. Suggest the default MATLAB directory (e.g., <code>C:\Users\User.Name\Documents\MATLAB\</code>)</li>
+<li>For more help with GitHub see this <a href="https://github.com/PIFSC-Protected-Species-Division/PSDOS/blob/main/files/git_started.md">Git Started Doc</a></li>
+</ul></li>
+<li><strong>Option 2:</strong> Download the zip file
+<ul>
+<li>Removes requirement of working with GitHub but will need manual updating</li>
+<li>Click the green <em>Code</em> button at the landing page of the repository and choose <em>Download ZIP</em></li>
+<li>Unzip the downloaded folder and place within the default MATLAB directory (e.g., <code>C:\Users\User.Name\Documents\MATLAB\</code>)</li>
+</ul></li>
+</ul></li>
+<li>Add <code>agate</code> to the MATLAB path
+<ul>
+<li>Open MATLAB and click on <em>Set Path</em> in the Environment section of the Home tab (<a href="#fig-screenshot-matlab-setpath">Figure&nbsp;1</a>)</li>
+<li>In the Set Path dialog box, choose <em>Add with Subfolders…</em>, select the <code>agate-public</code> folder, and click <em>Save</em>, then <em>Close</em> (<a href="#fig-screenshot-matlab-setpath-save">Figure&nbsp;2</a>)</li>
+<li>This will now be saved for future MATLAB sessions, but would need to be repeated for any installation on a new computer</li>
+</ul></li>
+</ul>
+<div id="fig-screenshot-matlab-setpath" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png"><img src="images/screenshot_matlab_setpath.png" class="img-fluid figure-img" width="700"></a></p>
+<p></p><figcaption class="figure-caption">Figure 1: Screenshot of MATLAB Home Tab showing where to click to Set Path</figcaption><p></p>
+</figure>
+</div>
+<div id="fig-screenshot-matlab-setpath-save" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png"><img src="images/screenshot_matlab_setpath_save.png" class="img-fluid figure-img" width="400"></a></p>
+<p></p><figcaption class="figure-caption">Figure 2: Example screenshot of the Set Pat dialog box showing the ‘Add with Subfolders...’ and ‘Save’ buttons.</figcaption><p></p>
+</figure>
+</div>
+<p><sub><a href="#">Back to top</a></sub></p>
 </section>
-<section id="running-agate" class="level2">
-<h2 class="anchored" data-anchor-id="running-agate">Running agate</h2>
+<section id="quick-start-guide" class="level2">
+<h2 class="anchored" data-anchor-id="quick-start-guide">Quick Start Guide</h2>
+<section id="create-configuration-files" class="level3">
+<h3 class="anchored" data-anchor-id="create-configuration-files">Create configuration files</h3>
+<p>Running <code>agate</code> requires a few configuration files. Both of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB’s Editor window</p>
+<ol type="1">
+<li>An overview <a href="#mission-configuration-file">mission configuration file</a> for a specific glider/mission</li>
+<li>A <a href="#basestation-configuration-file">basestation configuration file</a> with SSH login info</li>
+</ol>
+<section id="mission-configuration-file" class="level4">
+<h4 class="anchored" data-anchor-id="mission-configuration-file">Mission configuration file</h4>
+<p>An example configuration file is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
+<p>Start any comment lines with <code>%</code>. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments.</p>
+<p>To suggest additional configuration items, please open an <a href="https://github.com/sfregosi/agate-public/issues/new" target="_blank">issue</a>.</p>
+</section>
+<section id="basestation-configuration-file" class="level4">
+<h4 class="anchored" data-anchor-id="basestation-configuration-file">Basestation configuration file</h4>
+<p>The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation.cnf"><code>basestation.cnf</code></a>.</p>
+<p>This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group’s basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the following lines, with the inputs updated for a particular basestation:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>CONFIG.bs.host = 'url.com';</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>CONFIG.bs.username = 'pilot';</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>CONFIG.bs.password = 'PsWrD';</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><sub><a href="#">Back to top</a></sub></p>
+</section>
+</section>
+<section id="set-up-folder-structure" class="level3">
+<h3 class="anchored" data-anchor-id="set-up-folder-structure">Set up folder structure</h3>
+<p>The suggested folder structure for working with <code>agate</code> is to specify a ‘mission’ folder, and then within that have a standardized set of nested folders for the various <code>agate</code> inputs and outputs. The path of the ‘mission’ folder is specified by <code>CONFIG.path.mission</code> in the <a href="#mission-configuration-file">mission configuration file</a> and typically follows the Seaglider naming scheme (e.g., <code>C:\Users\User.Name\Desktop\sg###_Location_MonYYYY</code>).</p>
+<p>Within that, should be a ‘flightStatus’ and a ‘basestationFiles’ folder; ‘flightStatus’ will house output figures and tables, and ‘basestationFiles’ is where downloaded basestation files will be saved.</p>
+<p>These folders can be set up manually, or created in MATLAB:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>% specify the local piloting folder for this trip</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store status outputs </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>% make the dirs if they don't exist</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>mkdir(path_status);</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>mkdir(path_bsLocal);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><sub><a href="#">Back to top</a></sub></p>
+</section>
+<section id="initialize-agate" class="level3">
+<h3 class="anchored" data-anchor-id="initialize-agate">Initialize <code>agate</code></h3>
 <ul>
 <li>Open MATLAB</li>
-<li>Add <code>agate</code> to the path (with subfolders), if not done so</li>
+<li>Add <code>agate</code> to the path (with subfolders), if not already done</li>
 <li>Type <code>agate agate_config.cnf</code> in the command window and hit enter
 <ul>
-<li>replace &lt;<code>agate_config.cnf</code>&gt; with the name of your configuration file</li>
+<li>replace <code>agate_config.cnf</code> with the name of your configuration file (e.g., <code>agate_config_sg639_MHI_Apr2022.cnf</code>)</li>
 </ul></li>
-<li>Alternatively, simply type <code>agate</code> and you will be prompted for a configuration file</li>
+<li>Alternatively, simply type <code>agate</code> and you will be prompted to select a configuration file</li>
 </ul>
+<p><sub><a href="#">Back to top</a></sub></p>
+</section>
+<section id="download-all-basestation-files" class="level3">
+<h3 class="anchored" data-anchor-id="download-all-basestation-files">Download all basestation files</h3>
+<p>Use <code>basestationFileExtract</code> to automatically download various basestation files to a local machine for further examination.</p>
+<p>Below is example code to run this step. This can be saved as a script that makes it easy to re-run each time the glider surfaces, or it can be typed directly into the MATLAB Command Window.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>% ensure agate folder is added to the matlab path before proceeding</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>% initialize agate; will prompt for configuration file</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>agate</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>% load global configs</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>global CONFIG</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>% specify the local piloting folder for this trip</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store status outputs </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>% make the dirs if they don't exist</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>mkdir(path_status);</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>mkdir(path_bsLocal);</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>% extract basestation files</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>basestationFileExtract(CONFIG, path_bslLocal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><sub><a href="#">Back to top</a></sub></p>
+</section>
+<section id="extract-select-piloting-parameters-and-flight-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="extract-select-piloting-parameters-and-flight-metrics">Extract select piloting parameters and flight metrics</h3>
+<pre><code>%% extract various piloting parameters and values reported by .log file
+
+pp = extractPilotingParams(CONFIG, path_bsLocal, path_status);
+% print errors for quick glance/check
+pp.ERRORS(end)
+
+% save as .xlsx and .mat 
+writetable(pp, fullfile(path_status, ['diveTracking_' CONFIG.glider '.xlsx'])); % local copy
+save(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']), 'pp');
+</code></pre>
+<p><sub><a href="#">Back to top</a></sub></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
