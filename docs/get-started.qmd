@@ -13,6 +13,9 @@ It page is not a detailed list of all available functions and their specific doc
 
 ## Installation
 
+
+*See the [Dependencies](https://sfregosi.github.io/agate-public/#dependencies) section of the home page for more info on the required Mathworks File Exchange packages (copies of these come packaged with `agate`) and MATLAB Toolbox requirements.*
+
 - Download `agate` from [GitHub](https://github.com/sfregosi/agate-public) 
   - **Option 1:** Clone the repository using GitHub or GitHub Desktop 
     - __*This is the suggested installation!*__ This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub
@@ -31,6 +34,7 @@ It page is not a detailed list of all available functions and their specific doc
 [![Screenshot of MATLAB Home Tab showing where to click to Set Path](images/screenshot_matlab_setpath.png){#fig-screenshot-matlab-setpath fig-align="center" width='700'}](https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png)
 
 [![Example screenshot of the Set Pat dialog box showing the 'Add with Subfolders\...' and 'Save' buttons.](images/screenshot_matlab_setpath_save.png){#fig-screenshot-matlab-setpath-save fig-align="center" width='400'}](https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png)
+
 
 <sub>[Back to top](#)</sub>
 
