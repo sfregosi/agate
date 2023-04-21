@@ -10,8 +10,12 @@
 # /.quarto/
 # /_site/
 
-# MATLAB # 
+# MATLAB #
 ##########
+*.asv
+*.mat
+# configuration files
+*.cnf
 /agate/
 
 # Packages #
