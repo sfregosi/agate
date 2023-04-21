@@ -1,4 +1,4 @@
-function mapPlannedTrack(targetsFile, latLim, lonLim, trackName, bathyOn, figNum)
+function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 % MAPPLANNEDTRACK	Create static map of planned survey track
 %
 %	Syntax:
@@ -16,9 +16,8 @@ function mapPlannedTrack(targetsFile, latLim, lonLim, trackName, bathyOn, figNum
 
 %           
 %	Inputs:
-%		targetsFile     fullpath to targets file
-%       latLim          latitude limits in decimal degrees e.g., [18 23]
-%       lonLim          longitude limits in decimal degrees e.g., [-160 -154]
+%		CONFIG          global CONFIG from agate_config.cnf
+%       targetsFile     fullpath to targets file
 %       trackName       optional argument for the legend entry. If empty
 %                       will just say 'glider', e.g., 'sg639'
 %       bathyOn         optional arg to plot bathymetry data 1 = plot, 0 = no
@@ -75,8 +74,8 @@ clf
 cla reset; clear g
 
 % build axes
-ax = axesm('mercator', 'MapLatLim', latLim, 'MapLonLim', lonLim, ...
-    'Frame', 'on');
+ax = axesm('mercator', 'MapLatLim', CONFIG.map.latLim, ...
+    'MapLonLim', CONFIG.map.lonLim, 'Frame', 'on');
 
 gridm('PLineLocation', 1, 'MLineLocation', 1);
 plabel('PLabelLocation', 1, 'PLabelRound', -1, 'FontSize', 14);
@@ -105,7 +104,7 @@ if bathyOn
     end
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
         'CoordinateSystemType', 'geographic');
-    [Z, refvec] = geocrop(Z, refvec, latLim, lonLim);
+    [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
 
     % Z(Z >= 10) = NaN;
     Z(Z >= 10) = 100;
@@ -131,7 +130,7 @@ if ~exist(landFile, 'file')
     [fn, path] = uigetfile([CONFIG.path.shp '*.shp'], 'Select ne_10m_land_scale_rank.shp');
     landFile = fullfile(path, fn);
 end
-land = shaperead(landFile, 'BoundingBox', [lonLim' latLim'], ...
+land = shaperead(landFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
     'UseGeoCoords', true);
 
 % and any minor islands if needed (e.g., for SBI)
@@ -142,7 +141,7 @@ if ~exist(minIslFile, 'file')
     [fn, path] = uigetfile([CONFIG.path_shp '*.shp'], 'Select ne_10m_minor_islands.shp');
     minIslFile = fullfile(path, fn);
 end
-landmi = shaperead(minIslFile, 'BoundingBox', [lonLim' latLim'], ...
+landmi = shaperead(minIslFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
     'UseGeoCoords', true);
 
 geoshow(land, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
@@ -154,7 +153,7 @@ targets = readTargetsFile(targetsFile);
 
 plotm(targets.lat, targets.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor', [0 0 0], ...
     'MarkerFaceColor', [0 0 0], 'Color', [0 0 0])
-textm(targets.lat, targets.lon, targets.name)
+textm(targets.lat, targets.lon, targets.name, 'FontSize', 10)
 
 h(1) = linem(targets.lat, targets.lon, 'LineWidth', 2, 'Color', [1 0.4 0],...
     'DisplayName', trackName);
@@ -162,7 +161,7 @@ h(1) = linem(targets.lat, targets.lon, 'LineWidth', 2, 'Color', [1 0.4 0],...
 legend(h, {trackName}, 'Location', 'southeast', 'FontSize', 14)
 
 % add title
-title(sprintf('%s %s', CONFIG.glider, CONFIG.deployment), 'Interpreter', 'none')
+title(sprintf('%s %s', CONFIG.glider, CONFIG.mission), 'Interpreter', 'none')
 
 
 

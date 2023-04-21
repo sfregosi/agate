@@ -1,5 +1,5 @@
 % WORKFLOW_SURVEYTRACKPLANNING
-%	Planned survey path kmls to targets file and pretty map
+%	Planned mission path kmls to targets file and pretty map
 %
 %	Description:
 %		This script takes a survey track created in Google Earth and saved
@@ -28,18 +28,20 @@
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	05 April 2023
-%	Updated:
+%	Updated:        20 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+agate agate_config_sg639_MHI_Apr2023.cnf
 
 global CONFIG
 
 %% %%%%% SET UP %%%%%%
 
 glider = CONFIG.glider; %'sg639';
-deployment = CONFIG.deployment; %'MHI_Apr2023';
+mission = CONFIG.mission; %'MHI_Apr2023';
 
 % Select .kml file
-[kmlFileName, kmlPath] = uigetfile([CONFIG.path.survey '\*.kml'], 'Select .kml track');
+[kmlFileName, kmlPath] = uigetfile([CONFIG.path.mission '\*.kml'], 'Select .kml track');
 kmlFile = fullfile(kmlPath, kmlFileName);
 [~, kmlName, kmlExt] = fileparts(kmlFileName);
 
@@ -78,10 +80,10 @@ degMinLats = decdeg2degmin(decDegCoords(:,2));
 %     'WW09', 'WW10', 'WW11', 'WW12', 'WW13', 'WW14', 'WW15', 'WW16', ...
 %     'WW17', 'RECV'}';
 
-wpNames = {'WW01', 'WWaa', 'WW02', 'WWab', 'WW03', 'WW04', 'WW05', 'WWaa', ... 
-    'WW06', 'WWac', 'WW07', 'WWad', 'WW08', 'WWae', 'WW09', 'WWaf', 'WW10', ... 
-    'WWag', 'WW11', 'WWah', 'WW12', 'WWai', 'WW13', 'WWaj', 'WW14', 'WWak', ...
-    'WW15', 'WWal', 'WWam', 'WW16', 'WWan', 'WWao', 'WW17', 'WWap', 'WWaq', ...
+wpNames = {'WW01', 'WWaa', 'WW02', 'WWab', 'WW03', 'WW04', 'WW05', 'WWac', ... 
+    'WW06', 'WWad', 'WW07', 'WWae', 'WW08', 'WWaf', 'WW09', 'WWag', 'WW10', ... 
+    'WWah', 'WW11', 'WWai', 'WW12', 'WWaj', 'WW13', 'WWak', 'WW14', 'WWal', ...
+    'WW15', 'WWam', 'WWan', 'WW16', 'WWao', 'WWap', 'WW17', 'WWaq', 'WWar', ...
     'RECV'}';
 
 %% %%%%% WRITE TARGETS FILE %%%%%
@@ -114,35 +116,29 @@ fclose(fid);
 %% %%%%%% CREATE PLOT %%%%%%
 
 % Set up map configuration
-% **Need to make a function to play with these??
-CONFIG.map.latLim = [18 23];
-CONFIG.map.lonLim = [-160 -154];
-CONFIG.map.naLat = 22.3;
-CONFIG.map.naLon = -154.4;
-CONFIG.map.scalePos = [-0.045 0.325]; % ['XLoc' 'YLoc']
-CONFIG.map.scaleMajor = 0:50:100;
-CONFIG.map.scaleMinor = 0:12.5:25;
 bathyOn = 1;
 figNum = 26;
 
 targetsFile = targetsOut;
-mapPlannedTrack(targetsFile, CONFIG.map.latLim, CONFIG.map.lonLim, ...
-    CONFIG.glider, bathyOn, figNum)
+mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, figNum)
 
 
 %% 2 - print/save interpolated track map
+set(gcf, 'Position', [80 50 1600 1200]) % make it big to save it
 set(gcf, 'InvertHardCopy', 'off', 'color', 'w');
 
-print(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+print(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' kmlName, '.png']), '-dpng')
-savefig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+savefig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' kmlName, '.fig']))
 
 % exporting to EPS or PDF requires the export_fig toolbox available at 
 %  https://github.com/altmany/export_fig
-export_fig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' kmlName, '.eps']), '-eps', '-painters');
-export_fig(fullfile(CONFIG.path.survey, [CONFIG.glider '_' CONFIG.deployment, ...
+export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' kmlName, '.pdf']), '-pdf', '-painters');
 
+% shrink back down
+set(gcf, 'Position', [100 100 800 600]); % make it reasonable again. 
 
