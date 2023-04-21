@@ -1,4 +1,4 @@
-function [gpsSurfT, locCalcT] = positionalDataExtractor(glider, deploymentStr, saveOn, path_in)
+function [gpsSurfT, locCalcT] = extractPositionalData(glider, deploymentStr, saveOn, path_in)
 
 % *** USE THIS ONE!!!!!!!!!!!!!****
 % 2019 09 03 S. Fregosi
