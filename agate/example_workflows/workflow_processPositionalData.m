@@ -25,16 +25,16 @@
 %	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% initialize agate
 agate agate_config_sg639_MHI_Apr2022.cnf
-
 global CONFIG
 
-
+% extract positiona data
 [gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 0);
+% 0 in plotOn argument will not plot 'check' figures, but change to 1 to
+% plot basic figures for output checking
 
-
-% save in default location yes (1) or no (0)
-
+% save as .mat and .csv
 save(fullfile(CONFIG.path.mission, 'profiles', ...
     [CONFIG.glider, CONFIG.mission, '_gpsSurfaceTable.mat']), 'gpsSurfT');
 writetable(gpsSurfT,fullfile(CONFIG.path.mission, 'profiles', ...
