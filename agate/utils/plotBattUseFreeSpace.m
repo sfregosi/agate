@@ -31,8 +31,8 @@ function plotBattUseFreeSpace(CONFIG, pp, A0_24V, tmd)
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
-%	FirstVersion: 	13 April 2023
-%	Updated:
+%	FirstVersion: 	unknown
+%	Updated:        23 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -46,8 +46,8 @@ figure(figNum); clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 yyaxis left
 plot(timeDays, (A0_24V - pp.ampHrConsumed)/A0_24V*100, 'LineWidth', 2)
-ylim([0 100]);ylabel('Remaining battery %');
-xlim([0 tmd + 10]); xlabel('Days in Mission');
+ylim([0 100]);ylabel('remaining battery [%]');
+xlim([0 tmd + 10]); xlabel('days in mission');
 
 co = colororder;
 yyaxis right
@@ -59,7 +59,7 @@ for f = 1:length(uniqueCards)
     tmpTimeDays = timeDays(pp.activeCard == ac);
     tmpFreeGB = pp.(['pmFree_' num2str(ac,'0%d') '_GB'])(pp.activeCard == ac);
     plot(tmpTimeDays, tmpFreeGB, lineStyles{f}, 'LineWidth', 2)
-    ylim([0 500]);ylabel('Free Space [GB]');
+    ylim([0 500]);ylabel('free space [GB]');
     yline(35, ':', '35 GB', 'Color', co(2,:), 'LineWidth', 1.5); % don't let free space drop below 7%/35 GB or it will stop recording
     hold on;
 end
