@@ -22,14 +22,14 @@
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	21 April 2023
-%	Updated:
+%	Updated:        23 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
 agate agate_config_sg639_MHI_Apr2022.cnf
 global CONFIG
 
-% extract positiona data
+%% extract positional data
 [gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 0);
 % 0 in plotOn argument will not plot 'check' figures, but change to 1 to
 % plot basic figures for output checking
@@ -46,4 +46,58 @@ writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
     [CONFIG.glider, CONFIG.mission, '_locCalcT.csv']));
 
 
+%% plot sound speed profile
+% load locCalcT if not already loaded
+if ~exist('locCalcT', 'var')
+    load(fullfile(CONFIG.path.mission, 'profiles', ...
+        [CONFIG.glider, CONFIG.mission, '_locCalcT.mat']))
+end
+
+plotSoundSpeedProfile(CONFIG, locCalcT);
+print(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, CONFIG.mission, '_SSP.png']), '-dpng')
+export_fig(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, CONFIG.mission, '_SSP.pdf']), '-pdf')
+
+%% BELOW SECTIONS ARE NOT YET OPERATIONAL
+% Below called functions are in the 'drafts' folder and need to be adapted
+% for WISPR2 and also updated to new CONFIG system of agate
+
+%% extract acoustic system status for each dive and sample time
+
+% *** NEEDS WORK! *** to be updated to deal with WISPR2 and speed up with
+% PMARXL using .eng files rather than having to read in list of sound files
+
+% % this looks at each recorded file timestamp to populate a 'pam' column
+% % that is added to locCalcT and gpsSurfT that specifies the status of the
+% % pam system for each entry. 
+% 
+% fileLength = 600; % in seconds
+% dateFormat = 'yyMMdd-HHmmss';
+% dateStart = 1; % what part of file name starts the date format
+% 
+% [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(gldr, lctn, dplymnt, ...
+%     fileLength, dateFormat, dateStart, gpsSurfT, locCalcT);
+% % saved automatically gpsSurfTable_pam.mat and locCalcT_pam.mat and
+% % _pamByFile.mat
+
+
+%% extract positional data for each sound file
+% 
+% secs = 180;
+% 
+% filePosits = extractPositsPerPAMFile(gldr, lctn, dplymnt, ...
+%     pam, locCalcT,secs, path_profiles);
+% 
+% % this saves _pamFilePosits.mat and .csv
+
+%% extract positional data and acoustic effort by minute
+
+% % create byMin, minPerHour, minPerDay matrices for full experiment extent
+% % will need this for comparison down the line
+% [pamByMin, pamMinPerHour, pamMinPerDay] = ...
+%     calcPAMEffort(gldr, lctn, dplymnt, expLimits, gpsSurfT, path_profiles);
+% % this saves _pamByMin.mat
+% 
+% 
 
