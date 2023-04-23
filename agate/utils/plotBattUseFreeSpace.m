@@ -49,6 +49,7 @@ plot(timeDays, (A0_24V - pp.ampHrConsumed)/A0_24V*100, 'LineWidth', 2)
 ylim([0 100]);ylabel('Remaining battery %');
 xlim([0 tmd + 10]); xlabel('Days in Mission');
 
+co = colororder;
 yyaxis right
 uniqueCards = unique(pp.activeCard);
 lineStyles = {'-', ':', '-', '-.'}; % options for up to 4 cards.
@@ -59,16 +60,16 @@ for f = 1:length(uniqueCards)
     tmpFreeGB = pp.(['pmFree_' num2str(ac,'0%d') '_GB'])(pp.activeCard == ac);
     plot(tmpTimeDays, tmpFreeGB, lineStyles{f}, 'LineWidth', 2)
     ylim([0 500]);ylabel('Free Space [GB]');
-    hline(35, 'k:'); % don't let free space drop below 7%/35 GB or it will stop recording
+    yline(35, ':', '35 GB', 'Color', co(2,:), 'LineWidth', 1.5); % don't let free space drop below 7%/35 GB or it will stop recording
     hold on;
 end
 hold off;
 
 grid on; title(['Glider ' CONFIG.glider ' Battery Usage and Free Space']);
 yyaxis left
-hline(30, 'k--') % 30% battery safety threshold
+yline(30, '--', '30%', 'Color', co(1,:), 'LineWidth', 1.5); % 30% battery safety threshold
 if ~isempty(tmd)
-    vline(tmd, 'k-.')
+    xline(tmd, 'k-.', {'target mission duration'}, 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left')
 end
 set(gca, 'FontSize', 14)
 
