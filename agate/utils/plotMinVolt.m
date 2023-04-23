@@ -67,7 +67,7 @@ hold off;
 title(['Glider ' CONFIG.glider ' Minimum Battery Voltages']);
 set(gca, 'FontSize', 14)
 legend('24V', '10V')
-set(gcf, 'Position', [800   0    600    400])
+set(gcf, 'Position', [800   40    600    400])
 
 end
 
