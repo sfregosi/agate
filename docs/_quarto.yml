@@ -34,8 +34,8 @@ website:
       #   text: About
       - href: get-started.qmd
         text: Get started
-      # - href: content/customizing.qmd
-      #   text: Customizing
+      - href: plotting-functions.qmd
+        text: Plots
       # - href: content/rendering.qmd
       #   text: Rendering
       # - href: content/rmarkdown.Rmd

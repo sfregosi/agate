@@ -87,7 +87,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./acknowledgements.html" rel="next">
+<link href="./plotting-functions.html" rel="next">
 <link href="./index.html" rel="prev">
 <link href="./images/favicon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js"></script>
@@ -169,6 +169,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./plotting-functions.html" class="sidebar-item-text sidebar-link">Plots</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./acknowledgements.html" class="sidebar-item-text sidebar-link">Acknowledgements</a>
   </div>
 </li>
@@ -221,6 +226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>It page is not a detailed list of all available functions and their specific documentation (that might be coming later!). Those details are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing <code>doc function</code> or <code>help function</code> within the MATLAB Command Window.</p>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<p><em>See the <a href="https://sfregosi.github.io/agate-public/#dependencies">Dependencies</a> section of the home page for more info on the required Mathworks File Exchange packages (copies of these come packaged with <code>agate</code>) and MATLAB Toolbox requirements.</em></p>
 <ul>
 <li>Download <code>agate</code> from <a href="https://github.com/sfregosi/agate-public">GitHub</a>
 <ul>
@@ -271,7 +277,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="mission-configuration-file" class="level4">
 <h4 class="anchored" data-anchor-id="mission-configuration-file">Mission configuration file</h4>
 <p>An example configuration file is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
-<p>Start any comment lines with <code>%</code>. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments.</p>
+<p>Start any comment lines with <code>%</code>. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. The top section are required to initialize <code>agate</code> and use the most basic functions. The following sections are optional depending on what agate functionality is desired, including interfacing with the basestation, working with acoustic data outputs, and plotting maps. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments.</p>
 <p>To suggest additional configuration items, please open an <a href="https://github.com/sfregosi/agate-public/issues/new" target="_blank">issue</a>.</p>
 </section>
 <section id="basestation-configuration-file" class="level4">
@@ -573,8 +579,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./acknowledgements.html" class="pagination-link">
-        <span class="nav-page-text">Acknowledgements</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./plotting-functions.html" class="pagination-link">
+        <span class="nav-page-text">Plots</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

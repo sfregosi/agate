@@ -1,26 +1,38 @@
 % agate configuration file
 % create a new file for each glider and mission
 
+% %%%%%% REQUIRED CONFIG PARAMETERS %%%%%%
 % define glider and mission, glider version
 CONFIG.glider = 'sgXXX';
 CONFIG.mission = 'Location_Mon20XX'; % defined in sg_calib_constants.m 
 CONFIG.sgVer = 66.12;
-CONFIG.tmd = 60; % target mission duration in days
-
-% specify basestation configuration file
-CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
 
 % define paths
-CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
 CONFIG.path.mission = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
-CONFIG.path.out = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
 
+
+
+% %%%%%% OPTIONAL - working with the basestation %%%%%%
+% specify basestation configuration file
+CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
+CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
+
+
+
+% %%%%%% OPTIONAL - acoustics %%%%%%
 % pmar settings
 CONFIG.pm.loggers = 0; % 1 for active, 0 for inactive
 CONFIG.pm.activeCard = 0; % current active card, update throughout mission
 CONFIG.pm.numCards = 4;
 
-% map plotting settings
+
+
+% %%%%%% OPTIONAL - plotting %%%%%%
+% piloting plots
+CONFIG.tmd = 60; % target mission duration in days
+
+% map plots
+CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
 CONFIG.map.bathyFile =  'C:\Users\User.Name\Documents\GIS\etopo\etopo1_ice_g_i2.bin';
 CONFIG.map.latLim = [000.00 000.00];
 CONFIG.map.lonLim = [-000.00 -000.00];
@@ -35,4 +47,4 @@ CONFIG.map.scaleMinor = [0:12.5:25];
 figSeed = 1; % suggest glider number if flying multiple gliders
 CONFIG.figNumList = figSeed + [0 1 2 3 4 5 6 7 8 9]; 
 % figNumList(1) = battery, (2) = voltagePackUse, (3) = humidity
-% and pressure, (4) = map, (5) = zoomed map
+% and pressure, (4) = map, (5) = zoomed map, (6) = minimum voltage, (7) = voltage by device normalized

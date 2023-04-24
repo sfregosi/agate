@@ -51,7 +51,7 @@ Running `agate` requires a few configuration files. Both of these are plain text
 
 An example configuration file is located in the 'agate/settings' folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)
 
-Start any comment lines with `%`. It has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
+Lines starting with `%` are comments. The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. The top section is required to initialize `agate` and use the most basic functions. The following sections are optional depending on what agate functionality is desired, including interfacing with the basestation, working with acoustic data outputs, and plotting maps. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
 
 To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}.
 

@@ -1,0 +1,16 @@
+{
+  "hash": "50e883cd596e6692b00763dade9e3b7c",
+  "result": {
+    "markdown": "---\ntitle: \"Plots\"\nsubtitle: 'Overview of all plotting functions'\n---\n\n\n\n\nBasic details for each plotting function are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window. \n\nThis page will show example plots and provide a bit more detail. \n\n## Initialization\n\nTo run any of the `agate` plotting functions, the toolbox must be initialized with a configuration file. \n\nNo configuration file yet? Go back to [Get started - Create configuration files](get-started.html#create-configuration-files). At a minimum, the configuration file must include the top *required* portion, as well as the *optional - plotting* section.\n\n```default\n% ensure agate is on the path\n\n% initialize with specified configuration file, 'agate_config.cnf'\nagate agate_config.cnf\n\n% initialize with prompt to select configuration file\nagate\n```\nMost of the plotting functions rely on a `pp` (piloting parameters) variable that is a large table with various outputs from the .nc and .log files compiled in one place. If this has already be created, it can be loaded directly. If not, use `extractPilotingParams` to build it. \n\n```default\n% load existing pp table\nload(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glider '.mat']))\n\n% create new pp table\npp = extractPilotingParams(CONFIG, fullfile(CONFIG.path.mission, 'basestationFiles'), ...\nfullfile(CONFIG.path.mission, 'flightStatus'), 0);\n% zero as last argument creates it from scratch (does not load any previous tables)\nsave(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glider '.mat']), 'pp');\n\n```\n\n<sub>[Back to top](#)</sub>\n\n## Piloting plots\n\n### Battery remaining and PAM free space\n\n### Humidity and pressure\n\n### Voltage use by device\n\n### Voltage use by device, normalized by dive duration\n\n### Minimum voltage reported\n\n### Maps\n\n<sub>[Back to top](#)</sub>\n\n\n\n\n",
+    "supporting": [
+      "plotting-functions_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

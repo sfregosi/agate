@@ -2,15 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://sfregosi.github.io/agate-public/about.html</loc>
-    <lastmod>2023-04-20T19:22:09.118Z</lastmod>
+    <lastmod>2023-04-24T17:53:29.680Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/index.html</loc>
-    <lastmod>2023-04-20T16:59:01.549Z</lastmod>
+    <lastmod>2023-04-24T17:53:32.363Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/get-started.html</loc>
-    <lastmod>2023-04-21T03:42:35.751Z</lastmod>
+    <lastmod>2023-04-24T18:08:03.311Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/acknowledgments.html</loc>
@@ -18,6 +18,10 @@
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/acknowledgements.html</loc>
-    <lastmod>2023-04-20T16:20:21.000Z</lastmod>
+    <lastmod>2023-04-24T17:53:30.079Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sfregosi.github.io/agate-public/plotting-functions.html</loc>
+    <lastmod>2023-04-24T18:11:41.637Z</lastmod>
   </url>
 </urlset>
