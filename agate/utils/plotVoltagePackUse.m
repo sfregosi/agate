@@ -1,5 +1,5 @@
 function plotVoltagePackUse(CONFIG, pp)
-% PLOTVOLTAGEPACKUSE	Plot zoomed in view of glider path on bathymetry 
+% PLOTVOLTAGEPACKUSE	Plot power draw by individual glider devices 
 %
 %	Syntax:
 %		PLOTVOLTAGEPACKUSE(CONFIG, PP)
