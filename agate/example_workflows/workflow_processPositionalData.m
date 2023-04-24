@@ -26,7 +26,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-agate agate_config_sg680_MHI_Apr2022.cnf
+agate agate_config_sg639_MHI_Apr2022.cnf
 global CONFIG
 
 %% extract positional data
@@ -36,28 +36,28 @@ global CONFIG
 
 % save as .mat and .csv
 save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, CONFIG.mission, '_gpsSurfaceTable.mat']), 'gpsSurfT');
+    [CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']), 'gpsSurfT');
 writetable(gpsSurfT,fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, CONFIG.mission, '_gpsSurfaceTable.csv']))
+    [CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.csv']))
 
 save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, CONFIG.mission, '_locCalcT.mat']),'locCalcT');
+    [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']),'locCalcT');
 writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, CONFIG.mission, '_locCalcT.csv']));
+    [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.csv']));
 
 
 %% plot sound speed profile
 % load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
     load(fullfile(CONFIG.path.mission, 'profiles', ...
-        [CONFIG.glider, CONFIG.mission, '_locCalcT.mat']))
+        [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
 end
 
 plotSoundSpeedProfile(CONFIG, locCalcT);
 print(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, CONFIG.mission, '_SSP.png']), '-dpng')
+    [CONFIG.glider, '_', CONFIG.mission, '_SSP.png']), '-dpng')
 export_fig(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, CONFIG.mission, '_SSP.pdf']), '-pdf')
+    [CONFIG.glider, '_', CONFIG.mission, '_SSP.pdf']), '-pdf')
 
 %% BELOW SECTIONS ARE NOT YET OPERATIONAL
 % Below called functions are in the 'drafts' folder and need to be adapted
