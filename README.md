@@ -12,7 +12,7 @@ development.
 
 <img
 src="README_files/figure-gfm/fa-icon-ef3463a0984ba0e303f1b25b6e50a309.svg"
-style="width:0.88em;height:1em" /> *Last Update: 16 Apr 2023*
+style="width:0.88em;height:1em" /> *Last Update: 24 Apr 2023*
 
 **Detailed documentation can be found at
 [sfregosi.github.io/agate-public](https://sfregosi.github.io/agate-public)**
@@ -38,44 +38,6 @@ Please contact me if you have any questions, feedback, or suggestions!
 selene \[dot\] fregosi \[at\] noaa.gov or
 <a href="https://github.com/sfregosi/agate-public/issues/new"
 target="_blank">Report an issue on GitHub</a>
-
-## Dependencies
-
-Matlab toolboxes:
-
--   Mapping Toolbox
-    -   `agate` requires the MATLAB Mapping toolbox. In the future, we
-        may try modify the mapping tools to work with the freely
-        available `m_map` package to make it more accessible, but are
-        not there yet!
-
-MATLAB File Exchange functions:
-
-This package requires a few resources from MATLAB File Exchange. They
-come packaged within the utils/fileExchange folder. More info about each
-can be found below:
-
--   [SSH/SFTP/SCP For Matlab
-    (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)
--   [LatLon
-    Distance](https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance)
--   [hline and
-    vline](https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline)
--   [cmocean](https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps)
-
-Basemap rasters:
-
-A raster file is needed to plot bathymetry data on any of the maps.
-Detailed basemaps are available from
-[NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model).
-
-Depending on the needed resolution, the 60 arc second .tiff file may be
-sufficient, and is a reasonable size for download and plotting, but is a
-bit slow to load. Alternatively, finer resolution (15-60 arc second
-resolution options) for the specific area of interest can be extracted
-using the [ETOPO Grid Extract
-tool](https://www.ncei.noaa.gov/maps/grid-extract/) to download .tiff
-files in a smaller file size for faster loading and plotting.
 
 ## Disclaimer
 

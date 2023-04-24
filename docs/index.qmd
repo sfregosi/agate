@@ -45,14 +45,20 @@ Matlab toolboxes:
 
 This package requires a few resources from Matlab File Exchange. They come packaged within the utils/fileExchange folder. More info about each can be found below:
 
-- [SSH/SFTP/SCP For Matlab (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)
-- [LatLon Distance](https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance)
-- [hline and vline](https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline)
-- [cmocean](https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps)
+- [SSH/SFTP/SCP For Matlab (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)  
+<sub>*David Freedman (2023). SSH/SFTP/SCP For Matlab (v2), MATLAB Central File Exchange. Retrieved April 24, 2023.*</sub>
+- [LatLon Distance](https://www.mathworks.com/matlabcentral/fileexchange/38812-latlon-distance)  
+<sub>*M Sohrabinia (2023). LatLon distance, MATLAB Central File Exchange. Retrieved April 24, 2023.*</sub>
+<!-- - [hline and vline](https://www.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline) -->
+- [cmocean](https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps)  
+<sub>*Thyng, Kristen, et al. “True Colors of Oceanography: Guidelines for Effective and Accurate Colormap Selection.” Oceanography, vol. 29, no. 3, The Oceanography Society, Sept. 2016, pp. 9–13, doi:10.5670/oceanog.2016.66.*</sub>
+- [seawater_density](https://www.mathworks.com/matlabcentral/fileexchange/85900-seawater-density-from-salinity-temperature-and-pressure)  
+<sub>*Gabriel Ruiz-Martinez (2023). Seawater density from salinity, temperature and pressure, MATLAB Central File Exchange. Retrieved April 24, 2023.* </sub>
+
 
 Basemap rasters:
 
-A raster file is needed to plot bathymetry data on any of the maps. Detailed basemaps are available from [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). 
+A raster file is needed to plot bathymetry data on any of the maps. Detailed basemaps are available from [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model).
 
 Depending on the needed resolution, the 60 arc second .tiff file may be sufficient, and is a reasonable size for download and plotting, but is a bit slow to load. Alternatively, finer resolution (15-60 arc second resolution options) for the specific area of interest can be extracted using the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) to download .tiff files in a smaller file size for faster loading and plotting. 
 
