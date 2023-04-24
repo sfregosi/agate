@@ -26,7 +26,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-agate agate_config_sg639_MHI_Apr2022.cnf
+agate agate_config_sg680_MHI_Apr2022.cnf
 global CONFIG
 
 %% extract positional data
