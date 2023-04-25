@@ -12,10 +12,10 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %		outputs, battery usage, and safety/error checks. The purpose of
 %		the table is to enable a pilot to look at what parameters were
 %		changed, and how those changes manifested in the gliders flight,
-%		from dive to dive. 
+%		from dive to dive.
 %
 %	Inputs:
-%		CONFIG          global variable defined by agate mission 
+%		CONFIG          global variable defined by agate mission
 %                       configuration file
 %       path_bsLocal    path to local basestation files. Can be defined in
 %                       CONFIG file, or elsewhere. Suggested path is
@@ -26,11 +26,11 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %                       fullfile(CONFIG.path.mission, 'flightStatus'). This
 %                       is used to load a previously made table to speed up
 %                       processing by only running new dives
-%       preload         optional argument to preload an existing table. 
+%       preload         optional argument to preload an existing table.
 %                       Default is TRUE(1) to preload to save time (will
 %                       only process new dives. Change to FALSE (0) to
 %                       overwrite from scratch (used in development).
-%   
+%
 %	Outputs:
 %		pp              piloting parameters table
 %
@@ -212,76 +212,78 @@ for d = loopNums
     end
 
     %% pmar outputs
-    % operating duration
-    idx = strfind(x, '$SENSOR_SECS');
-    idxComma = regexp(x(idx:end), '\,');
-    sVal = str2num(x(idx+idxComma(7):idx+idxComma(8)-2));
-    pp.PMAR_SEC(d) = sVal;
-    pp.PMAR_MIN(d) = sVal/60;
+    if CONFIG.pm.loggers == 1 % pam system is active
+        % operating duration
+        idx = strfind(x, '$SENSOR_SECS');
+        idxComma = regexp(x(idx:end), '\,');
+        sVal = str2num(x(idx+idxComma(7):idx+idxComma(8)-2));
+        pp.PMAR_SEC(d) = sVal;
+        pp.PMAR_MIN(d) = sVal/60;
 
-    % power draw
-    idx = strfind(x, '$SENSOR_MAMPS');
-    idxComma = regexp(x(idx:end), '\,');
-    sVal = str2num(x(idx+idxComma(7):idx+idxComma(8)-2));
-    pp.PMAR_MAMPS(d) = sVal;
+        % power draw
+        idx = strfind(x, '$SENSOR_MAMPS');
+        idxComma = regexp(x(idx:end), '\,');
+        sVal = str2num(x(idx+idxComma(7):idx+idxComma(8)-2));
+        pp.PMAR_MAMPS(d) = sVal;
 
-    % kJ used ***EXPERIMENTAL***
-    pp.PMAR_kJ(d) = pp.PMAR_SEC(d)*pp.PMAR_MAMPS(d)*15/1000000;
+        % kJ used ***EXPERIMENTAL***
+        pp.PMAR_kJ(d) = pp.PMAR_SEC(d)*pp.PMAR_MAMPS(d)*15/1000000;
 
-    % find the current card
-    if CONFIG.sgVer == 66.12 % active card is listed in log file
-        activeCard = str2double(parseLogToBreak(x, '$PM_ACTIVECARD'));
-        activeCardStr = sprintf('0%d', activeCard);
-        pp.activeCard(d) = activeCard;
-    elseif CONFIG.sgVer == 67.00
-        % for sgVer 67.00 does it not print the active card - must specify
-        % in CONFIG
-        if isfield(CONFIG.pm,'activeCard')
-            % which active card for this dive?
-            acIdx = find(d >= CONFIG.pm.activeCard(:,1), 1, 'last');
-            pp.activeCard(d) = CONFIG.pm.activeCard(acIdx,2);
-            activeCardStr = sprintf('0%d', CONFIG.pm.activeCard(acIdx,2));
-        else
-            fprintf(1, 'Need to specify CONFIG.pm.activeCard. Exiting.\n')
-            return
+        % find the current card
+        if CONFIG.sgVer == 66.12 % active card is listed in log file
+            activeCard = str2double(parseLogToBreak(x, '$PM_ACTIVECARD'));
+            activeCardStr = sprintf('0%d', activeCard);
+            pp.activeCard(d) = activeCard;
+        elseif CONFIG.sgVer == 67.00
+            % for sgVer 67.00 does it not print the active card - must specify
+            % in CONFIG
+            if isfield(CONFIG.pm,'activeCard')
+                % which active card for this dive?
+                acIdx = find(d >= CONFIG.pm.activeCard(:,1), 1, 'last');
+                pp.activeCard(d) = CONFIG.pm.activeCard(acIdx,2);
+                activeCardStr = sprintf('0%d', CONFIG.pm.activeCard(acIdx,2));
+            else
+                fprintf(1, 'Need to specify CONFIG.pm.activeCard. Exiting.\n')
+                return
+            end
         end
-    end
 
-    % number of files recorded per dive
-    pamFolders = dir(fullfile(path_bsLocal, ['pm' num2str(d,'%04.f') '*']));
+        % number of files recorded per dive
+        pamFolders = dir(fullfile(path_bsLocal, ['pm' num2str(d,'%04.f') '*']));
 
-    for pf = 1:length(pamFolders)
-        xp = fileread(fullfile(path_bsLocal, pamFolders(pf).name, 'pm_ch00.eng'));
-        val = str2double(parseLogToBreak(xp, '%datafiles:'));
-        if strcmp(pamFolders(pf).name(end), 'a')
-            pp.numFilesDive(d) = val;
-        elseif strcmp(pamFolders(pf).name(end), 'b')
-            pp.numFilesClimb(d) = val;
+        for pf = 1:length(pamFolders)
+            xp = fileread(fullfile(path_bsLocal, pamFolders(pf).name, 'pm_ch00.eng'));
+            val = str2double(parseLogToBreak(xp, '%datafiles:'));
+            if strcmp(pamFolders(pf).name(end), 'a')
+                pp.numFilesDive(d) = val;
+            elseif strcmp(pamFolders(pf).name(end), 'b')
+                pp.numFilesClimb(d) = val;
+            end
         end
-    end
-    pp.numFiles(d) = sum([pp.numFilesDive(d) pp.numFilesClimb(d)], 'omitnan');
+        pp.numFiles(d) = sum([pp.numFilesDive(d) pp.numFilesClimb(d)], 'omitnan');
 
-    % space used in that dive
-    % first set up this column (Want it to come before by-card space
-    if d == 1
-        pp.pmUsed_GB(d,1) = NaN;
-    end
-
-    % free space per card
-    for sdc = 1:CONFIG.pm.numCards
-        cardNumStr = sprintf('0%d', sdc-1);
-        val = str2double(parseLogToBreak(x,  ['$PM_FREEKB_' cardNumStr]));
-        if ~isempty(val)
-            pp.(['pmFree_' cardNumStr '_GB'])(d) = val/1000000;
-        else
-            pp.(['pmFree_' cardNumStr '_GB'])(d) = NaN;
+        % space used in that dive
+        % first set up this column (Want it to come before by-card space
+        if d == 1
+            pp.pmUsed_GB(d,1) = NaN;
         end
-    end
 
-    % space used on this dive (if not Dive 1)
-    if d > 1
-        pp.pmUsed_GB(d,1) = (pp.(['pmFree_' activeCardStr '_GB'])(d-1) - ...
-            pp.(['pmFree_' activeCardStr '_GB'])(d));
+        % free space per card
+        for sdc = 1:CONFIG.pm.numCards
+            cardNumStr = sprintf('0%d', sdc-1);
+            val = str2double(parseLogToBreak(x,  ['$PM_FREEKB_' cardNumStr]));
+            if ~isempty(val)
+                pp.(['pmFree_' cardNumStr '_GB'])(d) = val/1000000;
+            else
+                pp.(['pmFree_' cardNumStr '_GB'])(d) = NaN;
+            end
+        end
+
+        % space used on this dive (if not Dive 1)
+        if d > 1
+            pp.pmUsed_GB(d,1) = (pp.(['pmFree_' activeCardStr '_GB'])(d-1) - ...
+                pp.(['pmFree_' activeCardStr '_GB'])(d));
+        end
     end
 
     %% battery usage
@@ -290,14 +292,15 @@ for d = loopNums
     sl = length('$24V_AH');
     idxComma = regexp(x(idx:end), '\,');
     idxBreak = regexp(x(idx+sl+1:end),'\n','once') + idx + sl;
-    sVal = str2num(x(idx+idxComma(2):idxBreak-1));
+    sVal = str2double(x(idx+idxComma(2):idxBreak-1));
     pp.ampHrConsumed(d) = sVal;
 
-    sVal = str2num(x(idx+idxComma(1):idx+idxComma(2)-2));
+    % minimum voltages
+    sVal = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
     pp.minVolt_24(d) = sVal;
     idx = strfind(x, '$10V_AH');
     idxComma = regexp(x(idx:end), '\,');
-    sVal = str2num(x(idx+idxComma(1):idx+idxComma(2)-2));
+    sVal = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
     pp.minVolt_10(d) = sVal;
 
     % By Devices *****EXPERIMENTAL******
@@ -305,19 +308,19 @@ for d = loopNums
         % order of devices = pitch, roll, VBD apogee, VBD surf, VBD valve
         idx = strfind(x, '$DEVICE_SECS');
         idxComma = regexp(x(idx:end), '\,');
-        pSec    = str2num(x(idx+idxComma(1):idx+idxComma(2)-2));
-        rSec    = str2num(x(idx+idxComma(2):idx+idxComma(3)-2));
-        vSec1   = str2num(x(idx+idxComma(3):idx+idxComma(4)-2));
-        vSec2   = str2num(x(idx+idxComma(4):idx+idxComma(5)-2));
-        vSec3   = str2num(x(idx+idxComma(5):idx+idxComma(6)-2));
+        pSec    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
+        rSec    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
+        vSec1   = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
+        vSec2   = str2double(x(idx+idxComma(4):idx+idxComma(5)-2));
+        vSec3   = str2double(x(idx+idxComma(5):idx+idxComma(6)-2));
 
         idx = strfind(x, '$DEVICE_MAMPS');
         idxComma = regexp(x(idx:end), '\,');
-        pMamps    = str2num(x(idx+idxComma(1):idx+idxComma(2)-2));
-        rMamps    = str2num(x(idx+idxComma(2):idx+idxComma(3)-2));
-        vMamps1   = str2num(x(idx+idxComma(3):idx+idxComma(4)-2));
-        vMamps2   = str2num(x(idx+idxComma(4):idx+idxComma(5)-2));
-        vMamps3   = str2num(x(idx+idxComma(5):idx+idxComma(6)-2));
+        pMamps    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
+        rMamps    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
+        vMamps1   = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
+        vMamps2   = str2double(x(idx+idxComma(4):idx+idxComma(5)-2));
+        vMamps3   = str2double(x(idx+idxComma(5):idx+idxComma(6)-2));
 
         pp.pkJ(d,1) = pSec*pMamps*15/1000000;
         pp.rkJ(d,1) = rSec*rMamps*15/1000000;
@@ -353,9 +356,8 @@ for d = loopNums
     %% any errors?
     pp.ERRORS{d} = parseLogToBreak(x, '$ERRORS');
 
-end
+end % dives
 
 end
 
-%% nested functions
 
