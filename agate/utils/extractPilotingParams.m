@@ -1,22 +1,52 @@
 function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
-
+% EXTRACTPILOTINGPARAMS Compile various piloting-relevant values from log and nc files
+%
+%	Syntax:
+%		PP = EXTRACTPILOTINGPARAMS(CONFIG, PATH_BSLOCAL, PATH_STATUS, PRELOAD)
+%
+%	Description:
+%		Multi-part function that loops through all dive files (either from
+%		the start of mission if preload = 0, or for just new dives) and
+%		extracts various piloting-related parameters including times,
+%		locations, durations, input centers and target dive values, pam
+%		outputs, battery usage, and safety/error checks. The purpose of
+%		the table is to enable a pilot to look at what parameters were
+%		changed, and how those changes manifested in the gliders flight,
+%		from dive to dive. 
+%
+%	Inputs:
+%		CONFIG          global variable defined by agate mission 
+%                       configuration file
+%       path_bsLocal    path to local basestation files. Can be defined in
+%                       CONFIG file, or elsewhere. Suggested path is
+%                       fullfile(CONFIG.path.mission, 'basestationFiles')
+%       path_status     path to 'flightStatus' output folder used during
+%                       piloting. Can be defined in CONFIG file or on its
+%                       own. Suggested path is
+%                       fullfile(CONFIG.path.mission, 'flightStatus'). This
+%                       is used to load a previously made table to speed up
+%                       processing by only running new dives
+%       preload         optional argument to preload an existing table. 
+%                       Default is TRUE(1) to preload to save time (will
+%                       only process new dives. Change to FALSE (0) to
+%                       overwrite from scratch (used in development).
+%   
+%	Outputs:
+%		pp              piloting parameters table
+%
+%	Examples:
+%       pp = extractPilotingParams(CONFIG, path_bsLocal, path_status);
+%	See also
+%
+%
+%	Authors:
+%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%
+%	FirstVersion: 	06 July 2017
+%	Updated:        24 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% to calculate battery usage during the GoMex 2017 deployment
-% updated 07/06/17
-% S. Fregosi 2020 02 08 to work with PMAR
-% Updated 2020 03 04 to work with second PMAR SD card
-% updated 2022 04 05 for Hawaii deployment and eventually for AGATE public
-% release
 
-% Inputs:
-% CONFIG       deployment parameters - glider serial, deployment string, pmcard
-% path_bsLocal  location of locally saved basetation files
-% path_status   output directory to save status plots and tables
-% preload       optional argument to preload an existing table. default is
-%               TRUE(1) to preload to save time. change to FALSE (0) to
-%               overwrite from scratch (used in development)
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if nargin < 4
     preload = true;
 end
