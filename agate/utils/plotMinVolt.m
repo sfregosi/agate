@@ -33,7 +33,17 @@ function plotMinVolt(CONFIG, pp)
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-figNum = CONFIG.figNumList(6);
+figNum = CONFIG.plots.figNumList(6);
+% set position
+figPosition = [800   40    600    400];
+% overwrite if in config
+if isfield(CONFIG.plots, 'positions')
+    % is a position defined for this figure
+    fnIdx = find(figNum == CONFIG.plots.figNumList);
+    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
+        figPosition = CONFIG.plots.positions{fnIdx};
+    end
+end
 
 figure(figNum); clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
@@ -67,7 +77,7 @@ hold off;
 title(['Glider ' CONFIG.glider ' Minimum Battery Voltages']);
 set(gca, 'FontSize', 14)
 legend('24V', '10V')
-set(gcf, 'Position', [800   40    600    400])
+set(gcf, 'Position', figPosition)
 
 end
 

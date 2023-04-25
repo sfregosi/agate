@@ -29,7 +29,19 @@ function plotHumidityPressure(CONFIG, pp)
 %	FirstVersion: 	unknown
 %	Updated:        21 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figNum = CONFIG.figNumList(3);
+figNum = CONFIG.plots.figNumList(3);
+
+% set position
+figPosition = [1200    40    600    400];
+% overwrite if in config
+if isfield(CONFIG.plots, 'positions')
+    % is a position defined for this figure
+    fnIdx = find(figNum == CONFIG.plots.figNumList);
+    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
+        figPosition = CONFIG.plots.positions{fnIdx};
+    end
+end
+
 
 figure(figNum); clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
@@ -49,7 +61,7 @@ title(['Glider ' CONFIG.glider ' Internal Pressure']);
 set(gca, 'FontSize', 14)
 grid on;
 
-set(gcf, 'Position', [1200    40    600    400])
+set(gcf, 'Position', figPosition)
 
 end
 

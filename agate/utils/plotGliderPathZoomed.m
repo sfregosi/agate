@@ -49,8 +49,18 @@ end
 
 % set fig number so you can place it in one spot on your desktop and not
 % have to keep resizing, moving, etc.
-figNum = CONFIG.figNumList(5);
+figNum = CONFIG.plots.figNumList(5);
+% set position
 mapFigPosition = [100    100    800    600];
+% overwrite if in config
+if isfield(CONFIG.plots, 'positions')
+    % is a position defined for this figure
+    fnIdx = find(figNum == CONFIG.plots.figNumList);
+    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
+        mapFigPosition = CONFIG.plots.positions{fnIdx};
+    end
+end
+
 
 % get relative map extent based on last glider surface position
 % last surface position

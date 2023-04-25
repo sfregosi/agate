@@ -31,7 +31,17 @@ function plotVoltagePackUse(CONFIG, pp)
 %	Updated:        21 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figNum = CONFIG.figNumList(2);
+figNum = CONFIG.plots.figNumList(2);
+% set position
+figPosition = [600    40    600    400];
+% overwrite if in config
+if isfield(CONFIG.plots, 'positions')
+    % is a position defined for this figure
+    fnIdx = find(figNum == CONFIG.plots.figNumList);
+    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
+        figPosition = CONFIG.plots.positions{fnIdx};
+    end
+end
 
 figure(figNum); clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
@@ -48,9 +58,14 @@ grid on;
 hold off;
 
 title(['Glider ' CONFIG.glider ' Usage By Device']);
-set(gca, 'FontSize', 14)
-set(gcf, 'Position', [600    40    600    400])
+if CONFIG.pm.loggers == 1
+    legend('pitch motor', 'roll motor', 'vbd motor', 'pmar')
+else
+    legend('pitch motor', 'roll motor', 'vbd motor')
+end
 
-legend('pitch motor', 'roll motor', 'vbd motor', 'pmar')
+set(gca, 'FontSize', 14)
+set(gcf, 'Position', figPosition)
+
 end
 

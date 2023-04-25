@@ -44,8 +44,17 @@ end
 
 % set fig number so you can place it in one spot on your desktop and not
 % have to keep resizing, moving, etc.
-figNum = CONFIG.figNumList(4);
-mapFigPosition = [100    100    800    600];
+figNum = CONFIG.plots.figNumList(4);
+if isfield(CONFIG.plots, 'positions')
+    % is a position defined for this figure
+    fnIdx = find(figNum == CONFIG.plots.figNumList);
+    if ~isempty(CONFIG.plots.positions(fnIdx))
+        mapFigPosition = CONFIG.plots.positions{fnIdx};
+    end
+else
+    mapFigPosition = [100    100    800    600];
+end
+
 
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
     'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
