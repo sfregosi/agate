@@ -41,8 +41,8 @@ plot(timeDays, pp.rkJ, 'LineWidth', 2);
 plot(timeDays, pp.vkJ, 'LineWidth', 2);
 if CONFIG.pm.loggers == 1
     plot(timeDays, pp.PMAR_kJ, 'LineWidth', 2);
-    ylim([0 30]); ylabel('energy [kJ]');
 end
+ylim([0 30]); ylabel('energy [kJ]');
 xlim([0 max(timeDays)+5]); xlabel('days in mission');
 grid on;
 hold off;
