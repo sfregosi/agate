@@ -46,57 +46,68 @@ ssh2_conn = ssh2_config(CONFIG.bs.host, ...
 %% NC FILES
 [ssh2_conn, ncFileList] = ssh2_command(ssh2_conn, ...
     ['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.nc']);
-downloadFileType(ncFileList, path_bsLocal, ssh2_conn);
+downloadFileType(ncFileList, 'p', path_bsLocal, ssh2_conn);
 disp('**End of .nc files**');
 
 %% LOG FILES
 [ssh2_conn, logFileList] = ssh2_command(ssh2_conn, ...
     ['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.log']);
-downloadFileType(logFileList, path_bsLocal, ssh2_conn);
+downloadFileType(logFileList, 'p', path_bsLocal, ssh2_conn);
 disp('**End of .log files**');
 
 %% ENG FILES
 [ssh2_conn, engFileList] = ssh2_command(ssh2_conn, ...
     ['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.eng']);
-downloadFileType(engFileList, path_bsLocal, ssh2_conn);
+downloadFileType(engFileList, 'p', path_bsLocal, ssh2_conn);
 disp('**End of .eng files**');
 
 %% ASC FILES
 [ssh2_conn, ascFileList] = ssh2_command(ssh2_conn, ...
     ['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.asc']);
-downloadFileType(ascFileList, path_bsLocal, ssh2_conn);
+downloadFileType(ascFileList, 'p', path_bsLocal, ssh2_conn);
 disp('**End of .asc files**');
 
 %% DAT FILES
 [ssh2_conn, datFileList] = ssh2_command(ssh2_conn, ...
     ['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.dat']);
-downloadFileType(datFileList, path_bsLocal, ssh2_conn);
+downloadFileType(datFileList, 'p', path_bsLocal, ssh2_conn);
 disp('**End of .dat files**');
 
 %% PMAR FILES
 
-% if CONFIG.pmCard == 0 % skip these when writing to card 1
-[ssh2_conn, pmarFolderList] = ssh2_command(ssh2_conn, ...
-    ['ls -d /home/' CONFIG.glider '/pm*/']);
+if CONFIG.pm.loggers == 1
+    % if CONFIG.pmCard == 0 % skip these when writing to card 1
+    [ssh2_conn, pmarFolderList] = ssh2_command(ssh2_conn, ...
+        ['ls -d /home/' CONFIG.glider '/pm*/']);
 
-% check which already have been downloaded.
-for f = 1:length(pmarFolderList)
-    [ssh2_conn, pmarFileList] = ssh2_command(ssh2_conn, ...
-        ['ls ' pmarFolderList{f} '*.eng']);
-    if isempty(pmarFolderList{f})
-        continue
-    else
-        if exist(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)), 'dir')
-            % don't download it again
+    % check which already have been downloaded.
+    for f = 1:length(pmarFolderList)
+        [ssh2_conn, pmarFileList] = ssh2_command(ssh2_conn, ...
+            ['ls ' pmarFolderList{f} '*.eng']);
+        if isempty(pmarFolderList{f})
+            continue
         else
-            mkdir(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
-            ssh2_conn = scp_get(ssh2_conn, pmarFileList, fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
-            disp([pmarFolderList{f} ' now saved']);
+            if exist(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)), 'dir')
+                % don't download it again
+            else
+                mkdir(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
+                ssh2_conn = scp_get(ssh2_conn, pmarFileList, fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
+                disp([pmarFolderList{f} ' now saved']);
+            end
         end
     end
+    disp('**End of PMAR folders**');
+    % end
 end
-disp('**End of PMAR folders**');
-% end
+
+%% WISPR FILES
+
+if CONFIG.ws.loggers == 1
+    [ssh2_conn, wsFileList] = ssh2_command(ssh2_conn, ...
+        ['ls /home/' CONFIG.glider '/ws*']);
+    downloadFileType(wsFileList, 'ws', path_bsLocal, ssh2_conn);
+    disp('**End of wispr files**');
+end
 
 
 %% CMD FILES
@@ -200,7 +211,7 @@ end
 %% %%%%%%%%%%%%%%%%
 % NESTED FUNCTIONS
 % %%%%%%%%%%%%%%%%%
-function downloadFileType(fileList, path_bsLocal, ssh2_conn)
+function downloadFileType(fileList, matchExp, path_bsLocal, ssh2_conn)
 % check which files for that extension have already been downloaded and
 % download any that haven't. This works for .nc, .log, .eng., .asc, and
 % .dat
@@ -208,12 +219,17 @@ for f = 1:length(fileList)
     if isempty(fileList{f})
         return
     else
-        pIdx = regexp(fileList{f}, 'p');
-        if exist(fullfile(path_bsLocal, fileList{f}(pIdx:end)), 'file')
+        mIdx = regexp(fileList{f}, matchExp);
+        if exist(fullfile(path_bsLocal, fileList{f}(mIdx:end)), 'file')
             % don't download it again
         else
             ssh2_conn = scp_get(ssh2_conn, fileList{f}, path_bsLocal);
             disp([fileList{f} ' now saved']);
+            if strcmp(matchExp, 'ws')
+                % also unzip wispr files
+                [~, name, ext] = fileparts(fileList{f});
+                gunzip(fullfile(path_bsLocal, [name, ext]));
+            end
         end
     end
 end

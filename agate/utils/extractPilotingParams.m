@@ -286,6 +286,27 @@ for d = loopNums
         end
     end
 
+    %% wispr outputs
+    if CONFIG.ws.loggers == 1 % wispr pam system is active
+        % operating duration
+        idx = strfind(x, '$SENSOR_SECS');
+        idxComma = regexp(x(idx:end), '\,');
+        sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
+        pp.WS_SEC(d) = sVal;
+        pp.WS_MIN(d) = sVal/60;
+
+        % power draw
+        idx = strfind(x, '$SENSOR_MAMPS');
+        idxComma = regexp(x(idx:end), '\,');
+        sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
+        pp.WS_MAMPS(d) = sVal;
+
+        %         % kJ used ***EXPERIMENTAL***
+        %         pp.WS_kJ(d) = pp.WS_SEC(d)*pp.WS_MAMPS(d)*15/1000000;
+
+    end
+
+
     %% battery usage
     % voltages
     idx = strfind(x, '$24V_AH');

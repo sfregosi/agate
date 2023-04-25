@@ -1,5 +1,5 @@
 function plotBattUseFreeSpace(CONFIG, pp, A0_24V, tmd)
-% PLOTBATTUSEFREESPACE	Plot battery usage free space (acoustics) remaining 
+% PLOTBATTUSEFREESPACE	Plot battery usage free space (acoustics) remaining
 %
 %	Syntax:
 %		PLOTBATTUSEFREESPACE(CONFIG, PP, A0_24V, TMD)
@@ -13,7 +13,7 @@ function plotBattUseFreeSpace(CONFIG, pp, A0_24V, tmd)
 %
 %	Inputs:
 %		CONFIG      Mission/agate global configuration variable
-%       pp          Piloting parameters table created with 
+%       pp          Piloting parameters table created with
 %                   extractPilotingParams.m
 %       A0_24V      Value of the $A0_24V parameter with total available amp
 %                   hours for this glider (e.g., 310 for 15V system)
@@ -50,20 +50,22 @@ ylim([0 100]);ylabel('remaining battery [%]');
 xlim([0 tmd + 10]); xlabel('days in mission');
 
 co = colororder;
-yyaxis right
-uniqueCards = unique(pp.activeCard);
-lineStyles = {'-', ':', '-', '-.'}; % options for up to 4 cards.
-for f = 1:length(uniqueCards)
-    ac = uniqueCards(f);
-    % this card only
-    tmpTimeDays = timeDays(pp.activeCard == ac);
-    tmpFreeGB = pp.(['pmFree_' num2str(ac,'0%d') '_GB'])(pp.activeCard == ac);
-    plot(tmpTimeDays, tmpFreeGB, lineStyles{f}, 'LineWidth', 2)
-    ylim([0 500]);ylabel('free space [GB]');
-    yline(35, ':', '35 GB', 'Color', co(2,:), 'LineWidth', 1.5); % don't let free space drop below 7%/35 GB or it will stop recording
-    hold on;
+if CONFIG.pm.loggers == 1
+    yyaxis right
+    uniqueCards = unique(pp.activeCard);
+    lineStyles = {'-', ':', '-', '-.'}; % options for up to 4 cards.
+    for f = 1:length(uniqueCards)
+        ac = uniqueCards(f);
+        % this card only
+        tmpTimeDays = timeDays(pp.activeCard == ac);
+        tmpFreeGB = pp.(['pmFree_' num2str(ac,'0%d') '_GB'])(pp.activeCard == ac);
+        plot(tmpTimeDays, tmpFreeGB, lineStyles{f}, 'LineWidth', 2)
+        ylim([0 500]);ylabel('free space [GB]');
+        yline(35, ':', '35 GB', 'Color', co(2,:), 'LineWidth', 1.5); % don't let free space drop below 7%/35 GB or it will stop recording
+        hold on;
+    end
+    hold off;
 end
-hold off;
 
 grid on; title(['Glider ' CONFIG.glider ' Battery Usage and Free Space']);
 yyaxis left

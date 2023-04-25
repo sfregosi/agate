@@ -99,7 +99,7 @@ if bathyOn
     bathyFile = fullfile(CONFIG.path.shp, 'etopo2022', 'ETOPO_2022_v1_60s_N90W180_surface.tif');
     % if that's no good, prompt to select correct file
     if ~exist(bathyFile, 'file')
-        [fn, path] = uigetfile([CONFIG.path.shp '*.tif'], 'Select etop .tif file');
+        [fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etop .tif file');
         bathyFile = fullfile(path, fn);
     end
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
@@ -149,10 +149,10 @@ geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 
 % plot glider track from targets file
-targets = readTargetsFile(targetsFile); 
+[targets, ~] = readTargetsFile(CONFIG, targetsFile); 
 
 plotm(targets.lat, targets.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor', [0 0 0], ...
-    'MarkerFaceColor', [0 0 0], 'Color', [0 0 0])
+    'MarkerFaceColor', [0 0 0], 'Color', [0 0 0], 'HandleVisibility', 'off')
 textm(targets.lat, targets.lon, targets.name, 'FontSize', 10)
 
 h(1) = linem(targets.lat, targets.lon, 'LineWidth', 2, 'Color', [1 0.4 0],...

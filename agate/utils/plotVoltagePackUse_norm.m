@@ -6,8 +6,8 @@ function plotVoltagePackUse_norm(CONFIG, pp)
 %
 %	Description:
 %		Plot power draw by different devices, each separately. Includes
-%		VBD, pitch, and roll motors and PMAR. Power draw is normalized by 
-%       dive duration (in minutes) and plotted over time (days into 
+%		VBD, pitch, and roll motors and PMAR. Power draw is normalized by
+%       dive duration (in minutes) and plotted over time (days into
 %       mission)
 %
 %	Inputs:
@@ -29,7 +29,7 @@ function plotVoltagePackUse_norm(CONFIG, pp)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	24 April 2023
-%	Updated:        
+%	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 figNum = CONFIG.figNumList(7);
@@ -40,7 +40,9 @@ plot(timeDays, pp.pkJ./pp.diveDur_min, 'LineWidth', 2);
 hold on;
 plot(timeDays, pp.rkJ./pp.diveDur_min, 'LineWidth', 2);
 plot(timeDays, pp.vkJ./pp.diveDur_min, 'LineWidth', 2);
-plot(timeDays, pp.PMAR_kJ./pp.diveDur_min, 'LineWidth', 2);
+if CONFIG.pm.loggers == 1
+    plot(timeDays, pp.PMAR_kJ./pp.diveDur_min, 'LineWidth', 2);
+end
 ylim([0 0.3]); ylabel('energy [kJ/min]');
 xlim([0 max(timeDays)+5]); xlabel('days in mission');
 grid on;
