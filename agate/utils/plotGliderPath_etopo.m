@@ -50,7 +50,7 @@ mapFigPosition = [100    100    800    600];
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
     'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
 
-targets = readTargetsFile(targetsFile);
+[targets, ~] = readTargetsFile(CONFIG, targetsFile);
 
 %% set up figure
 figure(figNum);

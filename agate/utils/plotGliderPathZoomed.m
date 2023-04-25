@@ -62,7 +62,7 @@ newLonLim = [lastLon - 0.2 lastLon + 0.2];
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
     'BoundingBox', [newLonLim' newLatLim']);
 
-targets = readTargetsFile(targetsFile);
+[targets, ~] = readTargetsFile(CONFIG, targetsFile);
 
 %% set up figure
 figure(figNum);
