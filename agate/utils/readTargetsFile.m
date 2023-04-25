@@ -1,17 +1,56 @@
-function targets = readTargetsFile(targetsFile)
+function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
+% READTARGETSFILE	Read in Seaglider formatted targets file
+%
+%	Syntax:
+%		TARGETS = TREADTARGETSFILE(TARGETSFILE)
+%
+%	Description:
+%		Read in a Seaglider formatted targets file to a table variable.
+%		Fullfile name can be specified as input argument, or can be left
+%		blank to prompt to select targets file to read. 
+%
+%	Inputs:
+%       CONFIG          global CONFIG variable from agate mission
+%                       configuration file loaded with agate initialization
+%		targetsFile     fullfile path and name to Seaglider formatted
+%		                targets file to be read
+%
+%	Outputs:
+%		targets         table with waypoint names, latitudes, and
+%		                longitudes
+%       targetsFile     fullfile pathname either input or selected
+%
+%	Examples:
+%
+%	See also
+%       makeTargetsFile
+%
+%	Authors:
+%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%	Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
+%
+%	FirstVersion: 	unkonwn
+%	Updated:        25 April 2023
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%********* FIX THIS TO READ THE FILENAME!!!! *************
-% path_out = ['C:\Users\selene\Box\HDR-SOCAL-2018\piloting\' glider '\'];
+if nargin < 2
+    [fileName, filePath] = uigetfile([CONFIG.path.mission, '*.*'], ...
+        'Select targets file to read');
+    targetsFile = fullfile(filePath, fileName);
+    fprintf('targets file selected: %s\n', fileName);
+end
 
-% if strcmp(glider, 'sg607')
-% %     x = fileread([path_out 'targets_' glider '_offshore_20200206']);
-% %     x = fileread([path_out 'targets_' glider '_offshore_20200314']);
-%         x = fileread([path_out 'targets_' glider '_offshore_20200326']);
-% elseif strcmp(glider, 'sg639')
-%     x = fileread([path_out 'targets_' glider '_inshore']);
-% end
+% check that is fullfile name
+[path, ~, ~] = fileparts(targetsFile);
+if isempty(path)
+    fprintf(1, ['No filepath specified, re-enter targetsFile argument with '...
+        'path included. Exiting\n']);
+end
+
+% read in file
 x = fileread(targetsFile);
 
+% skip comment lines
 idx = regexp(x, '\/');
 idxBreak = regexp(x(idx(end):end), '\n');
 idxBreak = idxBreak + idx(end);
@@ -19,7 +58,6 @@ idxBreak = idxBreak + idx(end);
 numTargets = length(idxBreak);
 
 targets = table;
-warning off
 
 for t = 1:numTargets
     idxPeriod = regexp(x(idxBreak(t):end), '\.');
