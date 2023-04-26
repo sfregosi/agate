@@ -212,7 +212,7 @@ for d = loopNums
     end
 
     %% pmar outputs
-    if CONFIG.pm.loggers == 1 % pam system is active
+    if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1 % pam system is active
         % operating duration
         idx = strfind(x, '$SENSOR_SECS');
         idxComma = regexp(x(idx:end), '\,');
@@ -287,7 +287,7 @@ for d = loopNums
     end
 
     %% wispr outputs
-    if CONFIG.ws.loggers == 1 % wispr pam system is active
+    if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1 % wispr pam system is active
         % operating duration
         idx = strfind(x, '$SENSOR_SECS');
         idxComma = regexp(x(idx:end), '\,');

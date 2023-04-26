@@ -75,7 +75,7 @@ disp('**End of .dat files**');
 
 %% PMAR FILES
 
-if CONFIG.pm.loggers == 1
+if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
     % if CONFIG.pmCard == 0 % skip these when writing to card 1
     [ssh2_conn, pmarFolderList] = ssh2_command(ssh2_conn, ...
         ['ls -d /home/' CONFIG.glider '/pm*/']);
@@ -102,7 +102,7 @@ end
 
 %% WISPR FILES
 
-if CONFIG.ws.loggers == 1
+if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
     [ssh2_conn, wsFileList] = ssh2_command(ssh2_conn, ...
         ['ls /home/' CONFIG.glider '/ws*']);
     downloadFileType(wsFileList, 'ws', path_bsLocal, ssh2_conn);
