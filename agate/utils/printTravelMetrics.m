@@ -10,9 +10,6 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %		ground and along trackline), and estimates of remaining days to
 %		reach the end of the survey trackline.
 %
-%       Estimates of distance along trackline covered and remaining are
-%       conservative estimates, based on the previous waypoint. 
-%
 %	Inputs:
 %		CONFIG      global config variable from agate mission configuration
 %		            file and initlized by agate
@@ -46,7 +43,7 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	25 April 2023
-%	Updated:
+%	Updated:        25 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 tm = struct;
@@ -65,8 +62,10 @@ for f = 1:height(targets) - 1
         [targets.lat(f) targets.lon(f)]);
 end
 % sum
-tm.distRem = sum(targets.distToNext_km(ctIdx-1:end));
-tm.distCov = sum(targets.distToNext_km(1:ctIdx - 1));
+dist_remEst = sum(targets.distToNext_km(ctIdx:end));
+tm.distRem = dist_remEst + pp.distTGT_km(end);
+dist_covEst = sum(targets.distToNext_km(1:ctIdx));
+tm.distCov = dist_covEst - pp.distTGT_km(end);
 
 % days
 tm.missionDur = days(pp.diveEndTime(end) - pp.diveStartTime(1));
@@ -77,7 +76,6 @@ tm.avgTrkSpd = tm.distCov/tm.missionDur;
 
 % remaining days
 tm.missionRem = tm.distRem/tm.avgTrkSpd;
-
 
 if printOn == 1
     % print messagess
