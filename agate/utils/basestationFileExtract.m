@@ -30,12 +30,7 @@ function basestationFileExtract(CONFIG, path_bsLocal)
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:
-%       2020 02 07 SoCal 2020 deployment - work with PMAR - Card 0
-%       2020 03 04 to work around no output from PMAR Card 1; removed URL
-%       2022 04 05 partially set up CONFIG.bs approach, build in catches
-%           for empty dives
-%       2022 07 19 added in .dat files to be extracted, updated help text
+%   Updated:        26 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% access shell directly
