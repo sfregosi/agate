@@ -32,7 +32,7 @@ function plotBattUseFreeSpace(CONFIG, pp, A0_24V, tmd)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	unknown
-%	Updated:        23 April 2023
+%	Updated:        28 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -52,15 +52,27 @@ if isfield(CONFIG.plots, 'positions')
     end
 end
 
+% should this plot have a second axis (aka is there a PAM system?)
+if (isfield(CONFIG, 'pm') || isfield (CONFIG, 'ws')) && ...
+        (CONFIG.pm.loggers == 1 || CONFIG.ws.loggers == 1)
+    y2 = 1;
+    titleStr = ['Glider ' CONFIG.glider ' Battery Usage and Free Space'];
+else
+    y2 = 0;
+    titleStr = ['Glider ' CONFIG.glider ' Battery Usage'];
+end
 figure(figNum); clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
-yyaxis left
+
+if y2 == 1 % secondary y axis necessary
+    yyaxis left
+end
 plot(timeDays, (A0_24V - pp.ampHrConsumed)/A0_24V*100, 'LineWidth', 2)
-ylim([0 100]);ylabel('remaining battery [%]');
+ylim([0 100]); ylabel('remaining battery [%]');
 xlim([0 tmd + 10]); xlabel('days in mission');
 
 co = colororder;
-if CONFIG.pm.loggers == 1
+if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
     yyaxis right
     uniqueCards = unique(pp.activeCard);
     lineStyles = {'-', ':', '-', '-.'}; % options for up to 4 cards.
@@ -70,23 +82,40 @@ if CONFIG.pm.loggers == 1
         tmpTimeDays = timeDays(pp.activeCard == ac);
         tmpFreeGB = pp.(['pmFree_' num2str(ac,'0%d') '_GB'])(pp.activeCard == ac);
         plot(tmpTimeDays, tmpFreeGB, lineStyles{f}, 'LineWidth', 2)
-        ylim([0 500]);ylabel('free space [GB]');
+        ylim([0 500]); ylabel('free space [GB]');
         yline(35, ':', '35 GB', 'Color', co(2,:), 'LineWidth', 1.5); % don't let free space drop below 7%/35 GB or it will stop recording
         hold on;
     end
     hold off;
 end
 
-grid on; title(['Glider ' CONFIG.glider ' Battery Usage and Free Space']);
-yyaxis left
+% %%% under construction %%%
+% WISPR does not produce any output related to free space remaining on SD
+% cards, nor does it need us to manually switch the cards, so the right y
+% axis of free space isn't needed.
+% BUT WISPR and RPi power use is NOT incorporated into the glider's onboard
+% power use calculation so we need to also plot a revised one.
+% would like to do that on second y axis, but this needs work...
+if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+    yyaxis right
+    sgBatt = (A0_24V - pp.ampHrConsumed)/A0_24V*100;
+    wsBatt = pp.WS_SECl;
+    plot(timeDays, pp.WS_MIN, '-', 'LineWidth', 2);
+    ylim([0 100]); ylabel('WISPR adjusted battery [%]');
+end
+% %%%%%%%%
+
+grid on; title(titleStr);
+if y2 == 1 % secondary y axis necessary
+    yyaxis left
+end
 yline(30, '--', '30%', 'Color', co(1,:), 'LineWidth', 1.5); % 30% battery safety threshold
 if ~isempty(tmd)
     xline(tmd, 'k-.', {'target mission duration'}, 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left')
 end
+
 set(gca, 'FontSize', 14)
-
 set(gcf, 'Position', figPosition)
-
 
 end
 
