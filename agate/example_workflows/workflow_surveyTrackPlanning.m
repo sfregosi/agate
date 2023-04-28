@@ -30,7 +30,7 @@
 %	Updated:        25 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-agate agate_config_sg679_MHI_Apr2023.cnf
+agate agate_mission_config.cnf
 
 global CONFIG
 
