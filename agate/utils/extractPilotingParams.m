@@ -103,6 +103,9 @@ for d = loopNums
     if any(logFileNums == d) && any(ncFileNums == d) % do these files exist?
         x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
         ncFileName = fullfile(path_bsLocal, ncFileNames{ncFileNums == d});
+    elseif any(logFileNums == d) % at least log file exists
+        x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
+        ncFileName = [];
     else
         continue % move on to next loopNum dive and leave this row empty
     end
@@ -112,18 +115,42 @@ for d = loopNums
 
     % start and end time
     idxST = strfind(x,'$GPS2');
-    pp.diveStartTime(d,1) = datetime(x([idxST+6:idxST+18]), 'InputFormat', ...
+    pp.diveStartTime(d,1) = datetime(x(idxST+6:idxST+18), 'InputFormat', ...
         'ddMMyy,HHmmss');
     idxET = strfind(x,'$GPS,');
-    pp.diveEndTime(d,1) = datetime(x([idxET+5:idxET+17]), 'InputFormat', ...
+    pp.diveEndTime(d,1) = datetime(x(idxET+5:idxET+17), 'InputFormat', ...
         'ddMMyy,HHmmss');
 
+    % start lat/lon
+    idxBreak = regexp(x(idxST:end),'\n','once') + idxST;
+    idxComma = regexp(x(idxST:idxBreak), '\,');
+    sLatDM = x(idxST + idxComma(3):idxST + idxComma(4) - 2);
+    idxPer = regexp(sLatDM, '\.', 'once');
+    sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), str2double(sLatDM(idxPer-2:end))]);
+    sLonDM = x(idxST + idxComma(4):idxST + idxComma(5) - 2);
+    idxPer = regexp(x(idxST + idxComma(4):idxBreak), '\.', 'once');
+    sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), str2double(sLonDM(idxPer-2:end))]);
+    pp.startGPS{d} = [sLatDD sLonDD];
+
+    % end lat/lon
+    idxComma = regexp(x(idxET:end), '\,');
+    eLatDM = x(idxET + idxComma(3):idxET + idxComma(4) - 2);
+    idxPer = regexp(eLatDM, '\.', 'once');
+    eLatDD = degmin2decdeg([str2double(eLatDM(1:idxPer-3)), str2double(eLatDM(idxPer-2:end))]);
+    eLonDM = x(idxET + idxComma(4):idxET + idxComma(5) - 2);
+    idxPer = regexp(x(idxET + idxComma(4):end), '\.', 'once');
+    eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), str2double(eLonDM(idxPer-2:end))]);
+    pp.endGPS{d} = [eLatDD eLonDD];
+
     % actual start and end locations
-    latgps = ncread(ncFileName,'log_gps_lat');
-    longps = ncread(ncFileName,'log_gps_lon');
-    timegps = ncread(ncFileName,'log_gps_time');
-    pp.startGPS{d} = [latgps(2) longps(2)];
-    pp.endGPS{d} = [latgps(3) longps(3)];
+    % can also get info from nc file but nc files don't always exist
+    if ~isempty(ncFileName)
+        latgps = ncread(ncFileName,'log_gps_lat');
+        longps = ncread(ncFileName,'log_gps_lon');
+        %     timegps = ncread(ncFileName,'log_gps_time');
+        pp.startGPS{d} = [latgps(2) longps(2)];
+        pp.endGPS{d} = [latgps(3) longps(3)];
+    end
 
     % target name
     pp.tgtName{d} = parseLogToBreak(x, '$TGT_NAME') ;
@@ -135,13 +162,13 @@ for d = loopNums
     % target location
     idx = strfind(x, '$TGT_LATLONG');
     idxComma = regexp(x(idx:end), '\,');
-    idxPeriod = regexp(x(idx:end), '\.');
+    idxPer = regexp(x(idx:end), '\.');
     idxBreak = regexp(x(idx:end),'\n','once') + idx;
 
-    tgtLat = str2num(x(idx+idxComma(1):idx+idxPeriod(1)-4)) + ...
-        str2num(x(idx+idxPeriod(1)-3:idx+idxComma(2)-2))/60;
-    tgtLon = str2num(x(idx+idxComma(2):idx+idxPeriod(2)-4)) - ...
-        str2num(x(idx+idxPeriod(2)-3:idxBreak-2))/60; % western hemisphere specific.
+    tgtLat = str2double(x(idx+idxComma(1):idx+idxPer(1)-4)) + ...
+        str2double(x(idx+idxPer(1)-3:idx+idxComma(2)-2))/60;
+    tgtLon = str2double(x(idx+idxComma(2):idx+idxPer(2)-4)) - ...
+        str2double(x(idx+idxPer(2)-3:idxBreak-2))/60; % western hemisphere specific.
 
     pp.tgtLoc{d} = [tgtLat tgtLon];
     % put placeholder here and calculate below
@@ -151,7 +178,11 @@ for d = loopNums
     % actual duration
     pp.diveDur_min(d,1) = round(minutes(pp.diveEndTime(d,1) - pp.diveStartTime(d,1)));
     % actual depth
-    depth = ncread(ncFileName, 'eng_depth');
+    if ~isempty(ncFileName)
+        depth = ncread(ncFileName, 'eng_depth');
+    else
+        depth = 0;
+    end
     pp.maxDepth_m(d,1) = round(max(depth)/100);
     % actual distance over ground
     [~, pp.dog_km(d)] = lldistkm(pp.startGPS{d}, pp.endGPS{d});
@@ -186,17 +217,18 @@ for d = loopNums
     end
 
     %% pitch and speed actual values
+    if ~isempty(ncFileName)
+        vert_speed_gsm = ncread(ncFileName, 'vert_speed_gsm');
+        pp.vertSpeedDive(d) = mean(vert_speed_gsm(vert_speed_gsm < 0));
+        pp.vertSpeedClimb(d) = mean(vert_speed_gsm(vert_speed_gsm > 0));
 
-    vert_speed_gsm = ncread(ncFileName, 'vert_speed_gsm');
-    pp.vertSpeedDive(d) = mean(vert_speed_gsm(vert_speed_gsm < 0));
-    pp.vertSpeedClimb(d) = mean(vert_speed_gsm(vert_speed_gsm > 0));
+        eng_pitchAng = ncread(ncFileName, 'eng_pitchAng');
+        pp.pitchDive(d) = mean(eng_pitchAng(eng_pitchAng < 0));
+        pp.pitchClimb(d) = mean(eng_pitchAng(eng_pitchAng > 0));
 
-    eng_pitchAng = ncread(ncFileName, 'eng_pitchAng');
-    pp.pitchDive(d) = mean(eng_pitchAng(eng_pitchAng < 0));
-    pp.pitchClimb(d) = mean(eng_pitchAng(eng_pitchAng > 0));
-
-    pp.stwDive(d) = abs(pp.vertSpeedDive(d))/sind(abs(pp.pitchDive(d)));
-    pp.stwClimb(d) = abs(pp.vertSpeedClimb(d))/sind(abs(pp.pitchClimb(d)));
+        pp.stwDive(d) = abs(pp.vertSpeedDive(d))/sind(abs(pp.pitchDive(d)));
+        pp.stwClimb(d) = abs(pp.vertSpeedClimb(d))/sind(abs(pp.pitchClimb(d)));
+    end
 
     %% center parameters
     centersList = {'$C_VBD', '$C_PITCH', '$PITCH_GAIN', ...
@@ -370,9 +402,10 @@ for d = loopNums
     end
 
     %% depth average currents
-    pp.dac_east_cm_s(d) = ncread(ncFileName,'depth_avg_curr_east')*100;
-    pp.dac_north_cm_s(d) = ncread(ncFileName,'depth_avg_curr_north')*100;
-
+    if ~isempty(ncFileName)
+        pp.dac_east_cm_s(d) = ncread(ncFileName,'depth_avg_curr_east')*100;
+        pp.dac_north_cm_s(d) = ncread(ncFileName,'depth_avg_curr_north')*100;
+    end
 
     %% any errors?
     pp.ERRORS{d} = parseLogToBreak(x, '$ERRORS');
