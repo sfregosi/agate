@@ -32,7 +32,7 @@ function plotBattUseFreeSpace(CONFIG, pp, A0_24V, tmd)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	unknown
-%	Updated:        28 April 2023
+%	Updated:        2 May 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -40,7 +40,7 @@ if nargin < 3
     tmd = [];
 end
 
-figNum = CONFIG.plots.figNumList(1);
+figNum = CONFIG.plots.figNumList(3);
 % set position
 figPosition = [0    40    600   400];
 % overwrite if in config
@@ -56,10 +56,10 @@ end
 if (isfield(CONFIG, 'pm') || isfield (CONFIG, 'ws')) && ...
         (CONFIG.pm.loggers == 1 || CONFIG.ws.loggers == 1)
     y2 = 1;
-    titleStr = ['Glider ' CONFIG.glider ' Battery Usage and Free Space'];
+    titleStr = [CONFIG.glider ' Battery Usage and Free Space'];
 else
     y2 = 0;
-    titleStr = ['Glider ' CONFIG.glider ' Battery Usage'];
+    titleStr = [CONFIG.glider ' Battery Usage'];
 end
 figure(figNum); clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
@@ -114,7 +114,7 @@ if ~isempty(tmd)
     xline(tmd, 'k-.', {'target mission duration'}, 'LineWidth', 1.5, 'LabelHorizontalAlignment', 'left')
 end
 
-set(gca, 'FontSize', 14)
+set(gca, 'FontSize', 12)
 set(gcf, 'Position', figPosition)
 
 end

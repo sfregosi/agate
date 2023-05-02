@@ -27,9 +27,9 @@ function plotHumidityPressure(CONFIG, pp)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	unknown
-%	Updated:        21 April 2023
+%	Updated:        2 may 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figNum = CONFIG.plots.figNumList(3);
+figNum = CONFIG.plots.figNumList(2);
 
 % set position
 figPosition = [1200    40    600    400];
@@ -48,17 +48,19 @@ timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 subplot(211);
 plot(timeDays, pp.HUMID, '.');
 xlim([0 max(timeDays)+5]);
-ylabel('humidity');
-title(['Glider ' CONFIG.glider ' Humidity']);
-set(gca, 'FontSize', 14)
+xticklabels([]);
+ylabel('humidity [%]');
+% title(['Glider ' CONFIG.glider ' Humidity']);
+title([CONFIG.glider ' Humidity & Internal Pressure'], 'FontSize', 14)
+set(gca, 'FontSize', 12)
 grid on;
 
 subplot(212);
 plot(timeDays, pp.INTERNAL_PRESSURE, '.');
-xlim([0 max(timeDays)+5]); xlabel('Days in Mission');
-ylabel('internal pressure');
-title(['Glider ' CONFIG.glider ' Internal Pressure']);
-set(gca, 'FontSize', 14)
+xlim([0 max(timeDays)+5]); xlabel('days in mission');
+ylabel('pressure [psi]');
+% title(['Glider ' CONFIG.glider ' Internal Pressure']);
+set(gca, 'FontSize', 12)
 grid on;
 
 set(gcf, 'Position', figPosition)

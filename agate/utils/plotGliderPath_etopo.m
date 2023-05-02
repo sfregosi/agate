@@ -44,7 +44,7 @@ end
 
 % set fig number so you can place it in one spot on your desktop and not
 % have to keep resizing, moving, etc.
-figNum = CONFIG.plots.figNumList(4);
+figNum = CONFIG.plots.figNumList(1);
 if isfield(CONFIG.plots, 'positions')
     % is a position defined for this figure
     fnIdx = find(figNum == CONFIG.plots.figNumList);
@@ -60,6 +60,8 @@ states = shaperead('usastatehi', 'UseGeoCoords', true, ...
     'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
 
 [targets, ~] = readTargetsFile(CONFIG, targetsFile);
+
+currColor = '#29c481';
 
 %% set up figure
 figure(figNum);
@@ -126,7 +128,11 @@ geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 %% plot waypoints
 plotm(targets.lat, targets.lon, 'Marker', 'o', 'MarkerSize', 4, ...
     'MarkerEdgeColor', [0 0 0], 'MarkerFaceColor', [0 0 0], 'Color', [0 0 0])
-textm(targets.lat, targets.lon, targets.name, 'FontSize', 10)
+textm(targets.lat, targets.lon, targets.name, 'FontSize', 8)
+
+% highlight current waypoint
+plotm(pp.tgtLoc{end}, 'Marker', 'o', 'MarkerSize', 10, ...
+    'MarkerEdgeColor', currColor, 'LineWidth', 2)
 
 %% plot any landmarks
 
@@ -166,10 +172,11 @@ for d = 1:height(pp)
 end
 plotm(lat, lon, 'LineWidth', 2, 'Color', [1 0.4 0.2])
 plotm(lat, lon, '.y')
-plotm(lat(end), lon(end), '+g', 'MarkerSize', 10, 'LineWidth', 2)
+plotm(lat(end), lon(end), '+', 'Color', currColor, 'MarkerSize', 10, ...
+    'LineWidth', 2)
 
 title(sprintf('%s - %i dives completed', CONFIG.glider, height(pp)))
-textm(lat(end), lon(end), num2str(height(pp)));
+textm(lat(end), lon(end), num2str(height(pp)), 'Color', currColor);
 
 %% Plot depth-averaged velocity vectors for each dive
 scale = 5;

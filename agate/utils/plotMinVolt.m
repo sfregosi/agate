@@ -29,7 +29,7 @@ function plotMinVolt(CONFIG, pp)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	23 April 2023
-%	Updated:
+%	Updated:        2 May 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -74,9 +74,9 @@ yline(val, '--', '$MINV\_10V', 'Color', co(2,:));
 grid on;
 hold off;
 
-title(['Glider ' CONFIG.glider ' Minimum Battery Voltages']);
-set(gca, 'FontSize', 14)
-legend('24V', '10V')
+title([CONFIG.glider ' Minimum Battery Voltages']);
+set(gca, 'FontSize', 12)
+legend('24V', '10V', 'orientation', 'horizontal', 'location', 'south')
 set(gcf, 'Position', figPosition)
 
 end

@@ -29,10 +29,10 @@ function plotVoltagePackUse_norm(CONFIG, pp)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	24 April 2023
-%	Updated:
+%	Updated:        2 May 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figNum = CONFIG.plots.figNumList(7);
+figNum = CONFIG.plots.figNumList(5);
 % set position
 figPosition = [700    40    600    400];
 % overwrite if in config
@@ -61,12 +61,13 @@ hold off;
 
 title(['Glider ' CONFIG.glider ' Usage By Device - Normalized']);
 if CONFIG.pm.loggers == 1
-    legend('pitch motor', 'roll motor', 'vbd motor', 'pmar')
+    legend('pitch', 'roll', 'vbd', 'pmar', 'Location', 'EastOutside')
 else
-    legend('pitch motor', 'roll motor', 'vbd motor')
+    hleg = legend('pitch', 'roll', 'vbd', 'Location', 'EastOutside');
+    title(hleg, 'motors');
 end
 
-set(gca, 'FontSize', 14)
+set(gca, 'FontSize', 12)
 set(gcf, 'Position', figPosition)
 
 end

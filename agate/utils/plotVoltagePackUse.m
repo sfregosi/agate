@@ -28,10 +28,10 @@ function plotVoltagePackUse(CONFIG, pp)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	unknown
-%	Updated:        21 April 2023
+%	Updated:        2 May 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figNum = CONFIG.plots.figNumList(2);
+figNum = CONFIG.plots.figNumList(4);
 % set position
 figPosition = [600    40    600    400];
 % overwrite if in config
@@ -57,14 +57,15 @@ xlim([0 max(timeDays)+5]); xlabel('days in mission');
 grid on;
 hold off;
 
-title(['Glider ' CONFIG.glider ' Usage By Device']);
+title([CONFIG.glider ' Usage By Device']);
 if CONFIG.pm.loggers == 1
-    legend('pitch motor', 'roll motor', 'vbd motor', 'pmar')
+    legend('pitch', 'roll', 'vbd', 'pmar', 'Location', 'EastOutside')
 else
-    legend('pitch motor', 'roll motor', 'vbd motor')
+    hleg = legend('pitch', 'roll', 'vbd', 'Location', 'EastOutside');
+    title(hleg, 'motors');
 end
 
-set(gca, 'FontSize', 14)
+set(gca, 'FontSize', 12)
 set(gcf, 'Position', figPosition)
 
 end
