@@ -1,21 +1,25 @@
-function output = saveFigPositions(CONFIG, saveFileName)
+function positions = saveFigPositions(CONFIG, saveFileName)
 % SAVEFIGPOSITIONS	Save positions of current figures to specifiy in .cnf
 %
 %	Syntax:
-%		OUTPUT = SAVEFIGPOSITIONS(INPUT)
+%		POSITIONS = SAVEFIGPOSITIONS(CONFIG, SAVEFILENAME)
 %
 %	Description:
-%		Detailed description here, please
-%       Loads an existing file if there is one and updates it (will
-%       overwrite it!)
+%		Function to get the positions of all currently open figures and
+%		save these in a cell array called 'positions'
 %	Inputs:
-%		input 	describe, please
+%		CONFIG 	        Mission/agate global configuration variable
+%       saveFileName    Optional input argument as fullfile path and name
+%                       to save positions variable. If left empty, will
+%                       prompt user to choose path/filename. If path is not
+%                       specified, will prompt user to select save location
 %
 %	Outputs:
-%		output 	describe, please
+%		positions       cell array of figure positions for all currently 
+%                       opened agate figures
 %
 %	Examples:
-%
+%       saveFigPositions(CONFIG, 'C:/figPositions.mat');
 %	See also
 %
 %
