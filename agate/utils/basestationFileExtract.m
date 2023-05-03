@@ -99,7 +99,7 @@ end
 
 if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
     [ssh2_conn, wsFileList] = ssh2_command(ssh2_conn, ...
-        ['ls /home/' CONFIG.glider '/ws*']);
+        ['ls /home/' CONFIG.glider '/ws*.x*']);
     downloadFileType(wsFileList, 'ws', path_bsLocal, ssh2_conn);
     disp('**End of wispr files**');
 end
