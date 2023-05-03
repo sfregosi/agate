@@ -259,7 +259,7 @@ for d = loopNums
         pp.PMAR_MAMPS(d) = sVal;
 
         % kJ used ***EXPERIMENTAL***
-        pp.PMAR_kJ(d) = pp.PMAR_SEC(d)*pp.PMAR_MAMPS(d)*15/1000000;
+        pp.PMAR_kJ(d) = calckJ(pp.PMAR_SEC(d), pp.PMAR_MAMPS(d), 15);
 
         % find the current card
         if CONFIG.sgVer == 66.12 % active card is listed in log file
@@ -328,13 +328,14 @@ for d = loopNums
         pp.WS_MIN(d) = sVal/60;
 
         % power draw
-        idx = strfind(x, '$SENSOR_MAMPS');
-        idxComma = regexp(x(idx:end), '\,');
-        sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
-        pp.WS_MAMPS(d) = sVal;
+        %         idx = strfind(x, '$SENSOR_MAMPS');
+        %         idxComma = regexp(x(idx:end), '\,');
+        %         sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
+        %         pp.WS_MAMPS(d) = sVal;
+        pp.WS_MAMPS(d) = 33.3;
 
-        %         % kJ used ***EXPERIMENTAL***
-        %         pp.WS_kJ(d) = pp.WS_SEC(d)*pp.WS_MAMPS(d)*15/1000000;
+        % kJ used ***EXPERIMENTAL***
+        pp.WS_kJ(d) = calckJ(pp.WS_SEC(d), pp.WS_MAMPS(d), 15);
 
     end
 
@@ -375,11 +376,12 @@ for d = loopNums
         vMamps2   = str2double(x(idx+idxComma(4):idx+idxComma(5)-2));
         vMamps3   = str2double(x(idx+idxComma(5):idx+idxComma(6)-2));
 
-        pp.pkJ(d,1) = pSec*pMamps*15/1000000;
-        pp.rkJ(d,1) = rSec*rMamps*15/1000000;
-        vkJ1 = vSec1*vMamps1*15/1000000;
-        vkJ2 = vSec2*vMamps2*15/1000000;
-        vkJ3 = vSec3*vMamps3*15/1000000;
+        V = 15;
+        pp.pkJ(d,1) = calckJ(pSec, pMamps, V);
+        pp.rkJ(d,1) = calckJ(rSec, rMamps, V);
+        vkJ1 = calckJ(vSec1, vMamps1, V);
+        vkJ2 = calckJ(vSec2, vMamps2, V);
+        vkJ3 = calckJ(vSec3, vMamps3, V);
         pp.vkJ(d,1) = vkJ1 + vkJ2 + vkJ3;
 
     elseif CONFIG.sgVer == 67.00

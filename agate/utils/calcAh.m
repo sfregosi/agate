@@ -1,4 +1,4 @@
-function Ah= calcAh(secs, mAmps, Vs)
+function Ah = calcAh(secs, mAmps, Vs)
 % CALCAHBYDEVICE	calculate Ah from seconds and mAmps
 %	Syntax:
 %		OUTPUT = CALCAH(SECS, MAMPS, VS)
@@ -18,7 +18,7 @@ function Ah= calcAh(secs, mAmps, Vs)
 %	Examples:
 %       Ah = calcAh(120, 18);
 %	See also
-%
+%       calckJ
 %
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>

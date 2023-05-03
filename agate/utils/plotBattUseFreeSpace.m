@@ -62,6 +62,7 @@ else
     titleStr = [CONFIG.glider ' Battery Usage'];
 end
 figure(figNum); clf;
+co = colororder;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 
 if y2 == 1 % secondary y axis necessary
@@ -71,8 +72,9 @@ plot(timeDays, (A0_24V - pp.ampHrConsumed)/A0_24V*100, 'LineWidth', 2)
 ylim([0 100]); ylabel('remaining battery [%]');
 xlim([0 tmd + 10]); xlabel('days in mission');
 
-co = colororder;
+% if PMAR is being used, plot free space remaining on secondary y axis
 if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
+    titleStr = [CONFIG.glider ' Battery Usage and Free Space'];
     yyaxis right
     uniqueCards = unique(pp.activeCard);
     lineStyles = {'-', ':', '-', '-.'}; % options for up to 4 cards.
@@ -89,6 +91,7 @@ if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
     hold off;
 end
 
+% if WISPR is being used plot adjusted battery consumption on secondary y
 % %%% under construction %%%
 % WISPR does not produce any output related to free space remaining on SD
 % cards, nor does it need us to manually switch the cards, so the right y
@@ -97,10 +100,14 @@ end
 % power use calculation so we need to also plot a revised one.
 % would like to do that on second y axis, but this needs work...
 if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+    titleStr = [CONFIG.glider ' Battery Usage Reported and Adjusted'];
     yyaxis right
-    sgBatt = (A0_24V - pp.ampHrConsumed)/A0_24V*100;
-    wsBatt = pp.WS_SECl;
-    plot(timeDays, pp.WS_MIN, '-', 'LineWidth', 2);
+    sgAh = pp.ampHrConsumed; % pulling from log
+    wsAh = calcAh(pp.WS_SEC, pp.WS_MAMPS, 15);
+    wsAhSum = sum(wsAh);
+    adjAh = sgAh + wsAhSum;
+    asPercent = (A0_24V - adjAh)/A0_24V*100;
+    plot(timeDays, asPercent, '-', 'LineWidth', 2);
     ylim([0 100]); ylabel('WISPR adjusted battery [%]');
 end
 % %%%%%%%%
