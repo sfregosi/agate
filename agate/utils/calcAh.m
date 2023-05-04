@@ -1,4 +1,4 @@
-function Ah = calcAh(secs, mAmps, Vs)
+function Ah = calcAh(secs, mAmps)
 % CALCAHBYDEVICE	calculate Ah from seconds and mAmps
 %	Syntax:
 %		OUTPUT = CALCAH(SECS, MAMPS, VS)
@@ -25,7 +25,7 @@ function Ah = calcAh(secs, mAmps, Vs)
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	26 April 2023
-%	Updated:
+%	Updated:        4 May 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % full equation
