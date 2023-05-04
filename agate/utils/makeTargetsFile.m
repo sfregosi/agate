@@ -1,15 +1,15 @@
 function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod)
-% MAKETARGETSFILE	One-line description here, please
+% MAKETARGETSFILE	create properly formatted targets text file from kml
 %
 %	Syntax:
-%		OUTPUT = MAKETARGETSFILE(INPUT)
+%		TARGETSOUT = MAKETARGETSFILE(CONFIG, KMLFILE, WPMETHOD)
 %
 %	Description:
 %		Detailed description here, please
 %	Inputs:
 %		CONFIG      agate mission configuration settings, loaded during
 %		            agate initialization. Minimum fields are CONFIG.glider,
-%		            CONFIG.mission, CONFIG.path.mission,
+%		            CONFIG.mission, CONFIG.path.mission
 %       kmlFile     fullfile path to kml path file to be read in, if left
 %                   blank, will prompt to select file
 %       wpMethod    Method to define waypoint names, either 
