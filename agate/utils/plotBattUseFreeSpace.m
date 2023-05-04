@@ -121,6 +121,4 @@ end
 set(gca, 'FontSize', 12)
 set(gcf, 'Position', figPosition)
 
-
-
 end
