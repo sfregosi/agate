@@ -1,36 +1,35 @@
 function setCONFIG(missionCnf)
-% SETCONFIG	Set up global CONFIG structure for agate
+%SETCONFIG Set up global CONFIG structure for agate
 %
-%	Syntax:
-%		CONFIG = SETCONFIG
+%   Syntax:
+%      CONFIG = SETCONFIG
 %
-%	Description:
+%   Description:
 %       Called from the agate initialization. Sets the default
 %       configuration parameters and updates according to any .cnf files
 %       present in the settings folder
 %
-%	Inputs:
-%		input 	none
+%   Inputs:
+%      input    none
 %
-%	Outputs:
-%		CONFIG  global structure containing all the user-set configurations
-%       such as paths, basestation login info, etc
+%   Outputs:
+%       CONFIG  Global structure containing all the user-set configurations
+%               such as paths, basestation login info, etc
 %
-%	Examples:
+%   Examples:
 %
-%	See also
+%   See also AGATE
 %
-%
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
-%
-%		This function is based off the 'initparams' function from Triton,
-%		created by S. Wiggins and available at
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%       This function is based off the 'initparams' function from Triton,
+%       created by S. Wiggins and available at
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
-%	FirstVersion: 	06 April 2023
-%	Updated:        14 April 2023
+%   FirstVersion: 	06 April 2023
+%   Updated:        14 April 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

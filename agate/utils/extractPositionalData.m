@@ -1,49 +1,49 @@
 function [gpsSurfT, locCalcT] = extractPositionalData(CONFIG, plotOn)
-% EXTRACTPOSITIONALDATA	Extracts glider location data from nc files
+%EXTRACTPOSITIONALDATA	Extracts glider location data from nc files
 %
-%	Syntax:
-%		[gpsSurfT, locCalcT] = EXTRACTPOSITIONALDATA(CONFIG, SAVEON)
+%   Syntax:
+%	    [gpsSurfT, locCalcT] = EXTRACTPOSITIONALDATA(CONFIG, plotOn)
 %
-%	Description:
-%		Extracts glider positional data from basestation-generated .nc
-%		files and compiles into two tables, one with just GPS/surface
-%		locations and one with dead-reckoned locations underwater. Also
-%		includes various metrics related to speed and currents
+%   Description:
+%	    Extracts glider positional data from basestation-generated .nc
+%	    files and compiles into two tables, one with just GPS/surface
+%	    locations and one with dead-reckoned locations underwater. Also
+%	    includes various metrics related to speed and currents
 %
-%	Inputs:
-%		CONFIG  agate mission configuration file with relevant mission and
-%		        glider information. Minimum CONFIG fields are 'glider',
-%		        'mission', 'path.mission'
-%       plotOn  optional argument to plot basic maps of outputs for
-%               checking; (1) to plot, (0) to not plot
+%   Inputs:
+%       CONFIG    agate mission configuration file with relevant mission and
+%                 glider information. Minimum CONFIG fields are 'glider',
+%                 'mission', 'path.mission'
+%       plotOn    optional argument to plot basic maps of outputs for
+%                 checking; (1) to plot, (0) to not plot
 %
-%	Outputs:
-%		gpsSurfT    Table with glider surface locations, from GPS, one per
-%		            dive, and includes columns for dive start and end
-%		            time/lat/lon, dive duration, depth average current,
-%                   average speed over ground as northing and easting,
-%                   calculated by the hydrodynamic model or the glide slope
-%                   model
-%       locCalcT    Table with glider calculated locations underwater every
-%                   science file sampling interval. This gives more
-%                   instantaneous flight details and includes columns
-%                   for time, lat, lon from hydrodynamic and glide slope
-%                   models, displacement from both models, temperature,
-%                   salinity, density, sound speed, glider vertical and
-%                   horizontal speed (from both models), pitch, glide
-%                   angle, and heading
+%   Outputs:
+%       gpsSurfT  Table with glider surface locations, from GPS, one per
+%                 dive, and includes columns for dive start and end
+%                 time/lat/lon, dive duration, depth average current,
+%                 average speed over ground as northing and easting,
+%                 calculated by the hydrodynamic model or the glide slope
+%                 model
+%       locCalcT  Table with glider calculated locations underwater every
+%                 science file sampling interval. This gives more
+%                 instantaneous flight details and includes columns
+%                 for time, lat, lon from hydrodynamic and glide slope
+%                 models, displacement from both models, temperature,
+%                 salinity, density, sound speed, glider vertical and
+%                 horizontal speed (from both models), pitch, glide
+%                 angle, and heading
 %
-%	Examples:
+%   Examples:
 %
-%	See also
+%   See also
 %
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%    FirstVersion:   03 September 2019
+%    Updated:        21 April 2023
 %
-%	FirstVersion: 	03 September 2019
-%	Updated:        21 April 2023
+%    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

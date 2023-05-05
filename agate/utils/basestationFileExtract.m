@@ -1,20 +1,22 @@
 function basestationFileExtract(CONFIG, path_bsLocal)
-% BASESTATIONFILEEXTRACT  download basestation files locally via SSH
+%BASESTATIONFILEEXTRACT  download basestation files locally via SSH
 %
 %   Syntax:
-%       basestationFileExtract_PMAR(CONFIG, path_bsLocal)
+%      BASESTATIONFILEEXTRACT(CONFIG, path_bsLocal)
 %
 %   Description:
 %       Function to extract/download variety of glider piloting files
 %       uploaded to the basestation, using SSH protocol. Currently extracts
 %       .nc, .log, .eng, .asc, .dat, (glider data files); pm folders
 %       (acoustic outputs);and pdos and cmd files (glider piloting files).
+%
 %       Only downloads new files (that haven't been previously downloaded)
 %
 %   Inputs:
-%       CONFIG          deployment parameters - glider serial num, survey ID, pmcard
-%       path_bsLocal    directory of where to save the downloaded files
-%                       locally, typically set to path_bsFilesLocal =
+%       CONFIG          Deployment parameters - glider serial num, survey 
+%                       ID, pmcard
+%       path_bsLocal    Path to directory to save the downloaded files
+%                       locally, e.g., path_bsLocal =
 %                       fullfile(path_glider,'basestationFiles');
 %
 %   Outputs:
@@ -26,11 +28,12 @@ function basestationFileExtract(CONFIG, path_bsLocal)
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
 %   Updated:        26 April 2023
+%
+%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% access shell directly

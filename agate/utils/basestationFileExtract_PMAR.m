@@ -27,7 +27,6 @@ function basestationFileExtract_PMAR(dPARAMS, bsConfig, path_bsLocal)
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
@@ -37,6 +36,8 @@ function basestationFileExtract_PMAR(dPARAMS, bsConfig, path_bsLocal)
 %       2022 04 05 partially set up bsConfig approach, build in catches
 %           for empty dives
 %       2022 07 19 added in .dat files to be extracted, updated help text
+%
+%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% access shell directly

@@ -1,49 +1,50 @@
 function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
-% PRINTTRAVELMETRICS	One-line description here, please
+%PRINTTRAVELMETRICS	Print out summary of distances/days traveled/remaining
 %
-%	Syntax:
-%		PRINTTRAVELMETRICS(CONFIG, pp, targetsFile)
+%   Syntax:
+%      PRINTTRAVELMETRICS(CONFIG, pp, targetsFile)
 %
-%	Description:
-%		Summarize and print out several metrics about mission distances
-%		covered (over ground and along trackline), average speeds (over
-%		ground and along trackline), and estimates of remaining days to
-%		reach the end of the survey trackline.
+%   Description:
+%        Summarize and print out several metrics about mission distances
+%        covered (over ground and along trackline), average speeds (over
+%        ground and along trackline), and estimates of remaining days to
+%        reach the end of the survey trackline.
 %
-%	Inputs:
-%		CONFIG      global config variable from agate mission configuration
-%		            file and initlized by agate
-%       pp          piloting parameters table created with
+%   Inputs:
+%       CONFIG      Global config variable from agate mission configuration
+%                   file and initlized by agate
+%       pp          Piloting parameters table created with
 %                   extractPilotingParams
-%       targetsFile fullfile path to targets file to be used in
+%       targetsFile Fullfile path to targets file to be used in
 %                   calculations for trackline distance covered and
 %                   remaining
-%       printOn     optional argument to print (1) summary or not print (0)
+%       printOn     Optional argument to print (1) summary or not print (0)
 %                   default is to print
 %
-%	Outputs:
-%		tm      structure of travel metrics includes 
-%               distTot     total distance over ground in km
-%               distCov     total distance along trackline in km
-%               distRem     trackline distance remaining in km
-%               missionDur  total mission duration in days
-%               avgSpd      average speed over ground in km/day
-%               avgTrkSpd   average speed along trackline in km/day
-%               daysRem     estimated days remaining to finish trackline
+%   Outputs:
+%       tm          structure of travel metrics includes 
+%                   distTot     total distance over ground in km
+%                   distCov     total distance along trackline in km
+%                   distRem     trackline distance remaining in km
+%                   missionDur  total mission duration in days
+%                   avgSpd      average speed over ground in km/day
+%                   avgTrkSpd   average speed along trackline in km/day
+%                   daysRem     estimated days remaining to finish trackline
 %       also prints out lines of text
 %
-%	Examples:
+%   Examples:
 %       tm = printTravelMetrics(CONFIG, pp, targetsFile, 1);
 %
-%	See also
+%   See also
 %
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	25 April 2023
-%	Updated:        25 April 2023
+%   FirstVersion:   25 April 2023
+%   Updated:        25 April 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 tm = struct;

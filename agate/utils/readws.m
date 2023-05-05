@@ -1,39 +1,39 @@
 function ws = readws(wsFile)
-% READWS    Read in wispr generated ws file and extract summary info
+%READWS Read in wispr generated ws file and extract summary info
 %
-%	Syntax:
-%		WS = READWS(WSFILE)
+%   Syntax:
+%       ws = READWS(WSFILE)
 %
-%	Description:
-%		Read in ws****az files created by WISPR and downloaded/unzipped
-%		from the basestation, then extract summary info on what times were
-%		analyzed and how long processing took. This is used for general
-%		monitoring of WISPR operation and to estimate power draw by the
-%		RPi system.
+%   Description:
+%       Read in ws****az files created by WISPR and downloaded/unzipped
+%       from the basestation, then extract summary info on what times were
+%       analyzed and how long processing took. This is used for general
+%       monitoring of WISPR operation and to estimate power draw by the
+%       RPi system.
 %
 %       Future functionality should also extract encounter information
 %
-%	Inputs:
+%   Inputs:
 %       wsFile  Optional argument specifying a file to read. If none
 %               specified, will prompt for file selection; if not a
 %               fullfile name with path, will prompt to select a file
 %
-%	Outputs:
-%		ws      Structure with summary info including analysis start, stop,
-%		        duration, and processing time
+%   Outputs:
+%       ws      Structure with summary info including analysis start, stop,
+%               duration, and processing time
 %
-%	Examples:
+%   Examples:
 %       readws(CONFIG, 'ws0001az');
 %
-%	See also
-%       readpa
+%   See also READPA
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	04 May 2023
-%	Updated:
+%   FirstVersion:   04 May 2023
+%   Updated:
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % if CONFIG exists, use it to set up paths for file selection

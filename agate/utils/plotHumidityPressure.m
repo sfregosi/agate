@@ -1,33 +1,33 @@
 function plotHumidityPressure(CONFIG, pp)
-% PLOTHUMIDITYPRESSURE	Plot 2-panel fig with humidity and pressure over time 
+%PLOTHUMIDITYPRESSURE	Plot 2-panel fig with humidity and pressure over time 
 %
-%	Syntax:
-%		PLOTHUMIDITYPRESSURE(CONFIG, PP)
+%   Syntax:
+%       PLOTHUMIDITYPRESSURE(CONFIG, pp)
 %
-%	Description:
-%		Plot humidity and pressure as measured in the pressure housing, as
-%		a 2-panel figure, over time (days into mission) with one data point
-%		per dive
+%   Description:
+%       Plot humidity and pressure as measured in the pressure housing, as
+%       a 2-panel figure, over time (days into mission) with one data point
+%       per dive
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
-%       pp          Piloting parameters table created with
-%                   extractPilotingParams.m
+%   Inputs:
+%       CONFIG  Mission/agate global configuration variable
+%       pp      Piloting parameters table created with extractPilotingParams.m
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
+%   Examples:
 %       plotHumidityPressure(CONFIG, pp639)
-%	See also
-%       extractPilotingParams
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   See also EXTRACTPILOTINGPARAMS
 %
-%	FirstVersion: 	unknown
-%	Updated:        2 may 2023
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   FirstVersion:   unknown
+%   Updated:        2 May 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figNum = CONFIG.plots.figNumList(2);
 

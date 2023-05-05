@@ -1,16 +1,16 @@
 function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
-% PLOTGLIDERPATHZOOMED	Plot zoomed in view of glider path on bathymetry 
+%PLOTGLIDERPATHZOOMED	Plot zoomed in view of glider path on bathymetry 
 %
-%	Syntax:
-%		PLOTGLIDERPATHZOOMED(CONFIG, PP, TARGETSFILE, BATHYFILE)
+%   Syntax:
+%       PLOTGLIDERPATHZOOMED(CONFIG, pp, targetsFile, bathyFile)
 %
-%	Description:
-%		Zoomed in map view of the glider's most recent dive, with the most
-%		recent dive in the center of the plot and the lat/lon lims based on
-%		it's last surface location, showing about 20 km in all directions. 
+%   Description:
+%       Zoomed in map view of the glider's most recent dive, with the most
+%       recent dive in the center of the plot and the lat/lon lims based on
+%       it's last surface location, showing about 20 km in all directions. 
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
+%   Inputs:
+%       CONFIG      Mission/agate global configuration variable
 %       pp          Piloting parameters table created with
 %                   extractPilotingParams.m
 %       targetsFile Fullfile reference to the text file targetsFile
@@ -18,13 +18,14 @@ function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
 %                   either specify the fullfile (CONFIG.map.bathyFile) or 
 %                   set to 0 to not plot bathymetry
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
+%   Examples:
 %       plotGliderPathZoomed(CONFIG, pp639, targetsFile, CONFIG.map.bathyFile)
-%	See also
-%       extractPilotingParams
+%
+%   See also EXTRACTPILOTINGPARAMS
+%
 %   TO DO
 %       - for now, this does not show patches for land/states because that
 %       does not allow to reproject (not sure why but I think because there
@@ -33,12 +34,13 @@ function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
 %       that now would have data points outside the lims. Not sure I can do
 %       anything about this but would like to try to fix. 
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	16 April 2023
-%	Updated:        
+%   FirstVersion:   16 April 2023
+%   Updated:        
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 4

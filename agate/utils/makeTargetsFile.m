@@ -1,41 +1,48 @@
 function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod)
-% MAKETARGETSFILE	create properly formatted targets text file from kml
+%MAKETARGETSFILE Create properly formatted targets text file from kml
 %
-%	Syntax:
-%		TARGETSOUT = MAKETARGETSFILE(CONFIG, KMLFILE, WPMETHOD)
+%   Syntax:
+%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, wpMethod)
 %
-%	Description:
-%		Detailed description here, please
-%	Inputs:
-%		CONFIG      agate mission configuration settings, loaded during
-%		            agate initialization. Minimum fields are CONFIG.glider,
-%		            CONFIG.mission, CONFIG.path.mission
-%       kmlFile     fullfile path to kml path file to be read in, if left
-%                   blank, will prompt to select file
-%       wpMethod    Method to define waypoint names, either 
-%                   'file' = load text file with names, will prompt to
-%                           select file
-%                   'manual' = manually type in all waypoints in command
-%                           window
-%                   'prefix' = will automatically generate alpha-numeric
-%                           waypoints based on string entered as wpMethod
-%                           e.g., 'LW' will generate 'LW01', 'LW02', etc
-%                           and will end with RECV
+%   Description:
+%       Create a text file properly formatted as a Seaglider targets file,
+%       from a saved path created in Google Earth and saved as a .kml. The
+%       text file contains relevant header information at the top. Waypoint
+%       names can be provided as an additional text document, can be
+%       manually input in the Command Window, or a prefix can be specified
+%       as the last argument and a sequential alphanumeric waypoint labels
+%       will be generated from the prefix
 %
-%	Outputs:
-%		targetsOut  fullpath filename of newly created targets file
+%   Inputs:
+%       CONFIG     agate mission configuration settings, loaded during
+%                  agate initialization. Minimum fields are CONFIG.glider,
+%                  CONFIG.mission, CONFIG.path.mission
+%       kmlFile    Fullfile path to kml path file to be read in, if left
+%                  blank, will prompt to select file
+%       wpMethod   Method to define waypoint names, either
+%                     'file' = load text file with names, will prompt to
+%                            select file
+%                     'manual' = manually type in all waypoints in command
+%                             window
+%                     'prefix' = will automatically generate alpha-numeric
+%                             waypoints based on string entered as wpMethod
+%                             e.g., 'LW' will generate 'LW01', 'LW02', etc
+%                             and will end with RECV
 %
-%	Examples:
+%   Outputs:
+%       targetsOut Fullpath filename of newly created targets file
 %
-%	See also
+%   Examples:
 %
+%   See also MAPPLANNEDTRACK
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	23 April 2023
-%	Updated:
+%   FirstVersion:   23 April 2023
+%   Updated:        04 May 2023
+%
+%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global CONFIG
@@ -75,8 +82,9 @@ degMinLons = decdeg2degmin(lons);
 
 % define waypoint names - 3 options
 % (1) 'file', load text file with names
-% (2) 'prefix', automatically generate as prefix + numeric
-% (3) manually type in command window
+% (2) 'manual', prompted to manually type in command window
+% (3) use prefix string specified in function call (e.g., 'WP') and add
+% numbers in order after (e.g., WP01, WP02, RECV)
 
 switch wpMethod
     case 'file'  % (1) Select .txt file of waypoint names
@@ -106,27 +114,23 @@ switch wpMethod
         wpNames{f + 1} = 'RECV';
 end
 
-% wpNames = {'WW01', 'WWaa', 'WW02', 'WWab', 'WW03', 'WW04', 'WW05', 'WWac', ...
-%     'WW06', 'WWad', 'WW07', 'WWae', 'WW08', 'WWaf', 'WW09', 'WWag', 'WW10', ...
-%     'WWah', 'WW11', 'WWai', 'WW12', 'WWaj', 'WW13', 'WWak', 'WW14', 'WWal', ...
-%     'WW15', 'WWam', 'WWan', 'WW16', 'WWao', 'WWap', 'WW17', 'WWaq', 'WWar', ...
-%     'RECV'}';
-
-
 % now write it into a targets file
 % example header text
 % / Targets file for mission sg639_MHI_Apr2023
-% / Deployment will take place at WW01
+% / Created on 2023-05-04 10:55:00 UTC
+% / Deployment will take place at WW01, recovery at RECV
 % / template WWxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=2000 goto=WWzz
-% / radius set to 2000 m
 
 targetsOut = fullfile(kmlPath, ['targets_' kmlName]);
 fid = fopen(targetsOut, 'w');
 
-fprintf(fid, '%s %s_%s\n', '/ Targets file for mission', CONFIG.glider, CONFIG.mission);
-fprintf(fid, '%s %s%s\n', '/ Deployment will take place at', wpNames{1}, ', recovery at RECV');
-fprintf(fid, '%s\n', '/ template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=2000 goto=WPzz');
-fprintf(fid, '%s\n', '/ radius set to 2000 m');
+fprintf(fid, '%s %s_%s\n', '/ Targets file for mission', CONFIG.glider, ...
+    CONFIG.mission);
+fprintf(fid, '%s %s %s\n', '/ Created on', string(datetime('now', ...
+    'TimeZone', 'UTC', 'Format', 'yyyy-MM-dd HH:mm')), 'UTC');
+fprintf(fid, '%s %s%s\n', '/ Deployment will take place at', wpNames{1}, ...
+    ', recovery at RECV');
+fprintf(fid, '%s\n', '/ template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=XXXX goto=WPzz');
 
 for f = 1:length(wpNames)-1
     fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=2000 goto=%s\n', ...
@@ -136,6 +140,5 @@ f = length(wpNames);
 fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=2000 goto=%s', ...
     wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), degMinLons(f,2), wpNames{f});
 fclose(fid);
-
 
 end

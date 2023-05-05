@@ -1,35 +1,37 @@
 function plotMinVolt(CONFIG, pp)
-% PLOTMINVOLT	Plot minimum reported battery voltage(s) over time
+%PLOTMINVOLT   Plot minimum reported battery voltage(s) over time
 %
-%	Syntax:
-%		PLOTMINVOLT(CONFIG, PP)
+%   Syntax:
+%       PLOTMINVOLT(CONFIG, pp)
 %
-%	Description:
-%		Plot of minimum battery voltage(s) reported on each dive, over
+%   Description:
+%       Plot of minimum battery voltage(s) reported on each dive, over
 %       time.
+%       
 %       For Rev B gliders, both 10V and 24V battery voltage is
 %       plotted, even if it's a 2-15V glider.
-%		For Rev E gliders, a single voltage is reported and plotted
+%       
+%       For Rev E gliders, a single voltage is reported and plotted
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
-%       pp          Piloting parameters table created with
-%                   extractPilotingParams.m
+%   Inputs:
+%       CONFIG   Mission/agate global configuration variable
+%       pp       Piloting parameters table created with
+%                extractPilotingParams.m
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
 %	Examples:
 %
-%	See also
-%       extractPilotingParams
+%	See also EXTRACTPILOTINGPARAMS
 %
 %	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	23 April 2023
-%	Updated:        2 May 2023
+%   FirstVersion:   23 April 2023
+%   Updated:        2 May 2023
+% 
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

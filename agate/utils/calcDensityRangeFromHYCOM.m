@@ -1,43 +1,45 @@
 function [rho_min, rho_max, dt] = calcDensityRangeFromHYCOM(CONFIG, HYCOMFileName, plotOn)
-% CALCDENSITYRANGEFROMHYCOM	Calculate min and max density from HYCOM data
+%CALCDENSITYRANGEFROMHYCOM Calculate min and max density from HYCOM data
 %
-%	Syntax:
-%		[RHO_MIN RHO_MAX] = CALCDENSITYRANGEFROMHYCOM(dataFileName)
+%   Syntax:
+%       [rho_min, rho_max, dt] = CALCDENSITYRANGEFROMHYCOM(CONFIG, HYCOMFileName, plotOn)
 %
-%	Description:
-%		Calculate minimum and maximum seawater density (at atmospheric
-%		pressure, as is used for glider ballasting) from an input .nc data
-%		file downloaded from HYCOM:
+%   Description:
+%       Calculate minimum and maximum seawater density (at atmospheric
+%       pressure, as is used for glider ballasting) from an input .nc data
+%       file downloaded from HYCOM:
 %       https://ncss.hycom.org/thredds/ncss/grid/GLBy0.08/expt_93.0/ts3z/dataset.html
+%       
 %       Recommend just downloading a single day at a time for a reasonable
 %       file size, then process several days over the planned mission
 %       duration to get a range
 %
-%	Inputs:
-%		dataFileName    fullfile filename to downloaded .nc file. If no
+%   Inputs:
+%       dataFileName   fullfile filename to downloaded .nc file. If no
 %		                file is specified, will prompt to select one
 %
-%	Outputs:
-%		rho_min         minimum density across all lat/lons and depths of
-%		                the input data file
-%       rho_max         maximum density across all lat/lons and depths of
-%                       the input data file
-%       dt              table of mean salinity, mean temperature, mean,
-%                       min, and max density at the surface and at the
-%                       deepest depth extracted (closest to, but greater 
+%   Outputs:
+%       rho_min        minimum density across all lat/lons and depths of
+%		               the input data file
+%       rho_max        maximum density across all lat/lons and depths of
+%                      the input data file
+%       dt             table of mean salinity, mean temperature, mean,
+%                      min, and max density at the surface and at the
+%                      deepest depth extracted (closest to, but greater 
 %                       than 1000 m) 
 %
-%	Examples:
+%   Examples:
 %       [rho_min, rho_max, dt] = calcDensityRangeFromHYCOM('C:\MHI_2022-04-01.nc')
-%	See also
+%   See also
 %
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%   Authors:
+%	   S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   FirstVersion: 	24 April 2023
+%   Updated:
+%
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
-%
-%	FirstVersion: 	24 April 2023
-%	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global CONFIG

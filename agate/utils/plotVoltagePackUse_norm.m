@@ -1,35 +1,35 @@
 function plotVoltagePackUse_norm(CONFIG, pp)
-% PLOTVOLTAGEPACKUSE_NORM	Plot power draw by device normalized by dive duration
+%PLOTVOLTAGEPACKUSE_NORM	Plot power draw by device normalized by dive duration
 %
-%	Syntax:
-%		PLOTVOLTAGEPACKUSE_NORM(CONFIG, PP)
+%   Syntax:
+%       PLOTVOLTAGEPACKUSE_NORM(CONFIG, pp)
 %
-%	Description:
-%		Plot power draw by different devices, each separately. Includes
-%		VBD, pitch, and roll motors and PMAR. Power draw is normalized by
-%       dive duration (in minutes) and plotted over time (days into
-%       mission)
+%   Description:
+%        Plot power draw by different devices, each separately. Includes
+%        VBD, pitch, and roll motors and PMAR. Power draw is normalized by
+%        dive duration (in minutes) and plotted over time (days into
+%        mission)
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
-%       pp          Piloting parameters table created with
-%                   extractPilotingParams.m
+%   Inputs:
+%       CONFIG   Mission/agate global configuration variable
+%       pp       Piloting parameters table created with
+%                extractPilotingParams.m
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
+%   Examples:
 %       plotVoltagePackUse_norm(CONFIG, pp639)
-%	See also
-%       extractPilotingParams
-%       plotVoltagePackUse
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%	See also EXTRACTPILOTINGPARAMS, PLOTVOLTAGEPACKUSE
 %
-%	FirstVersion: 	24 April 2023
-%	Updated:        2 May 2023
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   FirstVersion:   24 April 2023
+%   Updated:        2 May 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 figNum = CONFIG.plots.figNumList(5);

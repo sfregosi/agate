@@ -1,38 +1,38 @@
 function plotBattUseFreeSpace(CONFIG, pp, A0_24V)
-% PLOTBATTUSEFREESPACE	Plot battery usage free space (acoustics) remaining
+%PLOTBATTUSEFREESPACE Plot battery usage and acoustic storage remaining
 %
-%	Syntax:
-%		PLOTBATTUSEFREESPACE(CONFIG, PP, A0_24V, TMD)
+%   Syntax:
+%       PLOTBATTUSEFREESPACE(CONFIG, pp, A0_24V)
 %
-%	Description:
-%		Plot of battery usage (as a percent, left yaxis) and free space
-%		remaining on the acoustic SD card (right yaxis) over the course of
-%		the deployment. A target mission duration (in days) can be
-%		specified as well as horizontal lines for battery and data space
-%		margins of error (e.g., 7% capacity left on SD card)
+%   Description:
+%       Plot of battery usage (as a percent, left yaxis) and free space
+%       remaining on the acoustic SD card (right yaxis) over the course of
+%       the deployment. A target mission duration (in days) can be
+%       specified as well as horizontal lines for battery and data space
+%       margins of error (e.g., 7% capacity left on SD card)
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
-%       pp          Piloting parameters table created with
-%                   extractPilotingParams.m
-%       A0_24V      Value of the $A0_24V parameter with total available amp
-%                   hours for this glider (e.g., 310 for 15V system)
-%       tmd         target mission duration in days
+%   Inputs:
+%       CONFIG   Mission/agate global configuration variable
+%       pp       Piloting parameters table created with
+%                extractPilotingParams.m
+%       A0_24V   Value of the $A0_24V parameter with total available amp
+%                hours for this glider (e.g., 310 for 15V system)
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
-%       plotBattUseFreeSpace(CONFIG, pp639, 310, 60)
-%	See also
-%       extractPilotingParams
+%   Examples:
+%       plotBattUseFreeSpace(CONFIG, pp639, 310)
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%	See also EXTRACTPILOTINGPARAMS
 %
-%	FirstVersion: 	unknown
-%	Updated:        2 May 2023
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   FirstVersion:   unknown
+%   Updated:        2 May 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

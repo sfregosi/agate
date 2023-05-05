@@ -1,31 +1,33 @@
 function Ah = calcAh(secs, mAmps)
-% CALCAHBYDEVICE	calculate Ah from seconds and mAmps
-%	Syntax:
-%		OUTPUT = CALCAH(SECS, MAMPS, VS)
+%CALCAH Calculate amp hours from seconds and mAmps
 %
-%	Description:
-%		Calculate total amp hours from seconds and milliamps. Useful for
-%		getting Ah used by a single device from the $DEVICE_SECS and
-%		$DEVICE_MAMPS reported in a Seaglider .log file.
+%   Syntax:
+%       Ah = CALCAH(secs, mAmps)
 %
-%	Inputs:
-%		secs    seconds on
+%   Description:
+%       Calculate total amp hours from seconds and milliamps. Useful for
+%       getting Ah used by a single device from the $DEVICE_SECS and
+%       $DEVICE_MAMPS reported in a Seaglider .log file.
+%
+%   Inputs:
+%       secs    seconds on
 %       mAmps   current draw
 %
-%	Outputs:
-%		Ah      amp hours
+%   Outputs:
+%       Ah      amp hours
 %
-%	Examples:
+%   Examples:
 %       Ah = calcAh(120, 18);
-%	See also
-%       calckJ
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   See also   CALCKJ
 %
-%	FirstVersion: 	26 April 2023
-%	Updated:        4 May 2023
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   FirstVersion:   26 April 2023
+%   Updated:        4 May 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % full equation

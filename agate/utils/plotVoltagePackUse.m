@@ -1,34 +1,35 @@
 function plotVoltagePackUse(CONFIG, pp)
-% PLOTVOLTAGEPACKUSE	Plot power draw by individual glider devices
+%PLOTVOLTAGEPACKUSE	Plot power draw by individual glider devices
 %
-%	Syntax:
-%		PLOTVOLTAGEPACKUSE(CONFIG, PP)
+%   Syntax:
+%       PLOTVOLTAGEPACKUSE(CONFIG, pp)
 %
-%	Description:
-%		Plot power draw by different devices, each separately. Includes
-%		VBD, pitch, and roll motors and PMAR. Power draw is on a by dive
-%		basis (not normalized by dive duration) but is plotted over time
-%		(days into mission)
+%   Description:
+%       Plot power draw by different devices, each separately. Includes
+%       VBD, pitch, and roll motors and PMAR. Power draw is on a by dive
+%       basis (not normalized by dive duration) but is plotted over time
+%       (days into mission)
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
+%   Inputs:
+%       CONFIG      Mission/agate global configuration variable
 %       pp          Piloting parameters table created with
 %                   extractPilotingParams.m
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
-%       plotVoltagePackUse(CONFIG, pp639)
-%	See also
-%       extractPilotingParams
+%   Examples:
+%        plotVoltagePackUse(CONFIG, pp639)
+%	
+%   See also EXTRACTPILOTINGPARAMS
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
-%
-%	FirstVersion: 	unknown
-%	Updated:        2 May 2023
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+% 
+%   FirstVersion:   unknown
+%   Updated:        2 May 2023
+% 
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 figNum = CONFIG.plots.figNumList(4);

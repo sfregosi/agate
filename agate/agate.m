@@ -1,29 +1,32 @@
 function agate(missionCnf)
-% AGATE	Initialize a new session of agate
+%AGATE	Initialize a new session of agate
 %
-%	Syntax:
-%		AGATE
+%   Syntax:
+%       AGATE missionCnf
 %
-%	Description:
-%		Detailed description here, please
-%	Inputs:
-%		missionCnf  optional argument to specific configuration file for a
+%   Description:
+%       Initialization step for agate toolbox. Reads in a specified
+%       configuration file, or if none is specified, prompts user to select
+%       configuration file. Sets paths and completes some checks.
+%
+%   Inputs:
+%      missionCnf   Optional argument to specific configuration file for a
 %                   particular mission e.g., 'sg639_MHI_Apr2023.cnf'
 %
-%	Outputs:
+%   Outputs:
+%      No workspace outputs. Generates a global CONFIG variable
 %
-%	Examples:
+%   Examples:
 %       agate agate_sgXXX_Location_MonYear_config.cnf
 %
-%	See also
+%   See also   SETCONFIG, CHECKPATH
 %
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%       Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
-%
-%	FirstVersion: 	06 April 2023
-%	Updated:        14 April 2023
+%   FirstVersion:   06 April 2023
+%   Updated:        14 April 2023
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear global;  % clear out old globals

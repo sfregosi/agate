@@ -1,18 +1,18 @@
 function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
-% PLOTGLIDERPATH_ETOPO	Plot glider path on bathymetric map
+%PLOTGLIDERPATH_ETOPO	Plot glider path on bathymetric map
 %
-%	Syntax:
-%		PLOTGLIDERPATH_ETOPO(CONFIG, PP, TARGETSFILE)
+%   Syntax:
+%       PLOTGLIDERPATH_ETOPO(CONFIG, pp, targetsFile, bathyFile)
 %
-%	Description:
-%		Map of glider planned track (from the targets file) and actual 
+%   Description:
+%       Map of glider planned track (from the targets file) and actual 
 %       track, showing surface locations for each dive, a line connecting 
 %       these surface locations (not dead-reckoned positions between 
 %       surfacings) and vectorsmshowing the depth averaged current for 
 %       that dive. 
 %
-%	Inputs:
-%		CONFIG      Mission/agate global configuration variable
+%   Inputs:
+%       CONFIG      Mission/agate global configuration variable
 %       pp          Piloting parameters table created with
 %                   extractPilotingParams.m
 %       targetsFile Fullfile reference to the text file targetsFile
@@ -20,20 +20,21 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %                   either specify the fullfile (CONFIG.map.bathyFile) or 
 %                   set to 0 to not plot bathymetry
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
+%   Examples:
 %       plotGliderPath_etopo(CONFIG, pp639, targetsFile, CONFIG.map.bathyFile)
-%	See also
-%       extractPilotingParams
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   See also EXTRACTPILOTINGPARAMS
 %
-%	FirstVersion: 	13 April 2023
-%	Updated:        16 April 2023
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   FirstVersion:   13 April 2023
+%   Updated:        16 April 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 4

@@ -1,35 +1,35 @@
 function plotSoundSpeedProfile(CONFIG, locCalcT)
-% PLOTSOUNDSPEEDPROFILE	Plot sound speed profile
+%PLOTSOUNDSPEEDPROFILE	Plot sound speed profile
 %
-%	Syntax:
-%		PLOTSOUNDSPEEDPROFILE(LOCCALCT)
+%   Syntax:
+%       PLOTSOUNDSPEEDPROFILE(locCalcT)
 %
-%	Description:
-%		Read in glider locCalcT data variable and create a plot of sound
+%   Description:
+%       Read in glider locCalcT data variable and create a plot of sound
 %       speed with individual sound speed profiles for every dive in grey
 %       and the mean and median thicker and in black over the top.
 %
-%	Inputs:
+%   Inputs:
 %       CONFIG      global agate mission configuration variable (for plot
 %                   titles)
-%		locCalcT    matlab object with table of glider sensor data
+%       locCalcT    matlab object with table of glider sensor data
 %                   extracted with extractPositionalData. Must contain
 %                   columns for soundVelocity and depth
 %
-%	Outputs:
-%		no output, creates figure
+%   Outputs:
+%       no output, creates figure
 %
-%	Examples:
+%   Examples:
 %
-%	See also
-%       extractPositionalData
+%   See also EXTRACTPOSITIONALDATA
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	12 November 2020 (last known date)
-%	Updated:
+%   FirstVersion:   12 November 2020 (last known date)
+%   Updated:
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global CONFIG

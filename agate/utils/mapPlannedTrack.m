@@ -1,22 +1,23 @@
 function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
-% MAPPLANNEDTRACK	Create static map of planned survey track
+%MAPPLANNEDTRACK Create static map of planned survey track
 %
-%	Syntax:
-%		OUTPUT = MAPPLANNEDTRACK(INPUT)
+%   Syntax:
+%       MAPPLANNEDTRACK(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %
-%	Description:
-%		Create a static map of the planned survey track from an input
-%		targets file. Optional argument to plot bathymetry (requires etopo
-%		raster from NCEI) and land (requires shape files from Natural Earth
+%   Description:
+%       Create a static map of the planned survey track from an input
+%       targets file. Optional argument to plot bathymetry (requires etopo
+%       raster from NCEI) and land (requires shape files from Natural Earth
+%
 %       Download etopo_2022_v1_60s_N90W180_surface.tif from NCEI:
 %           https://www.ncei.noaa.gov/products/etopo-global-relief-model
+%
 %       Download Natural Earth Data (naturalearthdata.com), latest release
 %       on GitHub: 
 %           https://github.com/nvkelso/natural-earth-vector/releases
-
-%           
-%	Inputs:
-%		CONFIG          global CONFIG from agate_config.cnf
+% 
+%   Inputs:
+%       CONFIG          global CONFIG from agate_config.cnf
 %       targetsFile     fullpath to targets file
 %       trackName       optional argument for the legend entry. If empty
 %                       will just say 'glider', e.g., 'sg639'
@@ -27,25 +28,24 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %       figNum          optional argument defining figure number so it
 %                       doesn't keep making new figs but refreshes existing
 %
-%	Outputs:
-%		output 	describe, please
+%   Outputs:
+%       none            creates figure
 %
-%	Examples:
+%   Examples:
+%       mapPlannedTrack(CONFIG, 'targetsFile', 'sg679', 1)
 %
-%	See also
+%   See also   MAKETARGETSFILE
 %
-%
-% TO DOs:
-%       - [ ] make it possible to customize the north arrow and scale info
+%   TO DOs:
 %       - [ ] make possible to plot multiple gliders for one survey
 %
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%   FirstVersion:   22 March 2023
+%   Updated:        06 April 2023
 %
-%	FirstVersion: 	22 March 2023
-%	Updated:        06 April 2023
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global CONFIG

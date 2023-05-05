@@ -1,36 +1,36 @@
 function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
-% READTARGETSFILE	Read in Seaglider formatted targets file
+%READTARGETSFILE Read in Seaglider formatted targets file
 %
-%	Syntax:
-%		TARGETS = TREADTARGETSFILE(TARGETSFILE)
+%   Syntax:
+%       targets = TREADTARGETSFILE(targetsFile)
 %
-%	Description:
-%		Read in a Seaglider formatted targets file to a table variable.
-%		Fullfile name can be specified as input argument, or can be left
-%		blank to prompt to select targets file to read. 
+%   Description:
+%       Read in a Seaglider formatted targets file to a table variable. 
+%       Fullfile name can be specified as input argument, or can be left
+%       blank to prompt to select targets file to read. 
 %
-%	Inputs:
-%       CONFIG          global CONFIG variable from agate mission
-%                       configuration file loaded with agate initialization
-%		targetsFile     fullfile path and name to Seaglider formatted
-%		                targets file to be read
+%   Inputs:
+%       CONFIG       global CONFIG variable from agate mission
+%                    configuration file loaded with agate initialization
+%       targetsFile  fullfile path and name to Seaglider formatted
+%		             targets file to be read
 %
-%	Outputs:
-%		targets         table with waypoint names, latitudes, and
-%		                longitudes
-%       targetsFile     fullfile pathname either input or selected
+%   Outputs:
+%       targets      table with waypoint names, latitudes, and
+%		             longitudes
+%       targetsFile  fullfile pathname either input or selected
 %
-%	Examples:
+%   Examples:
 %
-%	See also
-%       makeTargetsFile
+%   See also MAKETARGETSFILE
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%	Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	unkonwn
-%	Updated:        25 April 2023
+%   FirstVersion:   unkonwn
+%   Updated:        25 April 2023
+%
+%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 2
