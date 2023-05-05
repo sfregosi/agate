@@ -20,15 +20,15 @@ function plotVoltagePackUse(CONFIG, pp)
 %
 %   Examples:
 %        plotVoltagePackUse(CONFIG, pp639)
-%	
-%   See also EXTRACTPILOTINGPARAMS
+%
+%   See also EXTRACTPILOTINGPARAMS, PLOTVOLTAGEPACKUSE_NORM
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-% 
+%
 %   FirstVersion:   unknown
-%   Updated:        2 May 2023
-% 
+%   Updated:        4 May 2023
+%
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -37,11 +37,11 @@ figNum = CONFIG.plots.figNumList(4);
 figPosition = [600    40    600    400];
 % overwrite if in config
 if isfield(CONFIG.plots, 'positions')
-    % is a position defined for this figure
-    fnIdx = find(figNum == CONFIG.plots.figNumList);
-    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
-        figPosition = CONFIG.plots.positions{fnIdx};
-    end
+	% is a position defined for this figure
+	fnIdx = find(figNum == CONFIG.plots.figNumList);
+	if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
+		figPosition = CONFIG.plots.positions{fnIdx};
+	end
 end
 
 figure(figNum); clf;
@@ -50,20 +50,29 @@ plot(timeDays, pp.pkJ, 'LineWidth', 2);
 hold on;
 plot(timeDays, pp.rkJ, 'LineWidth', 2);
 plot(timeDays, pp.vkJ, 'LineWidth', 2);
-if CONFIG.pm.loggers == 1
-    plot(timeDays, pp.PMAR_kJ, 'LineWidth', 2);
+
+% add in pam info if present
+if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
+	plot(timeDays, pp.PMAR_kJ, 'LineWidth', 2);
+	legendStrs = {'pitch', 'roll', 'vbd', 'pmar'};
 end
-ylim([0 30]); ylabel('energy [kJ]');
+if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+	plot(timeDays, pp.WS_kJ, 'LineWidth', 2);
+	legendStrs = {'pitch', 'roll', 'vbd', 'wispr'};
+end
+
+ylim([0 max(pp.vkJ) + .1*max(pp.vkJ)]); ylabel('energy [kJ]');
 xlim([0 max(timeDays)+5]); xlabel('days in mission');
 grid on;
 hold off;
 
 title([CONFIG.glider ' Usage By Device']);
-if CONFIG.pm.loggers == 1
-    legend('pitch', 'roll', 'vbd', 'pmar', 'Location', 'EastOutside')
+if (isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1) || ...
+		(isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1)
+	legend(legendStrs, 'Location', 'EastOutside')
 else
-    hleg = legend('pitch', 'roll', 'vbd', 'Location', 'EastOutside');
-    title(hleg, 'motors');
+	hleg = legend('pitch', 'roll', 'vbd', 'Location', 'EastOutside');
+	title(hleg, 'motors');
 end
 
 set(gca, 'FontSize', 12)

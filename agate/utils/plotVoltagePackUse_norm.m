@@ -27,7 +27,7 @@ function plotVoltagePackUse_norm(CONFIG, pp)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   24 April 2023
-%   Updated:        2 May 2023
+%   Updated:        4 May 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,9 +50,17 @@ plot(timeDays, pp.pkJ./pp.diveDur_min, 'LineWidth', 2);
 hold on;
 plot(timeDays, pp.rkJ./pp.diveDur_min, 'LineWidth', 2);
 plot(timeDays, pp.vkJ./pp.diveDur_min, 'LineWidth', 2);
-if CONFIG.pm.loggers == 1
+
+% add in pam info if present
+if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
     plot(timeDays, pp.PMAR_kJ./pp.diveDur_min, 'LineWidth', 2);
+		legendStrs = {'pitch', 'roll', 'vbd', 'pmar'};
 end
+if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+	plot(timeDays, pp.WS_kJ./pp.diveDur_min, 'LineWidth', 2);
+	legendStrs = {'pitch', 'roll', 'vbd', 'wispr'};
+end
+
 ylim([0 max(pp.vkJ./pp.diveDur_min) + .1*max(pp.vkJ./pp.diveDur_min)]); 
 ylabel('energy [kJ/min]');
 xlim([0 max(timeDays)+5]); xlabel('days in mission');
@@ -60,8 +68,9 @@ grid on;
 hold off;
 
 title(['Glider ' CONFIG.glider ' Usage By Device - Normalized']);
-if CONFIG.pm.loggers == 1
-    legend('pitch', 'roll', 'vbd', 'pmar', 'Location', 'EastOutside')
+if (isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1) || ...
+		(isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1)
+	legend(legendStrs, 'Location', 'EastOutside')
 else
     hleg = legend('pitch', 'roll', 'vbd', 'Location', 'EastOutside');
     title(hleg, 'motors');
