@@ -65,7 +65,7 @@ end
 % sum
 dist_remEst = sum(targets.distToNext_km(ctIdx:end));
 tm.distRem = dist_remEst + pp.distTGT_km(end);
-dist_covEst = sum(targets.distToNext_km(1:ctIdx));
+dist_covEst = sum(targets.distToNext_km(1:ctIdx-1));
 tm.distCov = dist_covEst - pp.distTGT_km(end);
 
 % days
@@ -80,12 +80,12 @@ tm.missionRem = tm.distRem/tm.avgTrkSpd;
 
 if printOn == 1
     % print messagess
-    fprintf(1, ['SG639 total distance over ground: %.1f km  (~%.f km of trackline) ' ...
+    fprintf(1, ['%s total distance over ground: %.1f km  (~%.f km of trackline) ' ...
         'in %.1f days.\n' ...
         'Avg dist over ground: %.f km/day. Avg dist over trackline: ~%.f km/day.\n' ...
         'Approx. %.f days to complete mission (total ~= %.f days, target = %i days).\n'], ...
-        tm.distTot, tm.distCov, tm.missionDur, tm.avgSpd, tm.avgTrkSpd, ...
-        tm.missionRem, tm.missionRem + tm.missionDur, CONFIG.tmd);
+        CONFIG.glider, tm.distTot, tm.distCov, tm.missionDur, tm.avgSpd, ...
+		tm.avgTrkSpd, tm.missionRem, tm.missionRem + tm.missionDur, CONFIG.tmd);
 end
 
 end
