@@ -46,7 +46,8 @@ if nargin < 4
 end
 
 % use default bathy if none specified
-if nargin < 3
+if nargin < 3 || isempty(bathyFile)
+	% try this default
 	bathyFile = fullfile(CONFIG.path.shp, 'etopo', 'ETOPO2022_v1_60s_N90W180_surface.tif');
 end
 
