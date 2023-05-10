@@ -7,16 +7,20 @@ A collection of tools to be used for piloting acoustic gliders,
 processing glider positional and environmental data, and analyzing
 glider-collected acoustic data for surveys of marine mammals.
 
-This is the public release version and it is very much under
-development.
+This package is very much under development, but my hope is that I will
+maintain a [stable
+release](https://github.com/sfregosi/agate-public/releases) and then for
+those interested in the latest functionality, the repository can be
+cloned.
 
 <img
 src="README_files/figure-gfm/fa-icon-ef3463a0984ba0e303f1b25b6e50a309.svg"
-style="width:0.88em;height:1em" /> *Last Update: 24 Apr 2023*
+style="width:0.88em;height:1em" /> *Last Update: 10 May 2023*
 
 **Detailed documentation can be found at
 [sfregosi.github.io/agate-public](https://sfregosi.github.io/agate-public)**
-*(the documentation is also under construction!)*
+*(the documentation is also under construction and I welcome any and all
+feedback!)*
 
 ## Background
 
