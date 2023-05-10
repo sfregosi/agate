@@ -17,12 +17,12 @@ library(fontawesome)
 
 A collection of tools to be used for piloting acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected acoustic data for surveys of marine mammals. 
 
-This is the public release version and it is very much under development.
+This package is very much under development, but my hope is that I will maintain a [stable release](https://github.com/sfregosi/agate-public/releases) and then for those interested in the latest functionality, the repository can be cloned.
 
 `r fa(name = "calendar-check")` *Last Update: `r format(Sys.Date(), "%d %b %Y")`*
 
 **Detailed documentation can be found at [sfregosi.github.io/agate-public](https://sfregosi.github.io/agate-public)**
-*(the documentation is also under construction!)*
+*(the documentation is also under construction and I welcome any and all feedback!)*
 
 ## Background
 
