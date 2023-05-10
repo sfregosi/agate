@@ -5,7 +5,8 @@
 % define glider and mission, glider version
 CONFIG.glider = 'sgXXX';
 CONFIG.mission = 'Location_Mon20XX'; % defined in sg_calib_constants.m 
-CONFIG.sgVer = 66.12;
+CONFIG.sgVer = XX.XX; % 66.12 or 67.0
+CONFIG.tmd = XX; % target mission duration in days
 
 % define paths
 CONFIG.path.mission = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
@@ -25,12 +26,10 @@ CONFIG.pm.loggers = 0; % 1 for active, 0 for inactive
 CONFIG.pm.activeCard = 0; % current active card, update throughout mission
 CONFIG.pm.numCards = 4;
 
-
+% wispr settings
+CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
 
 % %%%%%% OPTIONAL - plotting %%%%%%
-% piloting plots
-CONFIG.tmd = 60; % target mission duration in days
-
 % map plots
 CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
 CONFIG.map.bathyFile =  'C:\Users\User.Name\Documents\GIS\etopo\etopo1_ice_g_i2.bin';
@@ -44,8 +43,11 @@ CONFIG.map.scaleMinor = [0:12.5:25];
 
 % general plotting settings
 % pre allocate fig numbers so figures are updated rather than created new
-figSeed = 1; % suggest glider number if flying multiple gliders
-CONFIG.figNumList = figSeed + [0 1 2 3 4 5 6 7 8 9]; 
-% figNumList (1) map, (2) humidity and pressure, (3) battery/free space, 
-(4) voltagePackUse, (5) normalized voltage, (6) minimum voltage, 
-(7) zoomed map
+CONFIG.plots.figSeed = 639;
+CONFIG.plots.figNumList = CONFIG.plots.figSeed + [0 1 2 3 4 5 6 7 8 9]; 
+% figNumList(1) = battery, (2) = voltagePackUse, (3) = humidity
+% and pressure, (4) = map, (5) = zoomed map, (6) = minimum voltage, (7) = voltage normalized
+
+% load plot positions 
+% load('C:\Users\User.Name\Documents\gliders\figPositions.mat');
+% CONFIG.plots.positions = positions;
