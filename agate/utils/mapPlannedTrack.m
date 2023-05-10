@@ -38,7 +38,8 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %
 %   TO DOs:
 %       - [ ] make possible to plot multiple gliders for one survey
-%
+%       - [ ] add in prompt to select targets file
+% 
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
@@ -96,7 +97,7 @@ setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
 %  plot bathymetry - slow step - optional
 if bathyOn
     % try this default path
-    bathyFile = fullfile(CONFIG.path.shp, 'etopo2022', 'ETOPO_2022_v1_60s_N90W180_surface.tif');
+    bathyFile = fullfile(CONFIG.path.shp, 'etopo', 'ETOPO_2022_v1_60s_N90W180_surface.tif');
     % if that's no good, prompt to select correct file
     if ~exist(bathyFile, 'file')
         [fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etop .tif file');
