@@ -1,8 +1,8 @@
-function basestationFileExtract(CONFIG, path_bsLocal)
-%BASESTATIONFILEEXTRACT  download basestation files locally via SSH
+function downloadBasestationFiles(CONFIG, path_bsLocal)
+%DOWNLOADBASESTATIONFILES  download basestation files locally via SSH
 %
 %   Syntax:
-%      BASESTATIONFILEEXTRACT(CONFIG, path_bsLocal)
+%      DOWNLOADBASESTATIONFILES(CONFIG, path_bsLocal)
 %
 %   Description:
 %       Function to extract/download variety of glider piloting files
@@ -24,14 +24,14 @@ function basestationFileExtract(CONFIG, path_bsLocal)
 %
 %   Examples:
 %
-%   See also BASESTATIONFILEEXTRACT
+%   See also 
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:        26 April 2023
+%   Updated:        10 May 2023
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
