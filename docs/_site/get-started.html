@@ -230,16 +230,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li>Download <code>agate</code> from <a href="https://github.com/sfregosi/agate-public">GitHub</a>
 <ul>
-<li><strong>Option 1:</strong> Clone the repository using GitHub or GitHub Desktop
+<li><strong>Option 1:</strong> Download the latest release
 <ul>
-<li><strong><em>This is the suggested installation!</em></strong> This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub</li>
+<li>This option ensures a stable release and removes the requirement of working with GitHub but will need manual updating</li>
+<li>Visit the <a href="https://github.com/sfregosi/agate-public/releases">Releases</a> page and download the latest release source code as a zip or tar.gz file</li>
+</ul></li>
+<li><strong>Option 2:</strong> Clone the repository using GitHub or GitHub Desktop
+<ul>
+<li>This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub, but this comes with risks as it may be buggy</li>
 <li>Click on the green <em>Code</em> button and select <em>Open with GitHub Desktop</em></li>
 <li>Specify where to clone the cloned local copy. Suggest the default MATLAB directory (e.g., <code>C:\Users\User.Name\Documents\MATLAB\</code>)</li>
 <li>For more help with GitHub see this <a href="https://github.com/PIFSC-Protected-Species-Division/PSDOS/blob/main/files/git_started.md">Git Started Doc</a></li>
 </ul></li>
-<li><strong>Option 2:</strong> Download the zip file
+<li><strong>Option 3:</strong> Download the repository as a zip file
 <ul>
-<li>Removes requirement of working with GitHub but will need manual updating</li>
+<li>This provides the latest functionality before an official release and removes requirement of working with GitHub but will need manual updating</li>
 <li>Click the green <em>Code</em> button at the landing page of the repository and choose <em>Download ZIP</em></li>
 <li>Unzip the downloaded folder and place within the default MATLAB directory (e.g., <code>C:\Users\User.Name\Documents\MATLAB\</code>)</li>
 </ul></li>
@@ -319,7 +324,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="download-all-basestation-files" class="level3">
 <h3 class="anchored" data-anchor-id="download-all-basestation-files">Download all basestation files</h3>
-<p>Use <code>basestationFileExtract</code> to automatically download various basestation files to a local machine for further examination.</p>
+<p>Use <code>downloadBasestationFiles</code> to automatically download various basestation files to a local machine for further examination.</p>
 <p>Below is example code to run this step. This can be saved as a script that makes it easy to re-run each time the glider surfaces, or it can be typed directly into the MATLAB Command Window.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>% ensure agate folder is added to the matlab path before proceeding</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>% initialize agate; will prompt for configuration file</span>
@@ -335,8 +340,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>mkdir(path_status);</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>mkdir(path_bsLocal);</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>% extract basestation files</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>basestationFileExtract(CONFIG, path_bslLocal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>% download basestation files</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>downloadBasetationFiles(CONFIG, path_bsLocal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><sub><a href="#">Back to top</a></sub></p>
 </section>
 <section id="extract-select-piloting-parameters-and-flight-metrics" class="level3">

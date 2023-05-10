@@ -17,13 +17,16 @@ It page is not a detailed list of all available functions and their specific doc
 *See the [Dependencies](https://sfregosi.github.io/agate-public/#dependencies) section of the home page for more info on the required Mathworks File Exchange packages (copies of these come packaged with `agate`) and MATLAB Toolbox requirements.*
 
 - Download `agate` from [GitHub](https://github.com/sfregosi/agate-public) 
-  - **Option 1:** Clone the repository using GitHub or GitHub Desktop 
-    - __*This is the suggested installation!*__ This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub
+  - **Option 1:** Download the latest release
+    - This option ensures a stable release and removes the requirement of working with GitHub but will need manual updating
+    - Visit the [Releases](https://github.com/sfregosi/agate-public/releases) page and download the latest release source code as a zip or tar.gz file 
+  - **Option 2:** Clone the repository using GitHub or GitHub Desktop 
+    - This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub, but this comes with risks as it may be buggy
     - Click on the green *Code* button and select *Open with GitHub Desktop* 
     - Specify where to clone the cloned local copy. Suggest the default MATLAB directory (e.g., `C:\Users\User.Name\Documents\MATLAB\`)
     - For more help with GitHub see this [Git Started Doc](https://github.com/PIFSC-Protected-Species-Division/PSDOS/blob/main/files/git_started.md)
-  - **Option 2:** Download the zip file
-    - Removes requirement of working with GitHub but will need manual updating
+  - **Option 3:** Download the repository as a zip file
+    - This provides the latest functionality before an official release and removes requirement of working with GitHub but will need manual updating
     - Click the green *Code* button at the landing page of the repository and choose *Download ZIP*
     - Unzip the downloaded folder and place within the default MATLAB directory (e.g., `C:\Users\User.Name\Documents\MATLAB\`)
 - Add `agate` to the MATLAB path
@@ -101,7 +104,7 @@ mkdir(path_bsLocal);
 
 ### Download all basestation files
 
-Use `basestationFileExtract` to automatically download various basestation files to a local machine for further examination. 
+Use `downloadBasestationFiles` to automatically download various basestation files to a local machine for further examination. 
 
 Below is example code to run this step. This can be saved as a script that makes it easy to re-run each time the glider surfaces, or it can be typed directly into the MATLAB Command Window. 
 
@@ -121,8 +124,8 @@ path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy o
 mkdir(path_status);
 mkdir(path_bsLocal);
 
-% extract basestation files
-basestationFileExtract(CONFIG, path_bslLocal)
+% download basestation files
+downloadBasetationFiles(CONFIG, path_bsLocal)
 
 ```
 
