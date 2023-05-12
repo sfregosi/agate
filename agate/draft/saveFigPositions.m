@@ -1,5 +1,5 @@
 function positions = saveFigPositions(CONFIG, saveFileName)
-% SAVEFIGPOSITIONS	Save positions of current figures to specifiy in .cnf
+%SAVEFIGPOSITIONS	Save positions of current figures to specifiy in .cnf
 %
 %	Syntax:
 %		POSITIONS = SAVEFIGPOSITIONS(CONFIG, SAVEFILENAME)
