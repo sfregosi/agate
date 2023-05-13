@@ -98,6 +98,7 @@ mkdir(path_bsLocal);
 - Add `agate` to the path (with subfolders), if not already done
 - Type `agate agate_config.cnf` in the command window and hit enter
   - replace `agate_config.cnf` with the name of your configuration file (e.g., `agate_config_sg639_MHI_Apr2022.cnf`)
+  - if the configuration file is located within the `agate/settings` folder, just the name is sufficient. If it is located elsewhere, specify the fullfile path (e.g., `C:/Users/User.Name/Desktop/agate_config_sgXXX.cnf`)
 - Alternatively, simply type `agate` and you will be prompted to select a configuration file
 
 <sub>[Back to top](#)</sub>
