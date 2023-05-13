@@ -54,13 +54,17 @@ if (isfield(CONFIG, 'pm') || isfield (CONFIG, 'ws')) && ...
         (CONFIG.pm.loggers == 1 || CONFIG.ws.loggers == 1)
     y2 = 1;
     titleStr = [CONFIG.glider ' Battery Usage and Free Space'];
+	figName = 'Battery & Free Space';
 else
     y2 = 0;
     titleStr = [CONFIG.glider ' Battery Usage'];
+	figName = 'Battery';
 end
 
 % set up figure and x axis
-figure(figNum); clf;
+figure(figNum); 
+clf;
+set(gcf, 'Name', figName);
 co = colororder;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 

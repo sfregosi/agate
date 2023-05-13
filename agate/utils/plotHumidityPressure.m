@@ -43,7 +43,9 @@ if isfield(CONFIG.plots, 'positions')
 end
 
 
-figure(figNum); clf;
+figure(figNum); 
+set(gcf, 'Name', 'Humidity & Pressure');
+clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 subplot(211);
 plot(timeDays, pp.HUMID, '.');
