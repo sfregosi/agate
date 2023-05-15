@@ -57,7 +57,7 @@ else
     [path, ~, ~] = fileparts(CONFIG.missionCnf);
     if ~isempty(path)
         CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
-        parseCnf(CONFIG.missionCnf)
+        parseCnf(CONFIG.missionCnf);
     else % no path specified
         % default location is within agate\settings folder, so try that
         CONFIG.missionCnf = fullfile(CONFIG.path.settings, CONFIG.missionCnf);
