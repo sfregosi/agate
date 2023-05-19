@@ -23,10 +23,11 @@ function agate(missionCnf)
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
-%       Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %   FirstVersion:   06 April 2023
-%   Updated:        14 April 2023
+%   Updated:        12 May 2023
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear global;  % clear out old globals
@@ -35,7 +36,7 @@ warning off % this is turned off for plotting messages
 global CONFIG
 % CONFIG = struct;
 
-CONFIG.ver = '0.0.20230414 github.com/sfregosi/agate-public';
+CONFIG.ver = '0.1.20230512 github.com/sfregosi/agate-public';
 fprintf('              agate version %s\n\n', CONFIG.ver)
 
 if nargin < 1

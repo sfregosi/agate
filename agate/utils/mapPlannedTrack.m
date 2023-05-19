@@ -100,7 +100,7 @@ if bathyOn
     bathyFile = fullfile(CONFIG.path.shp, 'etopo', 'ETOPO2022_v1_60s_N90W180_surface.tif');
     % if that's no good, prompt to select correct file
     if ~exist(bathyFile, 'file')
-        [fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etop .tif file');
+        [fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etopo .tif file');
         bathyFile = fullfile(path, fn);
     end
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...

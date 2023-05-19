@@ -44,7 +44,9 @@ if isfield(CONFIG.plots, 'positions')
     end
 end
 
-figure(figNum); clf;
+figure(figNum); 
+set(gcf, 'Name', 'Normalized Power Draw by Device');
+clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 plot(timeDays, pp.pkJ./pp.diveDur_min, 'LineWidth', 2);
 hold on;
