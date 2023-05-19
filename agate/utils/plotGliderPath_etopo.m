@@ -67,6 +67,7 @@ currColor = '#29c481';
 %% set up figure
 figure(figNum);
 mapFig = gcf;
+mapFig.Name = 'Map';
 mapFig.Position = mapFigPosition;
 % clear figure
 clf

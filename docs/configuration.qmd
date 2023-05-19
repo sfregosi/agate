@@ -1,0 +1,17 @@
+---
+title: "Configuration file guide"
+subtitle: 'Guide for creating and modifying necessary configuration files'
+---
+
+```{r, include = FALSE}
+library(fontawesome)
+```
+
+More detail coming! 
+
+
+<sub>[Back to top](#)</sub>
+
+
+
+

@@ -47,7 +47,9 @@ if isfield(CONFIG.plots, 'positions')
     end
 end
 
-figure(figNum); clf;
+figure(figNum); 
+set(gcf, 'Name', 'Minimum Voltage');
+clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 plot(timeDays, pp.minVolt_24, 'LineWidth', 2)
 hold on

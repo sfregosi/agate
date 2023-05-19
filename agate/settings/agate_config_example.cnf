@@ -1,38 +1,43 @@
-% agate configuration file
+% %%%%%% AGATE MISSION CONFIGURATION FILE %%%%%%
 % create a new file for each glider and mission
+% Guide for creating configuration files:  https://sfregosi.github.io/agate-public/get-started.html#create-configuration-files
+
 
 % %%%%%% REQUIRED CONFIG PARAMETERS %%%%%%
-% define glider and mission, glider version
+% define glider and mission information
 CONFIG.glider = 'sgXXX';
 CONFIG.mission = 'Location_Mon20XX'; % defined in sg_calib_constants.m 
 CONFIG.sgVer = XX.XX; % 66.12 or 67.0
 CONFIG.tmd = XX; % target mission duration in days
 
 % define paths
+% mission path - path to umbrella folder that either contains previously downloaded basestation and output files or will contain downloaded and processed/produced files and figures
 CONFIG.path.mission = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
-
 
 
 % %%%%%% OPTIONAL - working with the basestation %%%%%%
 % specify basestation configuration file
 CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
+% specify path to store downloaded basestation files
 CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
-
 
 
 % %%%%%% OPTIONAL - acoustics %%%%%%
 % pmar settings
 CONFIG.pm.loggers = 0; % 1 for active, 0 for inactive
-CONFIG.pm.activeCard = 0; % current active card, update throughout mission
+CONFIG.pm.activeCard = 0; % current active card; optional for sgVer 66.12 (will be updated in log file automatically); necessary to update throughout mission for sgVer 67.0
 CONFIG.pm.numCards = 4;
 
 % wispr settings
 CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
 
 % %%%%%% OPTIONAL - plotting %%%%%%
-% map plots
+% maps
+% path to basemap files (land shape files and bathymetry rasters)
 CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
+% optionally, can specify full path to bathymetry file, otherwise agate will prompt to select file
 CONFIG.map.bathyFile =  'C:\Users\User.Name\Documents\GIS\etopo\etopo1_ice_g_i2.bin';
+% define map extents and location of map elements
 CONFIG.map.latLim = [000.00 000.00];
 CONFIG.map.lonLim = [-000.00 -000.00];
 CONFIG.map.naLat = 00.00; % optional arguments for north arrow location on map; leave empty '[]' for no north arrow

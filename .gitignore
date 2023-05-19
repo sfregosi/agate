@@ -15,13 +15,11 @@ SeagliderPilotingTools
 
 # R STUFF # 
 ###########
-
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 *.Rproj
-
 /.quarto/
 /_site/
 
@@ -40,11 +38,6 @@ SeagliderPilotingTools
 *.tar
 *.zip
 
-# Logs and databases #
-######################
-*.log
-*.sql
-*.sqlite
 
 # OS generated files #
 ######################

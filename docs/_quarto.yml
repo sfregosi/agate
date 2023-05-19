@@ -34,6 +34,8 @@ website:
       #   text: About
       - href: get-started.qmd
         text: Get started
+      - href: configuration.qmd
+        text: Configuration guide
       - href: plotting-functions.qmd
         text: Plots
       # - href: content/rendering.qmd

@@ -90,7 +90,7 @@ ti.depth = nan(height(ti), 1);
 
 % check that specified bathymetric file exists
 if ~exist(bathyFile, 'file')
-	[fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etop .tif file');
+	[fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etopo .tif file');
 	bathyFile = fullfile(path, fn);
 end
 % read in and crop bathymetry data
