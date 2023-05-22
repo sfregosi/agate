@@ -1,5 +1,5 @@
 function s = readErmaReport(filename)
-%readDetReport	read a text file produced by ERMA and uploaded from the glider
+%readErmaReport	read a text file produced by ERMA and uploaded from the glider
 %
 % s = readErmaReport(filename)
 %   Read the detection report in file 'filenme' that was produced by the

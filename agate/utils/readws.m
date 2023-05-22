@@ -85,11 +85,11 @@ ss = '$processtimesec';
 idx = strfind(x, ss);
 if (~isempty(idx))			% check for missing '$processtimesec'
     % Suggestion: Instead of more regexp'ing here, could just do 
-    %      ws.procTime_sec = sscanf(x(idx+length(ss) : end), ',%d');
-    idxb = regexp(x(idx:end), '\n', 'once');
-    if (isempty(idxb)), idxb = strlen(x); end	    % in case of no trailing \n
-    idxc = regexp(x(idx:idx + idxb - 1), ',');
-    ws.procTime_sec = str2double(x(idx + idxc:idx + idxb - 2));
+          ws.procTime_sec = sscanf(x(idx+length(ss) : end), ',%d');
+    % idxb = regexp(x(idx:end), '\n', 'once');
+    % if (isempty(idxb)), idxb = strlen(x); end	    % in case of no trailing \n
+    % idxc = regexp(x(idx:idx + idxb - 1), ',');
+    % ws.procTime_sec = str2double(x(idx + idxc:idx + idxb - 2));
 else
     ws.procTime_sec = NaN;
 end
