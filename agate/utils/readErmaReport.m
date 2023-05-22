@@ -3,8 +3,8 @@ function s = readErmaReport(filename)
 %
 % s = readErmaReport(filename)
 %   Read the detection report in file 'filenme' that was produced by the
-%   ErmaMain C code and then uploaded from the glider and unzipped. Return it as
-%   a struct with these fields:
+%   ErmaMain C code and then uploaded from the glider, unzipped, and cleaned up.
+%   Return it as a struct 's' with these fields:
 %	t0_D	[scalar] start-time of the time period analyzed (datenum fmt) 
 %	t1_D	[scalar]   end-time of the time period analyzed (datenum fmt)
 %	procTimeS [scalar] number of seconds it took to process the data and
@@ -14,16 +14,18 @@ function s = readErmaReport(filename)
 %		    encT0_D	[scalar] start-time of the encounter (datenum fmt)
 %		    encT1_D	[scalar]   end-time of the encounter (datenum fmt)
 %		    nClicks	[scalar] total number of clicks in the encounter
-%		    t_D		[1xN] (some of the) times of clicks in this
+%		    t_D		[1xN] times of (some of the) clicks in this
 %				encounter (datenum format)
 %		    
-%   Note that enc.t doesn't necessarily have all nClicks times in the encounter,
-%   just all the click times that got uploaded. Some can get omitted from the
-%   upload because of space limitations; nClicks includes both the uploaded ones
-%   and the omitted ones.
+%   Note that enc.t_D doesn't necessarily have all nClicks times in the
+%   encounter, just all the click times that got uploaded. Some can get omitted
+%   from the upload because of space limitations. But the total click count
+%   enc.nClicks includes both the uploaded ones and the omitted ones.
 %   
 %   The number of encounters in this dive is length(s.enc).
 %   The number of uploaded clicks in encounter i is length(s.enc(i).t_D).
+%
+% David.Mellinger@oregonstate.edu
 
 fp = fopen(filename, 'r');
 if (fp < 0)
