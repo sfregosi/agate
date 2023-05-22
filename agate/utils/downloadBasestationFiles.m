@@ -28,10 +28,11 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%       D. Mellinger <David.Mellinger@oregonstate.edu> <https://github.com/DMellinger>
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:        10 May 2023
+%   Updated:        19 May 2023
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,7 +104,11 @@ end
 if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
     [ssh2_conn, wsFileList] = ssh2_command(ssh2_conn, ...
         ['ls /home/' CONFIG.glider '/ws*.x*']);
-    downloadFileType(wsFileList, 'ws', path_bsLocal, ssh2_conn);
+    files = downloadFileType(wsFileList, 'ws', path_bsLocal, ssh2_conn);
+    for i = 1 : length(files)
+      processWisprDetFile(path_bsLocal, files{i});
+    end
+    % Should clean up and remove the .x00 files? Or move them to a subdirectory.
     disp('**End of wispr files**');
 end
 
@@ -209,10 +214,11 @@ end
 %% %%%%%%%%%%%%%%%%
 % NESTED FUNCTIONS
 % %%%%%%%%%%%%%%%%%
-function downloadFileType(fileList, matchExp, path_bsLocal, ssh2_conn)
+function downloadedFiles = downloadFileType(fileList, matchExp, path_bsLocal, ssh2_conn)
 % check which files for that extension have already been downloaded and
 % download any that haven't. This works for .nc, .log, .eng., .asc, and
 % .dat
+downloadedFiles = {};
 for f = 1:length(fileList)
     if isempty(fileList{f})
         return
@@ -223,13 +229,45 @@ for f = 1:length(fileList)
         else
             ssh2_conn = scp_get(ssh2_conn, fileList{f}, path_bsLocal);
             disp([fileList{f} ' now saved']);
-            if strcmp(matchExp, 'ws')
-                % also unzip wispr files
-                [~, name, ext] = fileparts(fileList{f});
-                gunzip(fullfile(path_bsLocal, [name, ext]));
-            end
+	    downloadedFiles{end + 1} = fileList{f};		%#ok<AGROW>
+	    % Moved WISPR-file unzipping out of here because it seemed better to
+	    % do it above where WISPR files are handled.
         end
     end
 end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function processWisprDetFile(path_bsLocal, filename)
+% Unzip a WISPR/ERMA detection file, which typically has a name like
+% ws0047az.x00, and remove the extraneous characters that show up in such files.
+% The result is left in a file of the same name but without any extension.
+% Assumes path_bsLocal/filename is a valid file name including an extension, and
+% that it can be unzipped.
+%
+% The potential extraneous characters that get removed are extra ^M characters
+% (ASCII 13) every 64 characters throughout the file - I don't know how/where
+% these get in there - as well as 'W>' at the end of the file, which is left
+% over from the WISPR-to-Seaglider communications protocol.
+%
+% Dave Mellinger, David.Mellinger@oregonstate.edu
+
+% Unzip the file. gunzip creates an unzipped version without any extension.
+[~, name, ext] = fileparts(filename);
+gunzip(fullfile(path_bsLocal, [name, ext]));	% makes unzipped file sans ext
+
+% Remove the stray ^M and ending "W>" characters. Done by reading the whole
+% file, removing those characters, and writing back what's left.
+fp = fopen(fullfile(path_bsLocal, name), 'r');
+str = fread(fp).';				% read entire file as uint8s
+fclose(fp);
+str(str == 13) = [];				% remove ^M characters
+if (length(str) >= 2 && strcmp(char(str(end-1 : end)), 'W>'))
+    str = str(1 : end-2);			% remove trailing "W>"
+end
+fp = fopen(fullfile(path_bsLocal, name), 'w');
+fwrite(fp, str);				% write str as uint8s
+fclose(fp);
 
 end
