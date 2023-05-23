@@ -37,6 +37,8 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+fprintf(1, 'Starting basestation file download...\n')
+
 %% access shell directly
 % set up shell connection
 ssh2_conn = ssh2_config(CONFIG.bs.host, ...

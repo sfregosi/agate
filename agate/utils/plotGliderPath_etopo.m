@@ -15,7 +15,8 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %       CONFIG      Mission/agate global configuration variable
 %       pp          Piloting parameters table created with
 %                   extractPilotingParams.m
-%       targetsFile Fullfile reference to the text file targetsFile
+%       targetsFile Fullfile reference to the text file targetsFile. Can be
+%                   left empty ([]) to prompt to select targets
 %       bathyFile   Optional argument to plot bathymetry (slow step),
 %                   either specify the fullfile (CONFIG.map.bathyFile) or 
 %                   set to 0 to not plot bathymetry
@@ -41,6 +42,12 @@ if nargin < 4
     bathyOn = 0; % if no file specified, don't plot bathymetry
 elseif ~isempty(bathyFile)
     bathyOn = 1;
+end
+
+if nargin >= 3 && isempty(targetsFile)
+        [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...
+            'Select targets file');
+        targetsFile = fullfile(path, fn);
 end
 
 % set fig number so you can place it in one spot on your desktop and not
