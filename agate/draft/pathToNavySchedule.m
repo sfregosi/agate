@@ -1,4 +1,0 @@
-function pathToNavySchedule(targets)
-
-
-end

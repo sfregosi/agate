@@ -65,6 +65,7 @@ end
 % now re-open to append
 fid = fopen(fullfile(path_bsLocal, 'downloaded_files_cache.txt'), 'a+');
 
+fprintf(1, 'Starting basestation file download...\n')
 
 %% access shell directly
 % set up shell connection
