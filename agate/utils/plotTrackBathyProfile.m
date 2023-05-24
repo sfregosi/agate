@@ -142,7 +142,7 @@ hold on;
 scatter(targets.cumDist_km, targets.depth, 10, 'k', 'filled');
 % label the waypoints
 text(targets.cumDist_km + 5, targets.depth - 100, targets.name, 'FontSize', 10);
-yline(-1000, '--', 'Color', '#900C3F');
+yline(-990, '--', 'Color', '#900C3F');
 grid on;
 hold off;
 
