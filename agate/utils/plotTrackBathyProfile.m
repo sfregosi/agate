@@ -140,6 +140,7 @@ cla reset;
 plot(ti.cumDist_km, ti.depth, 'k:');
 hold on;
 scatter(targets.cumDist_km, targets.depth, 10, 'k', 'filled')
+yline(-990, '--', 'Color', [0.635 0.078 0.184])
 grid on;
 hold off;
 
