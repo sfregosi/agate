@@ -32,24 +32,26 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %       none            creates figure
 %
 %   Examples:
-%       mapPlannedTrack(CONFIG, 'targetsFile', 'sg679', 1)
+%       # use specified targets file, plot bathymetry
+%       mapPlannedTrack(CONFIG, targetsFile, 'sg679', 1)
+%       % to be prompted to select the targets file, plot bathymetry
+%       mapPlannedTrack(CONFIG, [], 'sg679', 1)
+%       % to use default track name 'glider', and do not plot bathymetry
+%       mapPlannedTrack(CONFIG, targetsFile, [], 0) 
 %
 %   See also   MAKETARGETSFILE
 %
 %   TO DOs:
 %       - [ ] make possible to plot multiple gliders for one survey
-%       - [ ] add in prompt to select targets file
 % 
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   22 March 2023
-%   Updated:        06 April 2023
+%   Updated:        25 May 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-global CONFIG
 
 % argument checks
 if nargin < 6
@@ -58,6 +60,12 @@ end
 
 if isempty(bathyOn)
     bathyOn = 0;
+end
+
+if isempty(targetsFile)
+    [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...
+        'Select targets file');
+    targetsFile = fullfile(path, fn);
 end
 
 if isempty(trackName)
@@ -76,7 +84,7 @@ cla reset; clear g
 
 % build axes
 ax = axesm('mercator', 'MapLatLim', CONFIG.map.latLim, ...
-    'MapLonLim', CONFIG.map.lonLim, 'Frame', 'on');
+    'MapLonLim', CONFIG.map.lonLim, 'Frame', 'on'); %#ok<NASGU>
 
 gridm('PLineLocation', 1, 'MLineLocation', 1);
 plabel('PLabelLocation', 1, 'PLabelRound', -1, 'FontSize', 14);
@@ -114,13 +122,14 @@ if bathyOn
     cmap = cmocean('ice');
     cmap = cmap(150:256,:);
     colormap(cmap)
-    clim([-6000 100])
+    % matlab renamed caxis to clim in R2022a...so try both
+    try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<SEPEX>
     brighten(.4);
 
-    [c,h] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]);
-    [c,h] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
-    [c,h] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]);
-    [c,h] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+    [~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
+    [~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
+    [~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
+    [~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
 end
 
 % plot land
@@ -164,5 +173,5 @@ legend(h, {trackName}, 'Location', 'southeast', 'FontSize', 14)
 % add title
 title(sprintf('%s %s', CONFIG.glider, CONFIG.mission), 'Interpreter', 'none')
 
-
+end
 
