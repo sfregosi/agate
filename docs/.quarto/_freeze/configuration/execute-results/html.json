@@ -1,0 +1,14 @@
+{
+  "hash": "9f22c136f00c9fa9d7ce21bd666074e3",
+  "result": {
+    "markdown": "---\ntitle: \"Configuration file guide\"\nsubtitle: 'Guide for creating and modifying necessary configuration files'\n---\n\n\n\n\nMore detail coming! \n\n\n<sub>[Back to top](#)</sub>\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

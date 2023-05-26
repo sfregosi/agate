@@ -6,11 +6,11 @@
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/index.html</loc>
-    <lastmod>2023-05-10T23:04:55.554Z</lastmod>
+    <lastmod>2023-05-26T00:45:59.681Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/get-started.html</loc>
-    <lastmod>2023-05-10T23:06:58.526Z</lastmod>
+    <lastmod>2023-05-26T00:29:55.367Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/acknowledgments.html</loc>
@@ -23,5 +23,9 @@
   <url>
     <loc>https://sfregosi.github.io/agate-public/plotting-functions.html</loc>
     <lastmod>2023-05-10T23:06:48.051Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sfregosi.github.io/agate-public/configuration.html</loc>
+    <lastmod>2023-05-26T00:29:53.614Z</lastmod>
   </url>
 </urlset>

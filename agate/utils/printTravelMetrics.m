@@ -42,7 +42,7 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   25 April 2023
-%   Updated:        25 April 2023
+%   Updated:        25 May 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
