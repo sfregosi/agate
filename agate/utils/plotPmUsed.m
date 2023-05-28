@@ -26,10 +26,15 @@ function output = plotPmUsed(CONFIG, pp)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   27 May 2023
-%   Updated:
+%   Updated:        28 May 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if CONFIG.pm.loggers == 0 || ~isfield('pm', CONFIG)
+	fprintf(1, 'PMAR logger not available, cannot plot PMAR space used. Exiting...\n')
+	return
+end
 
 % for now just manually assign...to be worked out later...
 figNum = 548;
