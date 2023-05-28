@@ -1,4 +1,4 @@
-function output = plotPmUsed(CONFIG, pp)
+function plotPmUsed(CONFIG, pp)
 % PLOTPMUSED	Create PMAR diagnostic plots
 %
 %   Syntax:
@@ -31,7 +31,7 @@ function output = plotPmUsed(CONFIG, pp)
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if CONFIG.pm.loggers == 0 || ~isfield('pm', CONFIG)
+if CONFIG.pm.loggers == 0 || ~isfield(CONFIG, 'pm')
 	fprintf(1, 'PMAR logger not available, cannot plot PMAR space used. Exiting...\n')
 	return
 end
