@@ -38,8 +38,8 @@ website:
         text: Configuration guide
       - href: plotting-functions.qmd
         text: Plots
-      # - href: content/rendering.qmd
-      #   text: Rendering
+      - href: piloting-functions.qmd
+        text: Piloting
       # - href: content/rmarkdown.Rmd
       #   text: R Markdown files
       # - href: content/code.qmd
