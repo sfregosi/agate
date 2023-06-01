@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sfregosi.github.io/agate-public/get-started.html</loc>
-    <lastmod>2023-05-26T01:15:27.588Z</lastmod>
-  </url>
-  <url>
-    <loc>https://sfregosi.github.io/agate-public/plotting-functions.html</loc>
-    <lastmod>2023-05-26T01:15:30.640Z</lastmod>
+    <loc>https://sfregosi.github.io/agate-public/configuration.html</loc>
+    <lastmod>2023-06-01T18:00:29.464Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/index.html</loc>
-    <lastmod>2023-05-26T01:15:33.400Z</lastmod>
+    <lastmod>2023-06-01T18:00:32.408Z</lastmod>
   </url>
   <url>
-    <loc>https://sfregosi.github.io/agate-public/about.html</loc>
-    <lastmod>2023-05-26T01:15:35.916Z</lastmod>
+    <loc>https://sfregosi.github.io/agate-public/get-started.html</loc>
+    <lastmod>2023-06-01T18:00:35.092Z</lastmod>
   </url>
   <url>
-    <loc>https://sfregosi.github.io/agate-public/configuration.html</loc>
-    <lastmod>2023-05-26T01:15:38.640Z</lastmod>
+    <loc>https://sfregosi.github.io/agate-public/plotting-functions.html</loc>
+    <lastmod>2023-06-01T18:00:37.488Z</lastmod>
   </url>
   <url>
     <loc>https://sfregosi.github.io/agate-public/acknowledgements.html</loc>
-    <lastmod>2023-05-26T01:15:41.280Z</lastmod>
+    <lastmod>2023-06-01T18:00:39.476Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sfregosi.github.io/agate-public/about.html</loc>
+    <lastmod>2023-06-01T18:00:41.556Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sfregosi.github.io/agate-public/piloting-functions.html</loc>
+    <lastmod>2023-06-01T18:00:45.068Z</lastmod>
   </url>
 </urlset>
