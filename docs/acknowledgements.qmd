@@ -1,6 +1,15 @@
 ---
 title: "Acknowledgements"
+page-layout: full
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
 
 Development of this toolbox was funded by:
 
@@ -8,4 +17,4 @@ Development of this toolbox was funded by:
 
 **Further development** - NOAA's Uncrewed Systems Research Transition Office Grant awarded to Pacific Islands Fisheries Science Center and Oregon State University
 
-![Testing and ballasting of SG639 in a saltwater tank before deployment](images/sg639-in-tank-hawaii_2023-04-10.jpg){#fig-tank-test width=75%}
+![Testing and ballasting of SG639 in a saltwater tank before deployment](images/sg639-in-tank-hawaii_2023-04-10.JPG){#fig-tank-test width=50%}

@@ -89,15 +89,22 @@ mlabel('MLabelLocation', 1, 'MLabelRound', -1, ...
     'MLabelParallel', 'south', 'FontSize', 14);
 tightmap
 
-% add north arrow and scale bar
+% add north arrow - if location specified
+if isfield(CONFIG.map, 'naLat') && isfield(CONFIG.map, 'naLon')
 CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
     CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
+end
+
+% add scale bar - if location and scale are specified
+if isfield(CONFIG.map, 'scalePos') && isfield(CONFIG.map, 'scaleMajor') && ...
+		isfield(CONFIG.map, 'scaleMinor')
 scaleruler on
 % showaxes
 setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
     'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
     'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
     'FontSize', 14);
+end
 
 %%  plot bathymetry - slow step
 %  plot bathymetry - slow step - optional
