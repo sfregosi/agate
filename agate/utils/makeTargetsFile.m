@@ -1,4 +1,4 @@
-function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod)
+function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod, radius)
 %MAKETARGETSFILE Create properly formatted targets text file from kml
 %
 %   Syntax:
@@ -14,20 +14,22 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod)
 %       will be generated from the prefix
 %
 %   Inputs:
-%       CONFIG     agate mission configuration settings, loaded during
-%                  agate initialization. Minimum fields are CONFIG.glider,
-%                  CONFIG.mission, CONFIG.path.mission
-%       kmlFile    Fullfile path to kml path file to be read in, if left
-%                  blank, will prompt to select file
-%       wpMethod   Method to define waypoint names, either
-%                     'file' = load text file with names, will prompt to
-%                            select file
+%       CONFIG     [struct] agate mission configuration settings, loaded 
+%                  during agate initialization. Minimum fields are 
+%                  CONFIG.glider, CONFIG.mission, CONFIG.path.mission
+%       kmlFile    [string] Fullfile path to kml path file to be read in, 
+%                  if empty, will prompt to select file
+%       wpMethod   [string] Method to define waypoint names, either
+%                     'file'   = load text file with names, will prompt to
+%                              select file
 %                     'manual' = manually type in all waypoints in command
-%                             window
+%                              window
 %                     'prefix' = will automatically generate alpha-numeric
-%                             waypoints based on string entered as wpMethod
-%                             e.g., 'LW' will generate 'LW01', 'LW02', etc
-%                             and will end with RECV
+%                              waypoints based on string entered as wpMethod
+%                              e.g., 'LW' will generate 'LW01', 'LW02', etc
+%                              and will end with RECV
+%       radius     [vector] radius around waypoint that the glider must 
+%                  reach before moving on to next waypoint. Default is 2000
 %
 %   Outputs:
 %       targetsOut Fullpath filename of newly created targets file
@@ -45,7 +47,9 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod)
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-global CONFIG
+if nargin < 5
+	radius = 2000;
+end
 
 % if no .kml specified...
 if isempty(kmlFile)
@@ -54,7 +58,7 @@ if isempty(kmlFile)
     kmlFile = fullfile(kmlPath, kmlFileName);
 end
 
-% pull out just  name for naming output targets file
+% pull out just name for naming output targets file
 [kmlPath, kmlName, ~] = fileparts(kmlFile);
 
 fid = fopen(kmlFile);
@@ -133,12 +137,14 @@ fprintf(fid, '%s %s%s\n', '/ Deployment will take place at', wpNames{1}, ...
 fprintf(fid, '%s\n', '/ template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=XXXX goto=WPzz');
 
 for f = 1:length(wpNames)-1
-    fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=2000 goto=%s\n', ...
-        wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), degMinLons(f,2), wpNames{f+1});
+    fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=%4.f goto=%s\n', ...
+        wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), ...
+		degMinLons(f,2), radius, wpNames{f+1});
 end
 f = length(wpNames);
-fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=2000 goto=%s', ...
-    wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), degMinLons(f,2), wpNames{f});
+fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=%4.f goto=%s', ...
+    wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), ...
+	degMinLons(f,2), radius, wpNames{f});
 fclose(fid);
 
 end

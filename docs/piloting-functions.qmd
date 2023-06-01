@@ -9,15 +9,15 @@ library(fontawesome)
 
 This page is meant to demonstrate some suggested workflows and examples of how the piloting functions may be used in an active survey to help the pilot download basestation files, create monitoring plots, and monitor mission progress.
 
-All code on this page combined in the `workflow_downloadScript.m` in the **`example_workflows`** folder within the `agate-public/agate` folder. 
+All code on this page combined in the [`workflow_downloadScript.m`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_downloadScript.m) in the 'example_workflows' folder within the 'agate-public/agate' folder. 
 
-<sub>Details for each piloting function (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.<sub>
+Details for each piloting function (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
 
 ### Initialization
 
 To run any of the `agate` piloting functions, the toolbox must be initialized with a configuration file. 
 
-No configuration file yet? Go back to [Get started - Create configuration files](get-started.html#create-configuration-files). At a minimum, for agate to initialize, the configuration file must include the top *required* portion. If `agate` will be used to download files from the basestation to the local computer, a `basestation.cnf` file is required and the ` OPTIONAL - working with the basestation ` section must be completed. 
+No configuration file yet? Go back to [Get started - Create configuration files](get-started.html#create-configuration-files). At a minimum, for `agate` to initialize, the configuration file must include the top *required* portion. If `agate` will be used to download files from the basestation to the local computer, a `basestation.cnf` file is required and the ` OPTIONAL - working with the basestation ` section must be completed. 
 
 The examples on this page include some plotting, so the ` OPTIONAL - plotting ` section should be complete. Examples below will also include some outputs for both the **PMAR** (`pm`) and **WISPR** (`ws`) acoustic systems. Those are specified in the configuration file and the examples below will indicate which system is 'active' for each example. This is controlled with the `CONFIG.pm.loggers` and `CONFIG.ws.loggers` options in the ` OPTIONAL - acoustics ` section of the configuration file. 
 
@@ -58,7 +58,7 @@ downloadBasetationFiles(CONFIG, path_bsLocal)
 
 Many of the plotting and other piloting-related functions within `agate` rely on a `pp` (piloting parameters) variable - a large table with various outputs from the .nc and .log files compiled in one place. Use the `extractPilotingParams` to create this table. 
 
-The last argument, `preload`, is used to specify if the table should be made from scratch (does not load any previously created table), or if a previous table should be loaded and any new dives appended to that table. As more dives occur during a mission, creating a new table each time can get slow, so saving the previous table and setting `preload` to `1` can save processing time. If the piloting parameters table is saved in the default location shown in the `save()` step below, then it will be loaded automatically. If it is saved elsewhere, the function will prompt to select the correct `.mat` to load. 
+The last argument, `preload`, is used to specify if the table should be made from scratch (does not load any previously created table), or if a previous table should be loaded and any new dives appended to that table. As more dives occur during a mission, creating a new table each time can get slow, so saving the previous table and setting `preload` to `1` can save processing time. If the piloting parameters table is saved in the default location shown in the `save()` step below, then it will be loaded automatically. If it is saved elsewhere, the function will prompt to select the correct .mat to load. 
 
 ```default
 % create piloting parameters (pp) table from downloaded basestation files
@@ -89,7 +89,7 @@ load(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 In this example, bathymetry is plotted, specified by `CONFIG.map.bathyFile`. That last argument can be left out to not plot bathymetry (which can be slow depending on the resolution of the selected bathymetry raster). If the last argument is set to `1`, a prompt will appear to select the correct bathymetry file. 
 
-The below example code saves the map both as a `.fig` file and a `.png`. The `.fig` version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The `.png` is good for a quick easy overview and is sharable, but doesn't allow the interactive zooming that a pilot may need. 
+The below example code saves the map both as a .fig file and a .png. The .fig version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The .png is good for a quick easy overview and is sharable, but doesn't allow the interactive zooming that a pilot may need. 
 
 High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). Depending on the needed resolution, the 60 arc second TIFF may be sufficient, and is a reasonable size for download and plotting, but is slow to load because it covers the whole globe. Alternatively, finer resolution (15-60 arc second resolution options) for the specific area of interest can be extracted using the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) to download a TIFF that covers a smaller area, but in a smaller sized file for faster loading and plotting. 
 
@@ -154,7 +154,7 @@ plotErmaDetections(CONFIG, path_bsLocal, pp.diveNum(end))
 
 ### Printing errors and mission speed and duration information
 
-The Seaglider `.log` file provides a summary of any errors that occurred during each dive, but they are just a list of integers that then have to be compared to a manual (and differ by Rev B vs Rev E!) so there is a function to print out all non-zero errors and a short descriptor of the type. Any dive can be specified in the second argument, or just the most recent dive as shown below. 
+The Seaglider .log file provides a summary of any errors that occurred during each dive, but they are just a list of integers that then have to be compared to a manual (and differ by Rev B vs Rev E!) so there is a function to print out all non-zero errors and a short descriptor of the type. Any dive can be specified in the second argument, or just the most recent dive as shown below. 
 
 ```default
 % print out errors with info on type, for the most recent dive
