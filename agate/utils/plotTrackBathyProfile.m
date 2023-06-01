@@ -1,4 +1,4 @@
-function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, figNum)
+function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, yLine, figNum)
 % PLOTTRACKBATHYPROFILE	Create bathymetric profile for planned targets
 %
 %   Syntax:
@@ -14,10 +14,12 @@ function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, figNum)
 %       depths at actual targets waypoints are plotted.
 %
 %   Inputs:
-%       CONFIG        agate global mission configuration settings from .cnf
-%       targetsFile   optional argument to targets file. If no file
+%       CONFIG        [struct] agate global configuration settings from .cnf
+%       targetsFile   [string] optional argument to targets file. If no file
 %                     specified, will prompt to select one, and if no path
 %                     specified, will prompt to select path
+%       yLine         [vector] optional argument to set depth to place 
+%                     horizontal indicator line; default is 990 m
 %       figNum        optional argument defining figure number so it
 %                     doesn't keep making new figs but refreshes existing
 %
@@ -32,7 +34,7 @@ function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   10 May 2023
-%   Updated:
+%   Updated:        01 June 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,14 +43,27 @@ function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, figNum)
 global CONFIG
 
 % argument checks
+if nargin < 5
+	figNum = 211;
+end
 if nargin < 4
 	figNum = 211;
+	yLine = -990;
 end
 
 % use default bathy if none specified
 if nargin < 3 || isempty(bathyFile)
 	% try this default
-	bathyFile = fullfile(CONFIG.path.shp, 'etopo', 'ETOPO2022_v1_60s_N90W180_surface.tif');
+	if isfield(CONFIG.path, 'shp')
+		shpDir = CONFIG.path.shp;
+	else
+		shpDir = 'C:\';
+	end
+	bathyFile = fullfile(shpDir, 'etopo', 'ETOPO2022_v1_60s_N90W180_surface.tif');
+	if nargin < 3 % also need to set these
+		figNum = 211;
+		yLine = -990;
+	end
 end
 
 % select targetsFile if none specified
@@ -90,7 +105,7 @@ ti.depth = nan(height(ti), 1);
 
 % check that specified bathymetric file exists
 if ~exist(bathyFile, 'file')
-	[fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etopo .tif file');
+	[fn, path] = uigetfile([shpDir '*.tif;*.tiff'], 'Select etopo .tif file');
 	bathyFile = fullfile(path, fn);
 end
 % read in and crop bathymetry data
@@ -141,12 +156,14 @@ plot(ti.cumDist_km, ti.depth, 'k:');
 hold on;
 scatter(targets.cumDist_km, targets.depth, 10, 'k', 'filled')
 % label the waypoints
-text(targets.cumDist_km + 5, targets.depth - 100, targets.name, 'FontSize', 10);	
-yline(-990, '--', 'Color', '#900C3F');
+text(targets.cumDist_km + sum(targets.cumDist_km)*.006, targets.depth - 100, ...
+	targets.name, 'FontSize', 10);	
+yline(yLine, '--', 'Color', '#900C3F');
 grid on;
 hold off;
 
 xlabel('track length [km]')
+ylim([-round((max(Z(:)) + max(Z(:))*.1)) 10])
 ylabel('depth [m]')
 set(gca, 'FontSize', 12)
 title(sprintf('%s %s %s', CONFIG.glider, CONFIG.mission, ...
