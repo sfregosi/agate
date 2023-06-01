@@ -50,7 +50,7 @@ figPosition = [100   100    760    400];
 %     end
 % end
 
-figure(figNum); 
+figure(figNum);
 set(gcf, 'Name', 'PMAR Use');
 clf;
 
@@ -61,7 +61,13 @@ nexttile(1)
 plot(pp.diveDur_min, pp.pmUsed_GB, 'k.');
 hold on;
 % highlight the last 5 dives
-plot(pp.diveDur_min(end-4:end), pp.pmUsed_GB(end-4:end), 'co')
+scatter(pp.diveDur_min(end-4:end), pp.pmUsed_GB(end-4:end), 40, ...
+	pp.diveNum(end-4:end), 'o', 'LineWidth', 2)
+cmap = cmocean('matter', 7);
+cmap = flipud(cmap(2:6,:));
+colormap(cmap)
+h = colorbar('Ticks', pp.diveNum(end-4:end));
+h.Label.String = 'dive number';
 grid on;
 hold off;
 xlabel('dive duration [min]');
