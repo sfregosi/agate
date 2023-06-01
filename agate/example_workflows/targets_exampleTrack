@@ -1,0 +1,9 @@
+/ Targets file for mission sgXXX_Location_Mon20XX
+/ Created on 2023-06-01 21:23 UTC
+/ Deployment will take place at WP01, recovery at RECV
+/ template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=XXXX goto=WPzz
+WP01 lat=1939.7082 lon=-15603.6153 radius=2000 goto=WP02
+WP02 lat=1943.5576 lon=-15608.6940 radius=2000 goto=WP03
+WP03 lat=1936.7737 lon=-15613.9137 radius=2000 goto=WP04
+WP04 lat=1932.4449 lon=-15607.2072 radius=2000 goto=RECV
+RECV lat=1938.4333 lon=-15603.1563 radius=2000 goto=RECV

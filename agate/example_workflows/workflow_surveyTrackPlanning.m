@@ -42,24 +42,25 @@ global CONFIG
 
 %% (1) Generate targets file from Google Earth path saved as .kmml
 
-% either prompt to select
-[file, path] = uigetfile([CONFIG.path.mission, '*.kml'], 'Select .kml file');
-kmlFile = fullfile(path, file);
-% or specify file name
-kmlFile = fullfile(CONFIG.path.mission, 'sg679_draft_2023-04-20.kml');
+% specify file name to .kml path
+kmlFile = fullfile(CONFIG.path.mission, 'exampleTrack.kml');
+% OR
+% leave empty and will prompt to select .kml path
+kmlFile = []; 
+
+% specify radius
+radius = 2000;
 
 % create targets file, 3 options to name waypoints
 % (1) prefix-based automated naming
-prefix = 'LW'; %'WP'
-targetsOut = makeTargetsFile(CONFIG, kmlFile, prefix);
+prefix = 'WP'; % Any two letters make easy to reference and read options
+targetsOut = makeTargetsFile(CONFIG, kmlFile, prefix, radius);
 % OR
 % (2) use a text file with list of waypoint names; will prompt to select .txt
-targetsOut = makeTargetsFile(CONFIG, kmlFile, 'file');
+targetsOut = makeTargetsFile(CONFIG, kmlFile, 'file', radius);
 % OR
 % (3) manually enter in command window when prompted
-targetsOut = makeTargetsFile(CONFIG, kmlFile, 'manual');
-
-
+targetsOut = makeTargetsFile(CONFIG, kmlFile, 'manual', radius);
 
 %% (2) Plot and print/save proposed track map
 
@@ -67,22 +68,25 @@ targetsOut = makeTargetsFile(CONFIG, kmlFile, 'manual');
 bathyOn = 1;
 figNum = 26;
 
-% get file name only for plot saving below
+% use targetsOut file from above as input targets file
 targetsFile = targetsOut;
-[~, targetsName, ~] = fileparts(targetsFile);
 
 % create plot
 mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, figNum)
 
-% save
-% as .png
+
+% get file name only for plot saving
+[~, targetsName, ~] = fileparts(targetsFile);
+
+% save as .png
 exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
 	CONFIG.mission, '_plannedTrack_' targetsName, '.png']), ...
     'Resolution', 300)
 % as .fig
 savefig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' targetsName, '.fig']))
-% as .pdf or .eps - requires the export_fig toolbox available at
+
+% save as .pdf or .eps - requires the export_fig toolbox available at
 %  https://github.com/altmany/export_fig
 export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' targetsName, '.eps']), '-eps', '-painters');
@@ -102,20 +106,25 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
 	CONFIG.mission, '_targetsBathymetryProfile_' targetsName, '.png']), ...
     'Resolution', 300)
 
-%% (4) Calculate full distance of track
-% As well as distance to the end from each waypoint, which is useful in
-% within-mission planning and adjustments
+%% (4) Calculate track distance and mission duration
 
 % if no targetsFile specified, will prompt to select
 [targets, targetsFile] = readTargetsFile(CONFIG);
 % OR specify targetsFile variable from above
 [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile);
 
-% loop through all targets (expect RECV)
+% loop through all targets (expect RECV), calc distance between waypoints
 for f = 1:height(targets) - 1
     [targets.distToNext_km(f), ~] = lldistkm([targets.lat(f+1) targets.lon(f+1)], ...
         [targets.lat(f) targets.lon(f)]);
 end
 
+% specify expected avg glider speed in km/day
+avgSpd = 15; % km/day
+
+% print out summary
 [targetsPath, targetsName, ~] = fileparts(targetsFile);
-fprintf(1, 'Total tracklength for %s: %.0f km\n', targetsName, sum(targets.distToNext_km));
+fprintf(1, 'Total tracklength for %s: %.0f km\n', targetsName, ...
+	sum(targets.distToNext_km));
+fprintf(1, 'Estimated mission duration, at %i km/day: %.1f days\n', avgSpd, ...
+	sum(targets.distToNext_km)/avgSpd);
