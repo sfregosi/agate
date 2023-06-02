@@ -54,7 +54,9 @@ if ~exist(fullfile(path_bsLocal, 'downloaded_files_cache.txt'), 'file')
 		'line from this file\n# Created %s\n'], datetime('now', 'Format', ...
 		'HH:mm:ss dd MMM uuuu ZZZZ', 'TimeZone', '+0000'));
 	fclose(fid);
-elseif exist(fullfile(path_bsLocal, 'downloaded_files_cache.txt'), 'file')
+end
+
+if exist(fullfile(path_bsLocal, 'downloaded_files_cache.txt'), 'file')
 	% read in the cached file (have to do this before specifying append or
 	% it comes up empty)
 	fid = fopen(fullfile(path_bsLocal, 'downloaded_files_cache.txt'), 'r');
@@ -75,31 +77,31 @@ ssh2_conn = ssh2_config(CONFIG.bs.host, ...
 %% NC FILES
 [ssh2_conn, ncFileList] = ssh2_command(ssh2_conn, ...
 	['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.nc']);
-downloadFileType(ncFileList, 'p', df, fid, path_bsLocal, ssh2_conn);
+[~, df] = downloadFileType(ncFileList, df, fid, path_bsLocal, ssh2_conn);
 disp('**End of .nc files**');
 
 %% LOG FILES
 [ssh2_conn, logFileList] = ssh2_command(ssh2_conn, ...
 	['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.log']);
-downloadFileType(logFileList, 'p', path_bsLocal, ssh2_conn);
+[~, df] = downloadFileType(logFileList, df, fid, path_bsLocal, ssh2_conn);
 disp('**End of .log files**');
 
 %% ENG FILES
 [ssh2_conn, engFileList] = ssh2_command(ssh2_conn, ...
 	['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.eng']);
-downloadFileType(engFileList, 'p', path_bsLocal, ssh2_conn);
+[~, df] = downloadFileType(engFileList, df, fid, path_bsLocal, ssh2_conn);
 disp('**End of .eng files**');
 
 %% ASC FILES
 [ssh2_conn, ascFileList] = ssh2_command(ssh2_conn, ...
 	['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.asc']);
-downloadFileType(ascFileList, 'p', path_bsLocal, ssh2_conn);
+[~, df] = downloadFileType(ascFileList, df, fid, path_bsLocal, ssh2_conn);
 disp('**End of .asc files**');
 
 %% DAT FILES
 [ssh2_conn, datFileList] = ssh2_command(ssh2_conn, ...
 	['ls /home/' CONFIG.glider '/p' CONFIG.glider(3:end) '*.dat']);
-downloadFileType(datFileList, 'p', path_bsLocal, ssh2_conn);
+[~, df] = downloadFileType(datFileList, df, fid, path_bsLocal, ssh2_conn);
 disp('**End of .dat files**');
 
 %% PMAR FILES
@@ -109,24 +111,24 @@ if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
 	[ssh2_conn, pmarFolderList] = ssh2_command(ssh2_conn, ...
 		['ls -d /home/' CONFIG.glider '/pm*/']);
 
-	% check which already have been downloaded.
-	for f = 1:length(pmarFolderList)
-		[ssh2_conn, pmarFileList] = ssh2_command(ssh2_conn, ...
-			['ls ' pmarFolderList{f} '*.eng']);
-		if isempty(pmarFolderList{f})
-			continue
-		else
-			if exist(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)), 'dir')
-				% don't download it again
-			else
+	if ~isempty(pmarFolderList)
+		% check which already have been downloaded.
+		for f = 1:length(pmarFolderList)
+			mIdx = regexp(pmarFolderList{f}, 'pm');
+			mfn = pmarFolderList{f}(mIdx:end);
+			fMask = ~cellfun(@isempty, regexp(df, mfn));
+			if isempty(find(fMask, 1)) % doesn't exist in download cache file
+				% make a folder on the basestation
 				mkdir(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
-				ssh2_conn = scp_get(ssh2_conn, pmarFileList, fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
-				disp([pmarFolderList{f} ' now saved']);
+
+				% get files from that folder
+				[ssh2_conn, pmarFileList] = ssh2_command(ssh2_conn, ...
+					['ls ' pmarFolderList{f} '*.eng']);
+				[~, df] = downloadFileType(pmarFileList, df, fid, path_bsLocal, ssh2_conn);
 			end
 		end
 	end
 	disp('**End of PMAR folders**');
-	% end
 end
 
 %% WISPR FILES
@@ -134,9 +136,9 @@ end
 if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
 	[ssh2_conn, wsFileList] = ssh2_command(ssh2_conn, ...
 		['ls /home/' CONFIG.glider '/ws*.x*']);
-	files = downloadFileType(wsFileList, 'ws', path_bsLocal, ssh2_conn);
-	for i = 1 : length(files)
-		processWisprDetFile(path_bsLocal, files{i});
+	[wsFiles, df] = downloadFileType(wsFileList, df, fid, path_bsLocal, ssh2_conn);
+	for i = 1 : length(wsFiles)
+		processWisprDetFile(path_bsLocal, wsFiles{i});
 	end
 	% Should clean up and remove the .x00 files? Or move them to a subdirectory.
 	disp('**End of wispr files**');
@@ -161,10 +163,10 @@ if ~isempty(diveNums)
 
 	% now find the index of the last cmdfile for that dive number
 	unqDives = unique(diveNums);
-	sumPerDive = [];
+	sumPerDive = nan(length(unqDives),1);
 	for u = 1:length(unqDives)
 		uD = unqDives(u);
-		sumPerDive = [sumPerDive; sum(diveNums == uD)];
+		sumPerDive(u) = sum(diveNums == uD);
 	end
 	sumPerDive = sumPerDive - 1; % for first cmdfile uploaded per dive
 
@@ -186,11 +188,6 @@ if ~isempty(diveNums)
 				disp([cmdFileName ' now saved']);
 			catch
 				disp(['error with ' cmdFileName])
-				%             if uD == 2
-				%                 cmdFileName = '\home\sg607\cmdfile.2.12'; % call 11 was on board so didnt come through
-				%                 ssh2_conn = scp_get(ssh2_conn, cmdFileName, outDir);
-				%                 disp([cmdFileName ' now saved']);
-				%             end
 			end
 		end
 	end
@@ -224,8 +221,7 @@ disp('**End of .pdos files**');
 [ssh2_conn, udFile] = ssh2_command(ssh2_conn, ...
 	['ls /home/' CONFIG.glider '/' CONFIG.glider '*_up_and_down_profile.nc']);
 
-
-% check which already have been downloaded.
+% always download this one because it is updated after each dive
 if ~isempty(udFile{:})
 	try
 		ssh2_conn = scp_get(ssh2_conn, udFile, path_bsLocal);
@@ -235,17 +231,18 @@ if ~isempty(udFile{:})
 	end
 end
 
-
 %% close port and file
-ssh2_conn = ssh2_close(ssh2_conn);
+ssh2_close(ssh2_conn);
 fclose(fid);
 
 end
 
+
+
 %% %%%%%%%%%%%%%%%%
 % NESTED FUNCTIONS
 % %%%%%%%%%%%%%%%%%
-function downloadedFiles = downloadFileType(fileList, matchExp, df, fid, path_bsLocal, ssh2_conn)
+function [downloadedFiles, df] = downloadFileType(fileList, df, fid, path_bsLocal, ssh2_conn)
 % check which files for that extension have already been downloaded and
 % download any that haven't. This works for .nc, .log, .eng., .asc, and
 % .dat
@@ -254,17 +251,18 @@ for f = 1:length(fileList)
 	if isempty(fileList{f})
 		return
 	else
-		mIdx = regexp(fileList{f}, matchExp);
-		mfn = fileList{f}(mIdx:end);
-		fMask = ~cellfun(@isempty, regexp(df, mfn));
+		fMask = ~cellfun(@isempty, regexp(df, fileList{f}));
 		if isempty(find(fMask, 1)) % doesn't exist in download cache file
 			% download it
 			ssh2_conn = scp_get(ssh2_conn, fileList{f}, path_bsLocal);
 			disp([fileList{f} ' now saved']);
 			downloadedFiles{end + 1} = fileList{f};		%#ok<AGROW>
 			% add it to cache file
-			fprintf(fid, '%s, %s\n', mfn, datetime('now', 'Format', ...
+			fprintf(fid, '%s, %s\n', fileList{f}, datetime('now', 'Format', ...
 				'HH:mm:ss dd MMM uuuu ZZZZ', 'TimeZone', '+0000'));
+			% and add to df
+			df{end+1} = sprintf('%s, %s\n', fileList{f}, datetime('now', 'Format', ...
+				'HH:mm:ss dd MMM uuuu ZZZZ', 'TimeZone', '+0000')); %#ok<AGROW>
 		end
 	end
 end
