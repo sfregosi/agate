@@ -39,7 +39,7 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:        23 May 2023
+%   Updated:        02 June 2023
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,17 +114,16 @@ if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
 	if ~isempty(pmarFolderList)
 		% check which already have been downloaded.
 		for f = 1:length(pmarFolderList)
-			mIdx = regexp(pmarFolderList{f}, 'pm');
-			mfn = pmarFolderList{f}(mIdx:end);
-			fMask = ~cellfun(@isempty, regexp(df, mfn));
+			fMask = ~cellfun(@isempty, regexp(df, pmarFolderList{f}));
 			if isempty(find(fMask, 1)) % doesn't exist in download cache file
 				% make a folder on the basestation
-				mkdir(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
-
-				% get files from that folder
+				path_bsLocal_pm = fullfile(path_bsLocal, pmarFolderList{f}(end-7:end));
+				mkdir(path_bsLocal_pm);
+				% download new files
 				[ssh2_conn, pmarFileList] = ssh2_command(ssh2_conn, ...
 					['ls ' pmarFolderList{f} '*.eng']);
-				[~, df] = downloadFileType(pmarFileList, df, fid, path_bsLocal, ssh2_conn);
+				[~, df] = downloadFileType(pmarFileList, df, fid, ...
+					path_bsLocal_pm, ssh2_conn);
 			end
 		end
 	end
@@ -244,8 +243,16 @@ end
 % %%%%%%%%%%%%%%%%%
 function [downloadedFiles, df] = downloadFileType(fileList, df, fid, path_bsLocal, ssh2_conn)
 % check which files for that extension have already been downloaded and
-% download any that haven't. This works for .nc, .log, .eng., .asc, and
-% .dat
+% download any that haven't. This works for .nc, .log, .eng., .asc, .dat, 
+% pmar and wispr
+%
+% fileList      [cell] with all files of that type present on basestation
+% df            [cell aray] list of previously downloaded files
+% fid           [integer] file identifier for cache text file to write any
+%               new downloaded files
+% path_bsLocal  [string] location to save newly downloaded files
+% ssh2_conn     [struct] active ssh connection
+
 downloadedFiles = {};
 for f = 1:length(fileList)
 	if isempty(fileList{f})
