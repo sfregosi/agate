@@ -92,7 +92,8 @@ if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
                 % don't download it again
             else
                 mkdir(fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
-                ssh2_conn = scp_get(ssh2_conn, pmarFileList, fullfile(path_bsLocal, pmarFolderList{f}(end-7:end)));
+                ssh2_conn = scp_get(ssh2_conn, pmarFileList, fullfile(path_bsLocal, ...
+					pmarFolderList{f}(end-7:end)));
                 disp([pmarFolderList{f} ' now saved']);
             end
         end
