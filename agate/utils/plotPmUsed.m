@@ -1,5 +1,5 @@
 function plotPmUsed(CONFIG, pp)
-% PLOTPMUSED	Create PMAR diagnostic plots
+%PLOTPMUSED	Create PMAR diagnostic plots
 %
 %   Syntax:
 %       PLOTPMUSED(CONFIG)
