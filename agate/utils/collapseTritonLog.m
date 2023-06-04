@@ -1,44 +1,64 @@
 function [tl, tlm] = collapseTritonLog(logFile, eventGap)
-% COLLAPSETRITONLOG	Collapse a Triton log to have one entry per event
+%COLLAPSETRITONLOG	Collapse a Triton log to have one entry per event
 %
-%	Syntax:
-%		TL = COLLAPSETRITONLOG(FULLFILENAME)
+%   Syntax:
+%       TL = COLLAPSETRITONLOG(FULLFILENAME)
 %
-%	Description:
-%		Collapse/clean up a Triton log so there is just a single line/entry
-%		per odontocete event. It merges duplicate lines where multiple
-%		sound types are noted (e.g., clicks and whistles in a single UO
-%		event) but they are from a single dated `EventNumber`. Optional
-%       argument to combines any events that occur within `eventGap` mins
+%   Description:
+%       Collapse/clean up a Triton log so there is just a single line/entry
+%       per odontocete event. It merges duplicate lines where multiple
+%       sound types are noted (e.g., clicks and whistles in a single UO
+%       event) but they are from a single dated 'EventNumber'. Optional
+%       argument to combine any events that occur within 'eventGap' mins
 %       of one another. This merging by time is an optional argument by
-%       setting `eventGap` to 0 or leave out.
+%       setting 'eventGap' to 0 or leave out.
 %
-%	Inputs:
-%		logFile    file name and full path to log to be processed
-%       eventGap   optional argument to combine events with the same
-%                  species ID code taht are separated by less than the
+%   Inputs:
+%       logFile    [string] fullpath filename to log to be processed. If no
+%                  file is specified (no arguments) or is empty, or is
+%                  incorrect, will prompt to select
+%       eventGap   [integer] optional argument to combine events with the 
+%                  same species ID code that are separated by less than the
 %                  integer specified by eventGap
 %
-%	Outputs:
-%		tl         table as a compressed triton log
+%   Outputs:
+%       tl         table as a compressed triton log
 %
-%	Examples:
+%   Examples:
 %       tl = collapseTritonLog('E:\sg639_MHI_log_mw.xlsx', 15);
-%	See also
+% 
+%   See also
 %
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%	FirstVersion:   15 February 2023
+%	Updated:        6 June 2023
+%
 %	Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
-%
-%	FirstVersion: 	15 February 2023
-%	Updated:
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 2
     eventGap = 0;
 end
 
+if nargin < 1
+	logFile = [];
+end
+
+% agate CONFIG is not required, but if it is present, it will be used in
+% file search path if needed
+if exist('CONFIG', 'var')
+	searchPath = CONIFG.path.mission;
+else
+	searchPath = cd;
+end
+% check file exists and if not prompt to select
+if ~exist(logFile, 'file')
+	[file, path] = uigetfile(fullfile(searchPath, '*.xlsx;*.xls'), 'Select Triton log file');
+	logFile = fullfile(path, file);
+end
 
 % read in raw triton log xls
 t = readtable(logFile);
