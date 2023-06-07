@@ -109,14 +109,14 @@ if nargin < 1
     forceSRate = 180260;            % uncomment to force a given sample rate
     
 else % you can specify the configuration with a separate configuration script
-    inDir = CONFIG.inDir;
-    outDir = CONFIG.outDir;
-    outTemplate = CONFIG.outTemplate;
-    showProgress = CONFIG.showProgress;
-    restartDir = CONFIG.restartDir;
-    decim = CONFIG.decim;
-    relativeCutoffFreq = CONFIG.relativeCutoffFreq;
-    forceSRate = CONFIG.forceSRate;
+    inDir = CONFIG.pm.inDir;
+    outDir = CONFIG.pm.outDir;
+    outTemplate = CONFIG.pm.outTemplate;
+    showProgress = CONFIG.pm.showProgress;
+    restartDir = CONFIG.pm.restartDir;
+    decim = CONFIG.pm.decim;
+    relativeCutoffFreq = CONFIG.pm.relativeCutoffFreq;
+    forceSRate = CONFIG.pm.forceSRate;
     
 end
 
