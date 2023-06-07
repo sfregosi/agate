@@ -11,6 +11,7 @@ agate/draft/
 *.cnf
 !basestation.cnf
 !agate_config_example.cnf
+!pmarConvert_config_example.cnf
 
 
 # R STUFF # 

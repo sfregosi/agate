@@ -1,8 +1,10 @@
-% %%%%%% AGATE MISSION CONFIGURATION FILE %%%%%%
+% agate mission configuration file
 % create a new file for each glider and mission
 % Guide for creating configuration files:  
 %    https://sfregosi.github.io/agate-public/get-started.html#create-configuration-files
-
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%% TEMPLATE - PUT SURVEY METADATA HERE %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % %%%%%% REQUIRED CONFIG PARAMETERS %%%%%%
 % define glider and mission information
@@ -32,6 +34,7 @@ CONFIG.pm.activeCard = 0; % current active card; optional for sgVer 66.12
                           % (will be updated in log file automatically);
                           % necessary to update throughout mission for sgVer 67.0
 CONFIG.pm.numCards = 4;
+CONFIG.pm.cnfFile = fullfile(CONFIG.path.mission, 'pmarConvert_config_sgXXX_Location_MonYYYY.cnf');
 
 % wispr settings
 CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive

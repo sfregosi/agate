@@ -36,7 +36,7 @@ warning off % this is turned off for plotting messages
 global CONFIG
 % CONFIG = struct;
 
-CONFIG.ver = '0.1.20230604 DEV BRANCH github.com/sfregosi/agate-public';
+CONFIG.ver = '0.1.20230607 DEV BRANCH github.com/sfregosi/agate-public';
 fprintf('              agate version %s\n\n', CONFIG.ver)
 
 if nargin < 1
