@@ -17,7 +17,9 @@ CONFIG.restartDir = '';           % start at the beginning and do all the direct
 % CONFIG.pm.restartDir = 'pm0006a';  % re-start conversion at this directory
 
 CONFIG.pm.decim = 0;             % use this line if you don't want to downsample
-% CONFIG.pm.decim = 18;          % use this line to downsample (by this factor)CONFIG.relativeCutoffFreq = 0.8;  % relative to Nyquist freq of decimated signal
+% CONFIG.pm.decim = 18;          % use this line to downsample (by this factor)
+CONFIG.pm.relativeCutoffFreq = 0.8;  % relative to Nyquist freq of decimated signal
+                                     % only used if decimating (CONFIG.pm.decim > 2)
 
 % CONFIG.pm.forceSRate = NaN;    % uncomment to leave sample rates as is
 CONFIG.pm.forceSRate = 180260;   % uncomment to force a given sample rate
