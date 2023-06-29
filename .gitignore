@@ -1,7 +1,7 @@
 # FOLDERS #
 ###########
-# drafts under development
-agate/draft
+# draft tools in development
+agate/draft/
 
 # MATLAB #
 ##########
@@ -11,6 +11,7 @@ agate/draft
 *.cnf
 !basestation.cnf
 !agate_config_example.cnf
+!pmarConvert_config_example.cnf
 
 
 # R STUFF # 

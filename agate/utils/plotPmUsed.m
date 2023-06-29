@@ -68,6 +68,7 @@ cmap = flipud(cmap(2:6,:));
 colormap(cmap)
 h = colorbar('Ticks', pp.diveNum(end-4:end));
 h.Label.String = 'dive number';
+
 grid on;
 hold off;
 xlabel('dive duration [min]');

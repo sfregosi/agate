@@ -27,7 +27,7 @@ function setCONFIG(missionCnf)
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
 %   FirstVersion: 	06 April 2023
-%   Updated:        14 April 2023
+%   Updated:        07 June 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,23 +50,23 @@ global CONFIG
 
 % if none specified, prompt to locate one
 if isempty(CONFIG.missionCnf)
-    [name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select configuration file');
-    CONFIG.missionCnf = fullfile(path, name);
+	[name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select configuration file');
+	CONFIG.missionCnf = fullfile(path, name);
 else
-    % check if full file or just parts
-    [path, ~, ~] = fileparts(CONFIG.missionCnf);
-    if ~isempty(path)
-        CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
-        parseCnf(CONFIG.missionCnf);
-    else % no path specified
-        % default location is within agate\settings folder, so try that
-        CONFIG.missionCnf = fullfile(CONFIG.path.settings, CONFIG.missionCnf);
-        % otherwise prompt to select one
-        if ~exist(missionCnf, 'file')
-            [name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], 'Select survey configuration file');
-            CONFIG.missionCnf = fullfile(path, name);
-        end
-    end
+	% check if full file or just parts
+	[path, ~, ~] = fileparts(CONFIG.missionCnf);
+	if ~isempty(path)
+		CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
+		parseCnf(CONFIG.missionCnf);
+	else % no path specified
+		% default location is within agate\settings folder, so try that
+		CONFIG.missionCnf = fullfile(CONFIG.path.settings, CONFIG.missionCnf);
+		% otherwise prompt to select one
+		if ~exist(missionCnf, 'file')
+			[name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], 'Select survey configuration file');
+			CONFIG.missionCnf = fullfile(path, name);
+		end
+	end
 end
 CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
 parseCnf(CONFIG.missionCnf);
@@ -76,14 +76,22 @@ if isfield(CONFIG, 'bs')
 	% parse the basestation configuration file
 % prompt to select if none specified in mission configuration file
 if ~exist(CONFIG.bs.cnfFile, 'file')
-    [name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select basestation configuration file');
-    CONFIG.bs.cnfFile = fullfile(path, name);
+	[name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select basestation configuration file');
+	CONFIG.bs.cnfFile = fullfile(path, name);
 end
-    CONFIG.bs.cnfFid = fopen(CONFIG.bs.cnfFile,'r');
-    parseCnf(CONFIG.bs.cnfFile);
-end
+% CONFIG.bs.cnfFid = fopen(CONFIG.bs.cnfFile,'r');
+parseCnf(CONFIG.bs.cnfFile);
+
+% parse pmarConvert configuration file
+if isfield(CONFIG, 'pm') && (CONFIG.pm.loggers == 1)
+	if ~exist(CONFIG.pm.cnfFile, 'file')
+		[name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select pmar convert configuration file');
+		CONFIG.pm.cnfFile = fullfile(path, name);
+	end
+	parseCnf(CONFIG.pm.cnfFile);
 end
 
+end
 %%%%%% NESTED FUNCTIONS %%%%%%
 function CONFIG = parseCnf(userCnf, CONFIG)
 % parse info from .cnf text files
@@ -92,21 +100,21 @@ global CONFIG
 
 fid = fopen(userCnf,'r');
 if fid == -1
-    disp_msg('Error: no such file')
-    return
+	disp_msg('Error: no such file')
+	return
 end
 al = textscan(fid,'%s','delimiter','\n');
 nl = length(al{1});
 if nl < 1
-    disp_msg('Error: no data in configuration file')
+	disp_msg('Error: no data in configuration file')
 else
-    frewind(fid);
-    for i = 1:nl
-        line = fgets(fid);
-        if ~strcmp(line(1), '%')
-            eval(line);
-        end
-    end
+	frewind(fid);
+	for i = 1:nl
+		line = fgets(fid);
+		if ~strcmp(line(1), '%')
+			eval(line);
+		end
+	end
 end
 fclose(fid);
 
