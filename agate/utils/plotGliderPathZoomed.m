@@ -1,5 +1,5 @@
 function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
-%PLOTGLIDERPATHZOOMED	Plot zoomed in view of glider path on bathymetry 
+%PLOTGLIDERPATHZOOMED	Plot zoomed in view of glider path on bathymetry
 %
 %   Syntax:
 %       PLOTGLIDERPATHZOOMED(CONFIG, pp, targetsFile, bathyFile)
@@ -7,7 +7,7 @@ function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
 %   Description:
 %       Zoomed in map view of the glider's most recent dive, with the most
 %       recent dive in the center of the plot and the lat/lon lims based on
-%       it's last surface location, showing about 20 km in all directions. 
+%       it's last surface location, showing about 20 km in all directions.
 %
 %   Inputs:
 %       CONFIG      Mission/agate global configuration variable
@@ -15,14 +15,14 @@ function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
 %                   extractPilotingParams.m
 %       targetsFile Fullfile reference to the text file targetsFile
 %       bathyFile   Optional argument to plot bathymetry (slow step),
-%                   either specify the fullfile (CONFIG.map.bathyFile) or 
-%                   set to 0 to not plot bathymetry
+%                   either specify the fullfile (e.g.,CONFIG.map.bathyFile)
+%                   or set to 0 to not plot bathymetry
 %
 %   Outputs:
 %       no output, creates figure
 %
 %   Examples:
-%       plotGliderPathZoomed(CONFIG, pp639, targetsFile, CONFIG.map.bathyFile)
+%       plotGliderPathZoomed(CONFIG, pp, targetsFile, CONFIG.map.bathyFile)
 %
 %   See also EXTRACTPILOTINGPARAMS
 %
@@ -32,13 +32,13 @@ function plotGliderPathZoomed(CONFIG, pp, targetsFile, bathyFile)
 %       isn't anything to show?
 %       - does not show full extent of targets and path bc removes anything
 %       that now would have data points outside the lims. Not sure I can do
-%       anything about this but would like to try to fix. 
+%       anything about this but would like to try to fix.
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   16 April 2023
-%   Updated:        
+%   Updated:        25 May 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,8 +71,10 @@ lastLon = pp.endGPS{end}(2);
 newLatLim = [lastLat - 0.2 lastLat + 0.2];
 newLonLim = [lastLon - 0.2 lastLon + 0.2];
 
-states = shaperead('usastatehi', 'UseGeoCoords', true, ...
-    'BoundingBox', [newLonLim' newLatLim']);
+% ideally would like to plot states if glider is close enough to land, but
+% if it is not, geoshow below throws an error
+% states = shaperead('usastatehi', 'UseGeoCoords', true, ...
+%     'BoundingBox', [newLonLim' newLatLim']);
 
 [targets, ~] = readTargetsFile(CONFIG, targetsFile);
 
@@ -116,23 +118,27 @@ if bathyOn
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
         'CoordinateSystemType', 'geographic');
     [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
-
+    
     Z(Z >= 10) = 100;
     geoshow(Z, refvec, 'DisplayType', 'surface', ...
         'ZData', zeros(size(Z)), 'CData', Z);
-
+    
     cmap = cmocean('ice');
     cmap = cmap(150:256,:);
     colormap(cmap)
-    clim([-6000 0])
+    % matlab renamed caxis to clim in R2022a...so try both
+    try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<SEPEX>
     brighten(.4);
-
-    [c,h] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]);
-    [c,h] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
+    
+    [~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
+    [~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
         'LineWidth', 0.8);
-    [c,h] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]);
-    [c,h] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+    [~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
+    [~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
 end
+
+% if no land is within the limits of the fig, this throws an error, so
+% leaving out for now
 % geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 
@@ -153,7 +159,7 @@ for d = 1:height(pp)
         lat((d*2-1):d*2) = [pp.startGPS{d}(1); pp.endGPS{d}(1)];
         lon((d*2-1):d*2) = [pp.startGPS{d}(2); pp.endGPS{d}(2)];
         dive((d*2-1):d*2) = [d; d];
-        time((d*2-1):d*2) = [datenum(pp.diveStartTime(d)); 
+        time((d*2-1):d*2) = [datenum(pp.diveStartTime(d));
             datenum(pp.diveEndTime(d))];
         per((d*2-1):d*2) = [1, 2];
     catch

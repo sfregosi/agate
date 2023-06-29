@@ -6,7 +6,7 @@ website:
   title: 'AGATE' 
   site-url: "https://sfregosi.github.io/agate-public" 
   repo-url: "https://github.com/sfregosi/agate-public"
-  repo-actions: [edit, source, issue]
+  repo-actions: [issue]
   favicon: images/favicon.ico
   
   page-footer:
@@ -38,10 +38,10 @@ website:
         text: Configuration guide
       - href: plotting-functions.qmd
         text: Plots
-      # - href: content/rendering.qmd
-      #   text: Rendering
-      # - href: content/rmarkdown.Rmd
-      #   text: R Markdown files
+      - href: survey-planning.qmd
+        text: Survey planning
+      - href: piloting-functions.qmd
+        text: Piloting
       # - href: content/code.qmd
       #   text: Code in your files
       - href: acknowledgements.qmd

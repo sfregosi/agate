@@ -1,4 +1,4 @@
-function output = plotPmUsed(CONFIG, pp)
+function plotPmUsed(CONFIG, pp)
 % PLOTPMUSED	Create PMAR diagnostic plots
 %
 %   Syntax:
@@ -26,10 +26,15 @@ function output = plotPmUsed(CONFIG, pp)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   27 May 2023
-%   Updated:
+%   Updated:        28 May 2023
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if CONFIG.pm.loggers == 0 || ~isfield(CONFIG, 'pm')
+	fprintf(1, 'PMAR logger not available, cannot plot PMAR space used. Exiting...\n')
+	return
+end
 
 % for now just manually assign...to be worked out later...
 figNum = 548;
@@ -45,7 +50,7 @@ figPosition = [100   100    760    400];
 %     end
 % end
 
-figure(figNum); 
+figure(figNum);
 set(gcf, 'Name', 'PMAR Use');
 clf;
 
@@ -56,7 +61,14 @@ nexttile(1)
 plot(pp.diveDur_min, pp.pmUsed_GB, 'k.');
 hold on;
 % highlight the last 5 dives
-plot(pp.diveDur_min(end-4:end), pp.pmUsed_GB(end-4:end), 'co')
+scatter(pp.diveDur_min(end-4:end), pp.pmUsed_GB(end-4:end), 40, ...
+	pp.diveNum(end-4:end), 'o', 'LineWidth', 2)
+cmap = cmocean('matter', 7);
+cmap = flipud(cmap(2:6,:));
+colormap(cmap)
+h = colorbar('Ticks', pp.diveNum(end-4:end));
+h.Label.String = 'dive number';
+
 grid on;
 hold off;
 xlabel('dive duration [min]');

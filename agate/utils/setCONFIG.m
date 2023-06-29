@@ -71,7 +71,9 @@ end
 CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
 parseCnf(CONFIG.missionCnf);
 
-% parse the basestation configuration file
+% if basestation 'bs' configurations exist
+if isfield(CONFIG, 'bs')
+	% parse the basestation configuration file
 % prompt to select if none specified in mission configuration file
 if ~exist(CONFIG.bs.cnfFile, 'file')
 	[name, path] = uigetfile([CONFIG.path.settings, '\*.cnf'], 'Select basestation configuration file');

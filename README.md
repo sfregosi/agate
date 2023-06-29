@@ -3,21 +3,25 @@
 
 # Acoustic Glider Analysis Tools and Environment
 
-A collection of tools to be used for piloting acoustic gliders,
-processing glider positional and environmental data, and analyzing
-glider-collected acoustic data for surveys of marine mammals.
+<img
+src="README_files/figure-gfm/fa-icon-ef3463a0984ba0e303f1b25b6e50a309.svg"
+style="width:0.88em;height:1em" /> *Last Update: 25 May 2023*
+
+A collection of MATLAB-based tools to be used for piloting acoustic
+gliders, processing glider positional and environmental data, and
+analyzing glider-collected acoustic data for surveys of marine mammals.
 
 This package is very much under development, but my hope is that I will
 maintain a [stable
 release](https://github.com/sfregosi/agate-public/releases) and then for
 those interested in the latest functionality, the repository can be
-cloned.
+cloned. For those interested in contributing to the package, I suggest
+creating a fork and using pull requests to contribute.
 
-<img
-src="README_files/figure-gfm/fa-icon-ef3463a0984ba0e303f1b25b6e50a309.svg"
-style="width:0.88em;height:1em" /> *Last Update: 10 May 2023*
+This code was either developed or most recently updated and tested with
+MATLAB version 2022b, but has undergone some testing with 2020b.
 
-**Detailed documentation can be found at
+**Detailed documentation and information on dependencies can be found at
 [sfregosi.github.io/agate-public](https://sfregosi.github.io/agate-public)**
 *(the documentation is also under construction and I welcome any and all
 feedback!)*

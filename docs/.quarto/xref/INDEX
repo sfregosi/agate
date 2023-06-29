@@ -1,0 +1,26 @@
+{
+  "piloting-functions.qmd": {
+    "piloting-functions.html": "eb9753d6"
+  },
+  "plotting-functions.qmd": {
+    "plotting-functions.html": "f136fd97"
+  },
+  "survey-planning.qmd": {
+    "survey-planning.html": "be8ba1c6"
+  },
+  "index.qmd": {
+    "index.html": "fef02919"
+  },
+  "about.qmd": {
+    "about.html": "2f7eae89"
+  },
+  "acknowledgements.qmd": {
+    "acknowledgements.html": "1cef25dc"
+  },
+  "configuration.qmd": {
+    "configuration.html": "1fbf8070"
+  },
+  "get-started.qmd": {
+    "get-started.html": "59ab7d03"
+  }
+}

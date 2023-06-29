@@ -5,11 +5,11 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %       PLOTGLIDERPATH_ETOPO(CONFIG, pp, targetsFile, bathyFile)
 %
 %   Description:
-%       Map of glider planned track (from the targets file) and actual 
-%       track, showing surface locations for each dive, a line connecting 
-%       these surface locations (not dead-reckoned positions between 
-%       surfacings) and vectorsmshowing the depth averaged current for 
-%       that dive. 
+%       Map of glider planned track (from the targets file) and actual
+%       track, showing surface locations for each dive, a line connecting
+%       these surface locations (not dead-reckoned positions between
+%       surfacings) and vectorsmshowing the depth averaged current for
+%       that dive.
 %
 %   Inputs:
 %       CONFIG      Mission/agate global configuration variable
@@ -18,7 +18,7 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %       targetsFile Fullfile reference to the text file targetsFile. Can be
 %                   left empty ([]) to prompt to select targets
 %       bathyFile   Optional argument to plot bathymetry (slow step),
-%                   either specify the fullfile (CONFIG.map.bathyFile) or 
+%                   either specify the fullfile (CONFIG.map.bathyFile) or
 %                   set to 0 to not plot bathymetry
 %
 %   Outputs:
@@ -45,9 +45,9 @@ elseif ~isempty(bathyFile)
 end
 
 if nargin >= 3 && isempty(targetsFile)
-        [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...
-            'Select targets file');
-        targetsFile = fullfile(path, fn);
+    [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...
+        'Select targets file');
+    targetsFile = fullfile(path, fn);
 end
 
 % set fig number so you can place it in one spot on your desktop and not
@@ -89,22 +89,29 @@ mlabel('MLabelLocation', 1, 'MLabelRound', -1, ...
     'MLabelParallel', 'south', 'FontSize', 14);
 tightmap
 
-% add north arrow and scale bar
+% add north arrow - if location specified
+if isfield(CONFIG.map, 'naLat') && isfield(CONFIG.map, 'naLon')
 CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
     CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
+end
+
+% add scale bar - if location and scale are specified
+if isfield(CONFIG.map, 'scalePos') && isfield(CONFIG.map, 'scaleMajor') && ...
+		isfield(CONFIG.map, 'scaleMinor')
 scaleruler on
 % showaxes
 setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
     'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
     'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
     'FontSize', 14);
+end
 
 %%  plot bathymetry - slow step
 %  plot bathymetry - slow step - optional
 if bathyOn
     % try the specified file
-%     bathyFile = fullfile(CONFIG.path.shp, 'etopo2022', ...
-%         'ETOPO_2022_v1_60s_N90W180_surface.tif');
+    %     bathyFile = fullfile(CONFIG.path.shp, 'etopo2022', ...
+    %         'ETOPO_2022_v1_60s_N90W180_surface.tif');
     % if that's no good, prompt to select correct file
     if ~exist(bathyFile, 'file')
         [fn, path] = uigetfile(fullfile(CONFIG.path.shp, '*.tif;*.tiff'), ...
@@ -114,22 +121,23 @@ if bathyOn
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
         'CoordinateSystemType', 'geographic');
     [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
-
+    
     Z(Z >= 10) = 100;
     geoshow(Z, refvec, 'DisplayType', 'surface', ...
         'ZData', zeros(size(Z)), 'CData', Z);
-
+    
     cmap = cmocean('ice');
     cmap = cmap(150:256,:);
     colormap(cmap)
-    clim([-6000 0])
+    % matlab renamed caxis to clim in R2022a...so try both
+    try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<SEPEX>
     brighten(.4);
-
-    [c,h] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]);
-    [c,h] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
+    
+    [~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
+    [~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
         'LineWidth', 0.8);
-    [c,h] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]);
-    [c,h] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+    [~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
+    [~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
 end
 geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
@@ -172,7 +180,7 @@ for d = 1:height(pp)
         lat((d*2-1):d*2) = [pp.startGPS{d}(1); pp.endGPS{d}(1)];
         lon((d*2-1):d*2) = [pp.startGPS{d}(2); pp.endGPS{d}(2)];
         dive((d*2-1):d*2) = [d; d];
-        time((d*2-1):d*2) = [datenum(pp.diveStartTime(d)); 
+        time((d*2-1):d*2) = [datenum(pp.diveStartTime(d));
             datenum(pp.diveEndTime(d))];
         per((d*2-1):d*2) = [1, 2];
     catch

@@ -34,6 +34,8 @@ function plotErmaDetections(CONFIG, path_bsLocal, divenum)
 %
 %   Created with MATLAB ver. 9.13.0.2049777 (R2022b)
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% get CONFIG name incase it isn't exactly 'CONFIG'
+cfgName = inputname(1);
 
 % Check that this glider has WISPR, and has it enabled.
 if (~isfield(CONFIG,'ws') || ~isfield(CONFIG.ws,'loggers') || ...
@@ -77,11 +79,11 @@ if (~preexisting)
   set(gcf, 'Position', [posn(1:2)+[30 -30]*isnan(divenum) 800 posn(4)]);
 end
 
-makeErmaPlots(dets, plotTitle, figTitle, divenum)
+makeErmaPlots(dets, plotTitle, figTitle, divenum, cfgName)
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function makeErmaPlots(dets, titl, figtitle, divenum)
+function makeErmaPlots(dets, titl, figtitle, divenum, cfgName)
 % Draw the ICI plots and histograms for this dive. 'divenum' may be NaN or
 % omitted, in which case the buttons at the bottom aren't made.
 
@@ -120,17 +122,17 @@ set(gcf, 'NumberTitle', 'off', 'Name', figtitle)     % figure name in header bar
 
 % Make Prev, Compare, and Next buttons.
 if (nargin >= 3 && ~isnan(divenum))
-  makeButton('← Prev',  divenum-1, -1.5, 'Show previous dive');
-  makeButton('Compare', NaN,       -0.5, 'Show comparison data from known whale encounters');
-  makeButton('Next →',  divenum+1, +0.5, 'Show next dive');
+  makeButton('← Prev',  divenum-1, -1.5, 'Show previous dive', cfgName);
+  makeButton('Compare', NaN,       -0.5, 'Show comparison data from known whale encounters', cfgName);
+  makeButton('Next →',  divenum+1, +0.5, 'Show next dive', cfgName);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Utility to add a button at the bottom of the plot.
-function makeButton(str, divenumOrNan, hPosOffset, tip)
+function makeButton(str, divenumOrNan, hPosOffset, tip, cfgName)
 w = 60;					% width of each button, pixels
 set(gcf, 'units', 'pixel');
 posn = get(gcf, 'Pos');
-callback = sprintf('%s(CONFIG, path_bsLocal, %d)', mfilename, divenumOrNan);
+callback = sprintf('%s(%s, path_bsLocal, %d)', mfilename, cfgName, divenumOrNan);
 uicontrol('Style', 'pushb', 'String', str, 'Tooltip', tip, ...
   'Position', [(posn(3)/2 + w*hPosOffset) 0 w 22], 'Callback', callback);
