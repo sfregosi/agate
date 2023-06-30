@@ -1,0 +1,114 @@
+% configuration file for convertPmar.m
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%% TEMPLATE - PUT SURVEY METADATA HERE %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% configuration settings here, descriptions are below.
+
+CONFIG.pm.inDir = 'E:\sgXXX_Loc_MonYYYY\raw_acoustic_data\';     % path to raw PMAR .dat files 
+% raw .dat files can be in subdirectories by dive e.g., pm0001a/pm0000.dat
+CONFIG.pm.outDir = 'E:\sgXXX_Loc_MonYYYY\wav\';       % path to save converted wav files
+CONFIG.outTemplate = 'sgXXX_Loc_MonYYYY_%s.wav';   % must have %s and an extension like .wav
+
+CONFIG.pm.showProgress = true;       % true or false
+
+CONFIG.pm.restartDir = '';           % start at the beginning and do all the directories
+% CONFIG.pm.restartDir = 'pm0006a';  % re-start conversion at this directory
+
+CONFIG.pm.decim = 0;             % use this line if you don't want to downsample
+% CONFIG.pm.decim = 18;          % use this line to downsample (by this factor)
+CONFIG.pm.relativeCutoffFreq = 0.8;  % relative to Nyquist freq of decimated signal
+                                     % only used if decimating (CONFIG.pm.decim > 2)
+
+% CONFIG.pm.forceSRate = NaN;    % uncomment to leave sample rates as is
+CONFIG.pm.forceSRate = 180260;   % uncomment to force a given sample rate
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%% Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This configuration section has example values for each parameter. You'll need
+% to change these for your files and directories.
+
+% inDir specifies the head input directory or directories, each of which has
+% subdirectories named pmNNNNC (where N is a digit and C is a character like a,
+% b, c...), with each subdirectory having one or more pmNNNN.dat files. inDir
+% can be a string or a cell array of strings; input files will be gathered from
+% all of them.
+% inDir = 'C:\Dave\HDR_Marianas_Hawaii_GoA_SoCal\SoCal\data\'; % string example
+%inDir = {     % cell array example
+%  'E:\SoCal2020\SG607card1raw\' ...
+%  'E:\SoCal2020\SG607card2raw\' 
+%  };
+% inDir = 'C:\Users\Selene.Fregosi\Downloads\example soundfiles-HI_Apr22\example soundfiles\HI_Apr22_SG680\';
+
+
+% outDir specifies the directory to put the .wav files in. It can be a string
+% (one output directory name) or a cell array of strings (multiple output
+% directory names); copies of ALL of the output files will be put in EACH output
+% directory. In each output directory, a file named fileheaders.txt will also
+% get made (or appended to, if it already exists) containing the headers of all
+% the .dat files read and processed. These headers are lines of ASCII text. Two
+% extra lines are added to each header in fileheaders.txt specifying the source
+% (.dat) and destination (.wav) file names.
+% outDir = 'C:\Dave\HDR_Marianas_Hawaii_GoA_SoCal\SoCal\data\newWAV\'; % string example
+%outDir = {           % can be cell array instead
+%  %'D:/SoCal2020/sg607wav/'
+%  'F:/SoCal2020/sg607wav/'
+%  };
+% outDir = 'C:\Users\Selene.Fregosi\Downloads\example soundfiles-HI_Apr22\example soundfiles\HI_Apr22_SG680\wav\';
+
+% outTemplate is a template (a format string) for the name of the .wav files to
+% be created. It should include a %s, which becomes a date/time stamp, and it
+% should end in .wav, .aif, or any other extension known to audiowrite.
+% outTemplate = 'SoCal_%s.wav';       % must have %s and an extension like .wav
+% outTemplate = 'sg639_HI_Apr22_%s.wav';       % must have %s and an extension like .wav
+
+% 'showProgress' indicates whether or not to show progress in MATLAB's command
+% window. If true, show filenames are they're processed.
+% showProgress = true;        % true or false
+
+% This is for restarting a conversion after it halted. Use '' to start the
+% conversion from the beginning, or a specific directory name to run the
+% conversion on that directory and all following ones.
+% restartDir = '';           % start at the beginning and do all the directories
+%restartDir = 'pm0006a';    % re-start conversion at this directory
+
+% This is for downsampling the data during file conversion. It downsamples by a
+% factor of 'decim' -- for instance, if decim=5, then the converted .wav files
+% will have a sample rate 1/5 that of the input PMAR (.dat) files. If you don't
+% want to downsample, set decim to 0 (or 1). If you do want to downsample, you
+% need to set the relativeCutoffFreq parameter immediately below. Downsampling
+% requires the signal processing toolbox (to design the filter). decim must be
+% an integer, and all the input files must have nearly identical sample rates.
+%
+% Note: Sometimes filtering and decimating results in a 'Data clipped when
+% writing file' warning. My experience is that this happens only when a glider
+% motor is running, not from environmental sound, so I don't mind it. If you
+% absolutely don't want it, change the audiowrite statement far below to divide
+% 'sams' by, say, 10 to lower its amplitude by 20 dB, but beware that this might
+% result in loss of low-amplitude sound.
+% decim = 0;                      % use this line if you don't want to downsample
+%decim = 18;                    % use this line to downsample (by this factor)
+
+% relativeCutoffFreq is used only if you're decimating (downsampling) - i.e.,
+% decim is 2 or more. It specifies the cutoff frequency of the lowpass filter
+% relative to the Nyquist frequency of the downsampled (decimated) signal. It
+% must be between 0 and 1. For example, if the downsampled signal has a sample
+% rate of 10 kHz, and therefore a Nyquist frequency of 5 kHz, a
+% relativeCutoffFreq of 0.8 would result in a filter cutoff frequency of 4 kHz.
+% Values around 0.7-0.9 work well; larger numbers in this range preserve more of
+% the available frequency range in the filtered signal, but result in longer
+% filters that are slower to run.
+% relativeCutoffFreq = 0.8;      % relative to Nyquist freq of decimated signal
+
+% forceSRate specifies a sample rate to put into the newly-created output
+% soundfiles. It's useful because PMAR outputs have minor variations in sample
+% rate from file to file (e.g., 180259 Hz vs. 180261 Hz), but if these different
+% rates are propagated to the output files, it messes up later software like
+% Triton that doesn't like variable sample rates. If forceSRate is NaN, it's
+% ignored and the sample rate from the PMAR soundfile is used in the output
+% soundfiles.
+%forceSRate = NaN;              % uncomment to leave sample rates as is
+forceSRate = 180260;            % uncomment to force a given sample rate
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%
