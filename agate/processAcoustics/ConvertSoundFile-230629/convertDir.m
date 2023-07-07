@@ -9,7 +9,7 @@ nStrip = 0;		% strip this many chars from old filename; can override
 if (1)
 	% WISPR files from bench testing in Hawaii.
 	%     inDir = 'C:\Dave\Hawaii_gliders\operation\sg679_HI_Apr2023\230502\ascent\';
-	inDir = 'E:\sg679_MHI_May2023\raw_acoustic_data\lower_descent\allDays';
+	inDir = 'E:\sg679_MHI_May2023\raw_acoustic_data\upper_ascent\left';
 	%     outDir = fullfile(inDir, 'WAV');	% create this first - not auto created
 	outDir = 'F:\sg679_MHI_May2023\wav\';
 	inTemplate = '*.dat';

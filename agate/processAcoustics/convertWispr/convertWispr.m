@@ -153,15 +153,15 @@ end
 if (~iscell(inDir)),   inDir = { inDir };  end
 if (~iscell(outDir)), outDir = { outDir }; end
 
-if (decim ~= round(decim))
-	error('The decimation factor ''decim'' must be an integer.');
-end
-if (decim > 1 && (relativeCutoffFreq <= 0 || relativeCutoffFreq >= 1))
-	error('The relative filter cutoff frequency ''relativeCutoffFreq'' must be between 0 and 1.')
-end
-if (decim > 1 && ~exist('designfilt', 'file'))
-	error('You must have the signal processing toolbox to use downsampling. Please set decim to 0.')
-end
+% % if (decim ~= round(decim))
+% % 	error('The decimation factor ''decim'' must be an integer.');
+% % end
+% % if (decim > 1 && (relativeCutoffFreq <= 0 || relativeCutoffFreq >= 1))
+% % 	error('The relative filter cutoff frequency ''relativeCutoffFreq'' must be between 0 and 1.')
+% % end
+% % if (decim > 1 && ~exist('designfilt', 'file'))
+% % 	error('You must have the signal processing toolbox to use downsampling. Please set decim to 0.')
+% % end
 
 %% Initialization.
 
@@ -174,18 +174,18 @@ for dk = 1 : length(outDir)
 	hdrFp(dk) = fopen(fullfile(outDir{dk}, 'fileheaders.txt'), 'a+'); % append
 end
 
-% 'go' says whether we've gotten to restartDir yet. If restartDir is empty, it
-% means start from the beginning, so 'go' is true from the start.
-go = isempty(restartDir);               % have we gotten to restartDir yet?
-
-% lpFilt is the filter used in downsampling. It can be designed only after we
-% know the input sample rate.
-lpFilt = [];
-
-% For finding filenames that have 4 consecutive digits.
-dig4 = digitsPattern(4);
-
-forceWarned = false;
+% % % 'go' says whether we've gotten to restartDir yet. If restartDir is empty, it
+% % % means start from the beginning, so 'go' is true from the start.
+% % go = isempty(restartDir);               % have we gotten to restartDir yet?
+% % 
+% % % lpFilt is the filter used in downsampling. It can be designed only after we
+% % % know the input sample rate.
+% % lpFilt = [];
+% % 
+% % % For finding filenames that have 4 consecutive digits.
+% % dig4 = digitsPattern(4);
+% % 
+% % forceWarned = false;
 
 %% Process files.
 
