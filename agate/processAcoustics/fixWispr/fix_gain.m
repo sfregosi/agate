@@ -20,7 +20,7 @@
 %
 % The data file format is:
 % - 512 byte ascii header. 
-% - adc buffer 1
+% - adfc buffer 1
 % - adc buffer 2
 % ...
 % - adc buffer N
@@ -72,6 +72,10 @@ name1 = fullfile(directoryname,files(1).name);
 N = hdr.file_size * 512 / hdr.buffer_size;
 
 [nrd, hdr1, data1, time1] = read_wispr_file(name1, 1, N);
+
+% remove any cols that are all zeros
+zeroCols = find(all(data1 == 0));
+data1(:,zeroCols) = [];
 
 % save data in wav file
 wavfile1 = [name1(1:end-3) 'wav'];
