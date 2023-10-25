@@ -50,7 +50,7 @@ clear all;
 directoryname ='.';
 directoryname = uigetdir(directoryname);
 files = dir([directoryname '\*.dat']);
-nfiles = size(files);
+nfiles = size(files, 1);
 
 %R = input('Enter decimation factor [1]: ');
 %if(isempty(R))
@@ -75,7 +75,7 @@ N = hdr.file_size * 512 / hdr.buffer_size;
 
 % save data in wav file
 wavfile1 = [name1(1:end-3) 'wav'];
-wavwrite(data1(:)/5.0, hdr1.sampling_rate, 24, wavfile1);
+audiowrite(wavfile1, data1(:)/5.0, hdr1.sampling_rate, 'BitsPerSample', 24);
 
 % specrum parameters
 fft_size = 128;
@@ -176,7 +176,7 @@ for m = 2:(nfiles-1)
         data1 = gain* data1;
         dat1 = gain * dat1;        
         wavfile1 = [name1(1:end-3) 'wav'];
-        wavwrite(data1(:)/(adc_vref), hdr1.sampling_rate, 24, wavfile1);
+        audiowrite(wavfile1, data1(:)/(adc_vref), hdr1.sampling_rate, 'BitsPerSample', 24)
         gain = 1;
         %figure(1);
         %subplot(2,1,1);
@@ -204,7 +204,7 @@ for m = 2:(nfiles-1)
     % adjust and save data2 in wav file
     data2 = data2/gain;        
     wavfile2 = [name2(1:end-3) 'wav'];
-    wavwrite(data2(:)/(adc_vref), hdr2.sampling_rate, 24, wavfile2);
+    audiowrite(wavfile2, data2(:)/(adc_vref), hdr2.sampling_rate, 'BitsPerSample', 24);
 
     data1 = data2;
     time1 = time2;
