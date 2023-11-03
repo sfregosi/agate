@@ -20,7 +20,7 @@
 %
 % The data file format is:
 % - 512 byte ascii header.
-% - adfc buffer 1
+% - adc buffer 1
 % - adc buffer 2
 % ...
 % - adc buffer N
@@ -43,15 +43,31 @@
 %
 % cjones 10/2023
 %
+% s. fregosi 2023-11-02
 
 clear all;
+verbose = true; % or can be false to print less messages/be more automated
 
-% pick a data orectory with the .dat file.
+% set paths
+path_out = 'D:\sg679_MHI_May2023\gainFixTest3';
+% path_dat = uigetdir('D:\');
+path_dat = 'D:\sg679_MHI_May2023\gainFixTest3\raw';
+path_wav = fullfile(path_out, 'wav');
+
+% set up log file
+fid = fopen(fullfile(path_out, 'gainFix.log'), 'a');
+if fid == -1
+	error('Cannot open log file.');
+end
+fprintf(fid, '%s: %s\n', datestr(now, 0), 'Beginning gain fix process...');
+
+% pick a data directory with the .dat file.
 % directoryname ='.';
 % directoryname = uigetdir(directoryname);
-directoryname = 'D:\sg679_MHI_May2023\gainFixTest1\raw';
+directoryname = path_dat;
 files = dir([directoryname '\*.dat']);
 nfiles = size(files, 1);
+fprintf(fid, '%i %s\n', nfiles, 'total .dat files to process');
 
 %R = input('Enter decimation factor [1]: ');
 %if(isempty(R))
@@ -67,26 +83,7 @@ nbufs = 64;
 % set this value to eleminate spikes
 max_thresh = 1.0;
 
-file1 = files(1).name;
-name1 = fullfile(directoryname,files(1).name);
-[nrd, hdr, data1, time] = read_wispr_file(name1, 1, 1);
-N = hdr.file_size * 512 / hdr.buffer_size;
-
-[nrd, hdr1, data1, time1] = read_wispr_file(name1, 1, N);
-
-% % remove any cols that are all zeros
-% zeroCols = find(all(data1 == 0));
-% data1(:,zeroCols) = [];
-% time1(:,zeroCols) = [];
-% these are actually anything beyond nrd so can use that to clean up also
-data1 = data1(:, 1:nrd);
-time1 = time1(:, 1:nrd);
-
-% save data in wav file
-wavfile1 = [name1(1:end-3) 'wav'];
-audiowrite(wavfile1, data1(:)/5.0, hdr1.sampling_rate, 'BitsPerSample', 24);
-
-% specrum parameters
+% spectrum parameters
 fft_size = 128;
 win = hamming(fft_size)*1.59; %multiply energy correction
 %window = hann(fft_size)*1.63;
@@ -96,54 +93,89 @@ overlap = fft_size/2;
 f1 = 60000;
 f2 = 70000;
 
-% loop over files in firectory
+first_file = 1;
+
+fprintf(fid, 'Starting with file: %s\n', files(1).name);
+
+% read the first file in the directory
+file1 = files(1).name;
+name1 = fullfile(directoryname,files(1).name);
+% read just to get header info
+[nrd1, hdr1, data1, time1] = read_wispr_file(name1, 1, 0);
+% get num_bufs
+% N = hdr.file_size * 512 / hdr.buffer_size;
+% read
+% [nrd, hdr1, data1, time1] = read_wispr_file(name1, 1, N);
+
+% remove all zero bufs - only keep everything up to nrd
+data1 = data1(:, 1:nrd1);
+time1 = time1(:, 1:nrd1);
+
+% % save data in wav file
+% wavfile1 = [name1(1:end-3) 'wav'];
+% audiowrite(wavfile1, data1(:)/5.0, hdr1.sampling_rate, 'BitsPerSample', 24);
+
+% loop over files in directory
 for m = 2:(nfiles-1)
 
-	if(files(m).isdir)
+	if files(m).isdir
 		continue;
 	end
 
+	% read the next file
 	file2 = files(m).name;
 	name2 = fullfile(directoryname,files(m).name);
 
-	fprintf('Comparing file %s and %s\n', file1, file2);
+	fprintf(fid, 'Comparing file %s and %s\n', file1, file2);
 
-	[nrd, hdr2, data2, time2] = read_wispr_file(name2, 1, N);
-	% these are actually anything beyond nrd so can use that to clean up also
-	data2 = data2(:, 1:nrd);
-	time2 = time2(:, 1:nrd);
+	[nrd2, hdr2, data2, time2] = read_wispr_file(name2, 1, 0);
+	% remove zeros
+	data2 = data2(:, 1:nrd2);
+	time2 = time2(:, 1:nrd2);
 
-	% 	dat1 = data1(:,N-nbufs+1:end); % use size based on header (N)
-	dat1 = data1(:,end-nbufs+1:end); % actual size
-	dat2 = data2(:,1:nbufs);
+	% find a section of the data at the end of the first file (sig1)
+	% and the start of he second file (sig2)
+	sig1 = data1(:,nrd1-nbufs+1:nrd1); % end of data1
+	sig2 = data2(:,1:nbufs); % beginning of data2
 
-	% 	t1 = time1(:,N-nbufs+1:end) - time1(end); % use size based on header (N)
-	t1 = time1(:,end-nbufs+1:end) - time1(end); % use actual size
-	t2 = time2(:,1:nbufs) - time2(1);
+	t1 = time1(:,nrd1-nbufs+1:nrd1) - max(max(time1));
+	t2 = time2(:,1:nbufs) - min(min(time2));
 
-	if(nrd < nbufs)
+	if nrd2 < nrd1
+		if verbose
+			fprintf('Looks like %s is truncated: nrd is %d not %d\n', ...
+				files(m).name, nrd2, nrd1);
+		end
+	end
+
+	if nrd2 < nbufs
+		fprintf(fid, 'Not enough data in %s, continue to next file\n', ...
+			files(m).name);
 		continue;
 	end
 
+	% plot the data segments
 	figure(1); clf;
 	subplot(2,1,1);
-	plot(t1(:), dat1(:), t2(:), dat2(:));
+	plot(t1(:), sig1(:), t2(:), sig2(:));
 	ylabel('Volts');
 	title('Original data');
 
-	rms1 = sqrt(mean(dat1.^2));
-	rms2 = sqrt(mean(dat2.^2));
-	max1 = max(abs(dat1));
-	max2 = max(abs(dat2));
+% find the rms and max of the data segments
+	rms1 = sqrt(mean(sig1.^2));
+	rms2 = sqrt(mean(sig2.^2));
+	max1 = max(abs(sig1));
+	max2 = max(abs(sig2));
 
-	% try to ignore the spikes in the data
+	% try to ignore the spikes in the data by thresholding
 	i1 = find(abs(max1) < max_thresh);
 	i2 = find(abs(max2) < max_thresh);
 
 	if isempty(i1)
-		while isempty(i1) % all dat1 is above threshold
+		while isempty(i1) % all sig1 is above threshold
 			% try increasing threshold
 			max_thresh = max_thresh + 1;
+			fprintf(fid, 'Increasing max_thresh = %i\n', max_thresh);
 			% try to ignore the spikes in the data
 			i1 = find(abs(max1) < max_thresh);
 			i2 = find(abs(max2) < max_thresh);
@@ -151,10 +183,27 @@ for m = 2:(nfiles-1)
 		end
 	end
 
+	% alternative could skip if nothing below threshold... but don't think
+	% this is valid approach. 
+	    % if there's nothing below the threshold then the pumps are probably on
+	   % so skip this file and proceed to the next file
+%     if( isempty(i1) || isempty(i2) )
+%         data1 = data2;
+%         time1 = time2;
+%         name1 = name2;
+%         file1 = file2;
+%         nrd1 = nrd2;
+%         fprintf('Skipping file %s and %s - no signal below threshold\n', file1, file2);
+%         continue;
+%     end
+%     
+% 	
+
+% 	fprintf(fid, 'Comparing file %s and %s for gain change\n', file1, file2);
 	% Calc spectrum of data
-	fs = hdr.sampling_rate;
-	[spec1, freq1] = my_psd(dat1(:,i1), fs, win, overlap, t1(1));
-	[spec2, freq2] = my_psd(dat2(:,i2), fs, win, overlap, t2(1));
+	fs = hdr1.sampling_rate;
+	[spec1, freq1] = my_psd(sig1(:,i1), fs, win, overlap, t1(1));
+	[spec2, freq2] = my_psd(sig2(:,i2), fs, win, overlap, t2(1));
 
 	figure(2); clf
 	subplot(2,1,1);
@@ -237,6 +286,9 @@ for m = 2:(nfiles-1)
 	end;
 
 end
+
+% close log
+fclose(fid);
 
 return;
 
