@@ -45,8 +45,10 @@
 %
 % s. fregosi 2023-11-02
 
+%% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
-verbose = true; % or can be false to print less messages/be more automated
+tic
+verbose = false; % or can be false to print less messages/be more automated
 
 % set paths
 path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
@@ -59,11 +61,11 @@ fid = fopen(fullfile(path_out, 'gainFix.log'), 'a');
 if fid == -1
 	error('Cannot open log file.');
 end
-fprintf(fid, '%s: %s\n', datetime('now', 'format', 'uuuu-MM-dd''T''HH:mm:ss'), ...
+fprintf(fid, '\n%s: %s\n', datetime('now', 'format', 'uuuu-MM-dd''T''HH:mm:ss'), ...
 	'Beginning gain fix process...');
 if verbose
-	fprintf(1, '%s: %s\n', datetime('now', 'format', 'uuuu-MM-dd''T''HH:mm:ss'), ...
-		'Beginning gain fix process...');
+	fprintf(1, '\n%s: %s\n', datetime('now', 'format', 'uuuu-MM-dd''T''HH:mm:ss'), ...
+		'Beginning gain fix process...'); %#ok<*UNRCH>
 end
 
 % pick a data directory with the .dat file.
@@ -72,12 +74,15 @@ end
 directoryname = path_dat;
 files = dir([directoryname '\*.dat']);
 nfiles = size(files, 1);
-if verbose; fprintf(1, '%i %s\n', nfiles, 'total .dat files to process'); end
-fprintf(fid, '%i %s\n', nfiles, 'total .dat files to process');
+if verbose
+	fprintf(1, '%s: %i total .dat files to process\n', directoryname, nfiles); 
+end
+fprintf(fid, '%s: %i total .dat files to process\n', directoryname, nfiles); 
 
 % set up output table
 gt = table({files(:).name}', nan(nfiles, 1), nan(nfiles, 1), nan(nfiles, 1), ...
-	'VariableNames', {'fileName', 'gainAdj', 'maxThresh', 'firstFile'});
+	nan(nfiles, 1), 'VariableNames', {'fileName', 'gainSug', 'gainAdj', ...
+	'maxThresh', 'firstFile'});
 
 %R = input('Enter decimation factor [1]: ');
 %if(isempty(R))
@@ -108,6 +113,7 @@ first_file = 1;
 if verbose; fprintf(1, 'Starting with file: %s\n', files(1).name); end
 fprintf(fid, 'Starting with file: %s\n', files(1).name);
 
+%% %%% READ IN FIRST FILE %%%%%%%%%%%%%%%
 % read the first file in the directory
 file1 = files(1).name;
 name1 = fullfile(directoryname, files(1).name);
@@ -129,8 +135,9 @@ end
 data1 = data1(:, 1:nrd1);
 time1 = time1(:, 1:nrd1);
 
+%% %%% LOOP THROUGH ALL FILES %%%%%%%%%%%
 % loop over files in directory
-for m = 2:(nfiles-1)
+for m = 2:nfiles
 
 	if files(m).isdir
 		continue;
@@ -180,15 +187,15 @@ for m = 2:(nfiles-1)
 		% 		continue;
 	end
 
-	% plot the data segments
-	if verbose
-		figure(1); clf;
-		subplot(2,1,1);
-		plot(t1(:), sig1(:), t2(:), sig2(:));
-		xlabel('Seconds');
-		ylabel('Volts');
-		title('Original data');
-	end
+	% 	% plot the data segments
+	% 	if verbose
+	% 		figure(1); clf;
+	% 		subplot(2,1,1);
+	% 		plot(t1(:), sig1(:), t2(:), sig2(:));
+	% 		xlabel('Seconds');
+	% 		ylabel('Volts');
+	% 		title('Original data');
+	% 	end
 
 	% find the rms and max of the data segments
 	rms1 = sqrt(mean(sig1.^2));
@@ -239,17 +246,7 @@ for m = 2:(nfiles-1)
 	% plot rms and spectrums
 	if verbose
 		figure(2); clf
-		subplot(2,1,1);
-		plot(mean(t1(:,i1)), rms1(i1), '.', mean(t2(:,i2)), rms2(i2), '.');
-		%semilogx(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
-		%plot(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
-		xlabel('Seconds');
-		ylabel('RMS');
-		subplot(2,1,2);
-		plot(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
-		xlabel('Frequency [kHz]');
-		ylabel('dB');
-		legend('First file', 'Second file');
+		plotRMSSpec(i1, t1, rms1, spec1, i2, t2, rms2, spec2);
 	end
 
 	% prompt for frequency range (optional)
@@ -262,6 +259,7 @@ for m = 2:(nfiles-1)
 		end
 	end
 
+	% %%% COMPARE THE FILES %%%%%%%%%%%%%
 	% compare the spectrum in the specified freq range to determine gain
 	% gain should never be less than 1
 	ig = find((freq1 > f1) & (freq2 < f2));
@@ -273,11 +271,6 @@ for m = 2:(nfiles-1)
 		gain = round(gain);
 	end
 
-	if verbose
-		fprintf(1, 'Gain adjustment for second file is %.1f\n', gain);
-	end
-	fprintf(fid, 'Gain adjustment for second file is %.1f\n', gain);
-
 	% check for valid gain
 	% if gain is less than 1
 	if gain < 1
@@ -285,12 +278,10 @@ for m = 2:(nfiles-1)
 		if first_file
 			% then first file needs adjustment; adjust and resave data1 to wav
 			fprintf(1, 'Applying gain adjustment of %.1f to the first file\n', gain);
+			pause;
 			data1 = gain*data1;
 			sig1 = gain*sig1;
 			gt.gainAdj(m-1) = gain;
-			% 			wavfile1 = [file1(1:end-3) 'wav'];
-			% 			audiowrite(fullfile(path_wav, wavfile1), data1(:)/(adc_vref), ...
-			% 				hdr1.sampling_rate, 'BitsPerSample', 24);
 		elseif ~first_file
 			fprintf(1, 'Gain is < 1 and not first file...something went wrong\n');
 			pause;
@@ -299,14 +290,36 @@ for m = 2:(nfiles-1)
 		gain = 1;
 	end
 
+	% store suggested gain
+	gt.gainSug(m) = gain;
+
 	% prompt to verify gain
-	if verbose
+	if verbose || (gain ~= 1 && gain ~= 2)
+		if (gain ~= 1 && gain ~= 2)
+			beep
+		end
+
+		% plot the data segments
+		figure(1); clf;
+		subplot(2,1,1);
+		plot(t1(:), sig1(:), t2(:), sig2(:));
+		xlabel('Seconds');
+		ylabel('Volts');
+		title('Original data');
+
+		figure(2); clf
+		plotRMSSpec(i1, t1, rms1, spec1, freq1, i2, t2, rms2, spec2, freq2);
+
+		fprintf(1, 'Comparing file %s and %s\n', file1, file2);
+		fprintf(fid, 'NON_STANDARD suggested gain is %.1f.\n', gain);
+
 		str = sprintf('Enter gain adjustment to apply to second file [%.1f]: ', gain);
 		in = input(str);
 		if( ~isempty(in))
 			gain = in;
 		end
 
+		% plot equalized data to confirm
 		figure(1);
 		subplot(2,1,2);
 		sig2 = sig2/gain;
@@ -317,9 +330,20 @@ for m = 2:(nfiles-1)
 
 		refresh();
 		pause(0.5);
+
+		if(input('Look ok? Enter 1 to quit [0]: ') == 1)
+			break;
+		end
 	end
+
+	% state/save final gain adjustment
+	if verbose
+		fprintf(1, 'Gain adjustment for second file is %.1f\n', gain);
+	end
+	fprintf(fid, 'Gain adjustment for second file is %.1f\n', gain);
 	gt.gainAdj(m) = gain;
 
+	%%% ADJUST GAIN AND WRITE WAVS %%%%%%
 	% adjust the gain on the second file
 	if gain == 2
 		% 	data2 = data2/gain; % old way with variable gain (not always 2)
@@ -348,6 +372,8 @@ for m = 2:(nfiles-1)
 	% flag that it's not the first file anymore
 	first_file = 0;
 	gt.firstFile(m) = first_file;
+	% reset the max threshold
+	max_thresh = 1;
 
 	if verbose
 		if(input('quit [0]: ') == 1)
@@ -357,8 +383,7 @@ for m = 2:(nfiles-1)
 
 end
 
+fprintf(fid, 'Processing completed in %i minutes\n\n', round(toc/60));
+
 % close log
 fclose(fid);
-
-return;
-
