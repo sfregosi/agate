@@ -43,7 +43,7 @@
 %
 % cjones 10/2023
 %
-% s. fregosi 2023-11-02
+% s. fregosi 2023-11-14
 
 %% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
@@ -51,13 +51,20 @@ tic
 verbose = false; % or can be false to print less messages/be more automated
 
 % set paths
-path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
 % path_dat = uigetdir('D:\');
-path_dat = 'D:\sg679_MHI_May2023\gainFixTest4\raw';
-path_wav = fullfile(path_out, 'wav');
+% path_dat = 'D:\sg679_MHI_May2023\gainFixTest4\raw';
+% path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
+% path_wav = fullfile(path_out, 'wav');
+phase = 'lower_descent';
+dayStr = '230504';
+path_dat = fullfile('D:\sg679_MHI_May2023\raw_acoustic_data', phase, ...
+	'allDays', dayStr);
+path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
+path_wav = fullfile(path_out, phase, dayStr);
+mkdir(path_wav)
 
 % set up log file
-fid = fopen(fullfile(path_out, 'gainFix.log'), 'a');
+fid = fopen(fullfile(path_out, ['gainFix_', phase, '_', dayStr, '.log']), 'a');
 if fid == -1
 	error('Cannot open log file.');
 end
@@ -384,6 +391,7 @@ for m = 2:nfiles
 end
 
 fprintf(fid, 'Processing completed in %i minutes\n\n', round(toc/60));
+save(fullfile(path_out, ['gainFix_', phase, '_', dayStr, '.mat']), 'gt');
 
 % close log
 fclose(fid);
