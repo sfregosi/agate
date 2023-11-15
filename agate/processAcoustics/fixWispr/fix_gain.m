@@ -56,7 +56,7 @@ verbose = false; % or can be false to print less messages/be more automated
 % path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
 % path_wav = fullfile(path_out, 'wav');
 phase = 'lower_descent';
-dayStr = '230504';
+dayStr = '230505';
 path_dat = fullfile('D:\sg679_MHI_May2023\raw_acoustic_data', phase, ...
 	'allDays', dayStr);
 path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
@@ -291,7 +291,8 @@ for m = 2:nfiles
 			gt.gainAdj(m-1) = gain;
 		elseif ~first_file
 			fprintf(1, 'Gain is < 1 and not first file...something went wrong\n');
-			pause;
+			beep;
+% 			pause;
 		end
 		% else do nothing by resetting gain to 1
 		gain = 1;
