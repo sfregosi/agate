@@ -48,23 +48,22 @@
 %% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
 tic
-verbose = false; % or can be false to print less messages/be more automated
+verbose = true; % or can be false to print less messages/be more automated
 
 % set paths
 % path_dat = uigetdir('D:\');
 % path_dat = 'D:\sg679_MHI_May2023\gainFixTest4\raw';
 % path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
 % path_wav = fullfile(path_out, 'wav');
-phase = 'lower_descent';
+% phase = 'lower_descent';
 dayStr = '230505';
-path_dat = fullfile('D:\sg679_MHI_May2023\raw_acoustic_data', phase, ...
-	'allDays', dayStr);
+path_dat = fullfile('D:\sg679_MHI_May2023\dat', dayStr);
 path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
-path_wav = fullfile(path_out, phase, dayStr);
+path_wav = fullfile(path_out, dayStr);
 mkdir(path_wav)
 
 % set up log file
-fid = fopen(fullfile(path_out, ['gainFix_', phase, '_', dayStr, '.log']), 'a');
+fid = fopen(fullfile(path_out, ['gainFix_', dayStr, '.log']), 'a');
 if fid == -1
 	error('Cannot open log file.');
 end
@@ -85,11 +84,6 @@ if verbose
 	fprintf(1, '%s: %i total .dat files to process\n', directoryname, nfiles); 
 end
 fprintf(fid, '%s: %i total .dat files to process\n', directoryname, nfiles); 
-
-% set up output table
-gt = table({files(:).name}', nan(nfiles, 1), nan(nfiles, 1), nan(nfiles, 1), ...
-	nan(nfiles, 1), 'VariableNames', {'fileName', 'gainSug', 'gainAdj', ...
-	'maxThresh', 'firstFile'});
 
 %R = input('Enter decimation factor [1]: ');
 %if(isempty(R))
@@ -120,6 +114,11 @@ first_file = 1;
 if verbose; fprintf(1, 'Starting with file: %s\n', files(1).name); end
 fprintf(fid, 'Starting with file: %s\n', files(1).name);
 
+% set up output table
+gt = table({files(:).name}', nan(nfiles, 1), nan(nfiles, 1), nan(nfiles, 1), ...
+	nan(nfiles, 1), 'VariableNames', {'fileName', 'gainSug', 'gainAdj', ...
+	'maxThresh', 'firstFile'});
+
 %% %%% READ IN FIRST FILE %%%%%%%%%%%%%%%
 % read the first file in the directory
 file1 = files(1).name;
@@ -128,15 +127,16 @@ if strcmp(gt.fileName{1}, file1)
 	gt.fileName{1} = name1;
 	gt.firstFile(1) = 1;
 else
-	pause;
+	fprintf(1, 'File name does not match expected name. Paused.\n');
+	pause; % name does not match expected name
 end
 
 % read just to get header info
 [nrd1, hdr1, data1, time1] = read_wispr_file(name1, 1, 0);
 % get num_bufs
-% N = hdr.file_size * 512 / hdr.buffer_size;
+% N = hdr1.file_size * 512 / hdr1.buffer_size;
 % read
-% [nrd, hdr1, data1, time1] = read_wispr_file(name1, 1, N);
+% [nrd1, hdr1, data1, time1] = read_wispr_file(name1, 1, N);
 
 % remove all zero bufs - only keep everything up to nrd
 data1 = data1(:, 1:nrd1);
@@ -150,14 +150,15 @@ for m = 2:nfiles
 		continue;
 	end
 
-	% read the next file
+	% read the second file
 	file2 = files(m).name;
 	name2 = fullfile(directoryname, files(m).name);
 	% 	gt.fileName(m) = name2;
 	if strcmp(gt.fileName{m}, file2)
 		gt.fileName{m} = name2;
 	else
-		pause;
+		fprintf(1, 'Second file name does not match expected name. Paused.\n');
+		pause; % name does not match expected name
 	end
 
 	[nrd2, hdr2, data2, time2] = read_wispr_file(name2, 1, 0);
@@ -176,19 +177,20 @@ for m = 2:nfiles
 	t1 = time1(:,nrd1-nbufs+1:nrd1) - max(max(time1));
 	t2 = time2(:,1:nbufs) - min(min(time2));
 
-	if nrd2 < nrd1
+	if nrd2 < 1917 % size of full duration file
 		if verbose
-			fprintf(1, 'Looks like %s is truncated: nrd is %d not %d\n', ...
-				files(m).name, nrd2, nrd1);
+			fprintf(1, 'Looks like %s is truncated: nrd is %d not %d. Pausing\n', ...
+				files(m).name, nrd2, 1917);
 			pause;
 		end
 	end
 
 	if nrd2 < nbufs
-		if verbose; fprintf(1, 'Not enough data in %s, continue to next file\n', ...
+		if verbose 
+			fprintf(1, 'Not enough data in %s. Pausing\n', ...
 				files(m).name);
 		end
-		fprintf(fid, 'Not enough data in %s, continue to next file\n', ...
+		fprintf(fid, 'Not enough data in %s. Pausing\n', ...
 			files(m).name);
 		pause;
 		% 		continue;
@@ -215,7 +217,8 @@ for m = 2:nfiles
 	i2 = find(abs(max2) < max_thresh);
 
 	% while isempty(i1) || isempty(i2) % all sig1 is above threshold
-	while length(i1) < 5 || length(i2) < 5 % minimum samples below thresh
+	while (length(i1) < 5 || length(i2) < 5) ... % minimum samples below thresh
+			&& max_thresh <= 4 % max possible max_thresh
 		% try increasing threshold
 		max_thresh = max_thresh + 1;
 		if verbose
@@ -228,6 +231,11 @@ for m = 2:nfiles
 		% 	   break;
 	end
 	gt.maxThresh(m) = max_thresh;
+
+	if (length(i1) < 5 || length(i2) < 5) && max_thresh == 4 % reached max
+		fprintf(1, 'Increased max_thresh to 4 and still not enough data points. Pausing.\n')
+		pause;
+	end
 
 	% alternative could skip if nothing below threshold... but don't think
 	% this is valid approach.
@@ -295,6 +303,7 @@ for m = 2:nfiles
 % 			pause;
 		end
 		% else do nothing by resetting gain to 1
+		beep;
 		gain = 1;
 	end
 
