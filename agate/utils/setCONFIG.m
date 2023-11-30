@@ -81,6 +81,7 @@ if ~exist(CONFIG.bs.cnfFile, 'file')
 end
 % CONFIG.bs.cnfFid = fopen(CONFIG.bs.cnfFile,'r');
 parseCnf(CONFIG.bs.cnfFile);
+end
 
 % parse pmarConvert configuration file
 if isfield(CONFIG, 'pm') && (CONFIG.pm.loggers == 1)
@@ -92,6 +93,7 @@ if isfield(CONFIG, 'pm') && (CONFIG.pm.loggers == 1)
 end
 
 end
+
 %%%%%% NESTED FUNCTIONS %%%%%%
 function CONFIG = parseCnf(userCnf, CONFIG)
 % parse info from .cnf text files
