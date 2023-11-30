@@ -45,7 +45,7 @@
 %
 % s. fregosi 2023-11-14
 
-%% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
 tic
 verbose = true; % or can be false to print less messages/be more automated
@@ -81,9 +81,9 @@ directoryname = path_dat;
 files = dir([directoryname '\*.dat']);
 nfiles = size(files, 1);
 if verbose
-	fprintf(1, '%s: %i total .dat files to process\n', directoryname, nfiles); 
+	fprintf(1, '%s: %i total .dat files to process\n', directoryname, nfiles);
 end
-fprintf(fid, '%s: %i total .dat files to process\n', directoryname, nfiles); 
+fprintf(fid, '%s: %i total .dat files to process\n', directoryname, nfiles);
 
 %R = input('Enter decimation factor [1]: ');
 %if(isempty(R))
@@ -106,20 +106,20 @@ win = hamming(fft_size)*1.59; %multiply energy correction
 overlap = fft_size/2;
 
 % freq range (Hz) to compare spectra
-f1 = 55000;
-f2 = 65000;
-
-first_file = 1;
-
-if verbose; fprintf(1, 'Starting with file: %s\n', files(1).name); end
-fprintf(fid, 'Starting with file: %s\n', files(1).name);
+f1 = 80000;
+f2 = 85000;
 
 % set up output table
 gt = table({files(:).name}', nan(nfiles, 1), nan(nfiles, 1), nan(nfiles, 1), ...
 	nan(nfiles, 1), 'VariableNames', {'fileName', 'gainSug', 'gainAdj', ...
 	'maxThresh', 'firstFile'});
 
-%% %%% READ IN FIRST FILE %%%%%%%%%%%%%%%
+%% %%% READ IN FIRST FILE %%%%%%%%%%%%%%%%%%%%%
+first_file = 1;
+
+if verbose; fprintf(1, 'Starting with file %s\n', files(1).name); end
+fprintf(fid, 'Starting with file %s\n', files(1).name);
+
 % read the first file in the directory
 file1 = files(1).name;
 name1 = fullfile(directoryname, files(1).name);
@@ -142,7 +142,7 @@ end
 data1 = data1(:, 1:nrd1);
 time1 = time1(:, 1:nrd1);
 
-%% %%% LOOP THROUGH ALL FILES %%%%%%%%%%%
+%% %%% LOOP THROUGH ALL FILES %%%%%%%%%%%%%%%%%
 % loop over files in directory
 for m = 2:nfiles
 
@@ -150,7 +150,7 @@ for m = 2:nfiles
 		continue;
 	end
 
-	% read the second file
+	%% %%%%%% READ SECOND FILE %%%%%%%%%%%%%%%%
 	file2 = files(m).name;
 	name2 = fullfile(directoryname, files(m).name);
 	% 	gt.fileName(m) = name2;
@@ -166,9 +166,10 @@ for m = 2:nfiles
 	data2 = data2(:, 1:nrd2);
 	time2 = time2(:, 1:nrd2);
 
-	if verbose; fprintf(1, 'Comparing file %s and %s\n', file1, file2); end
+		if verbose; fprintf(1, 'Comparing file %s and %s\n', file1, file2); end
 	fprintf(fid, 'Comparing file %s and %s\n', file1, file2);
 
+	%% %%%%%% PROCESS DATA TO BE COMPARED %%%%%
 	% find a section of the data at the end of the first file (sig1)
 	% and the start of he second file (sig2)
 	sig1 = data1(:,nrd1-nbufs+1:nrd1); % end of data1
@@ -186,7 +187,7 @@ for m = 2:nfiles
 	end
 
 	if nrd2 < nbufs
-		if verbose 
+		if verbose
 			fprintf(1, 'Not enough data in %s. Pausing\n', ...
 				files(m).name);
 		end
@@ -230,12 +231,13 @@ for m = 2:nfiles
 		i2 = find(abs(max2) < max_thresh);
 		% 	   break;
 	end
-	gt.maxThresh(m) = max_thresh;
 
 	if (length(i1) < 5 || length(i2) < 5) && max_thresh == 4 % reached max
 		fprintf(1, 'Increased max_thresh to 4 and still not enough data points. Pausing.\n')
 		pause;
 	end
+
+	gt.maxThresh(m) = max_thresh;
 
 	% alternative could skip if nothing below threshold... but don't think
 	% this is valid approach.
@@ -261,7 +263,7 @@ for m = 2:nfiles
 	% plot rms and spectrums
 	if verbose
 		figure(2); clf
-		plotRMSSpec(i1, t1, rms1, spec1, i2, t2, rms2, spec2);
+		plotRMSSpec(i1, t1, rms1, spec1, freq1, i2, t2, rms2, spec2, freq2);
 	end
 
 	% prompt for frequency range (optional)
@@ -272,25 +274,33 @@ for m = 2:nfiles
 			f1 = in(1);
 			f2 = in(2);
 		end
+
+		figure(2); hold on;
+		subplot(212);
+		xline([f1/1000 f2/1000], 'k:', 'HandleVisibility', 'off');
+		hold off;
 	end
 
-	% %%% COMPARE THE FILES %%%%%%%%%%%%%
+	%% %%%%%% COMPARE FILE SEGMENTS %%%%%%%%%%%
 	% compare the spectrum in the specified freq range to determine gain
 	% gain should never be less than 1
 	ig = find((freq1 > f1) & (freq2 < f2));
-	db_gain = 10*log10(mean(spec2(ig) ./ spec1(ig)));
-	gain = (10.^(db_gain/20));
+	db_gain = 10*log10(mean(spec2(ig)./spec1(ig)));
+	gain = 10^(db_gain/20);
 	if gain < 1
 		gain = round(gain*2)/2; % if gain < 1 but > 0.5?
 	else
 		gain = round(gain);
 	end
 
-	% check for valid gain
-	% if gain is less than 1
-	if gain < 1
-		% and it's the first file in the directory
-		if first_file
+	%% %%%%%% CHECK FOR VALID GAIN %%%%%%%%%%%%
+
+	
+	if gain == 1 % this is most straightforward occurance - no change
+		continue;
+
+	elseif gain < 1 % this can either happen with first file or is a clipping issue	
+		if first_file % if it is the first file, it needs to be adjusted down
 			% then first file needs adjustment; adjust and resave data1 to wav
 			fprintf(1, 'Applying gain adjustment of %.1f to the first file\n', gain);
 			pause;
@@ -300,7 +310,7 @@ for m = 2:nfiles
 		elseif ~first_file
 			fprintf(1, 'Gain is < 1 and not first file...something went wrong\n');
 			beep;
-% 			pause;
+			% 			pause;
 		end
 		% else do nothing by resetting gain to 1
 		beep;
@@ -360,19 +370,22 @@ for m = 2:nfiles
 	fprintf(fid, 'Gain adjustment for second file is %.1f\n', gain);
 	gt.gainAdj(m) = gain;
 
-	%%% ADJUST GAIN AND WRITE WAVS %%%%%%
+	end
+	%% %%%%%% ADJUST GAIN AND WRITE WAVS %%%%%%
+		% save the first file to wav
+	if first_file
+		wavfile1 = [file1(1:end-3) 'wav'];
+		audiowrite(fullfile(path_wav, wavfile1), data1(:)/(adc_vref), ...
+			hdr1.sampling_rate, 'BitsPerSample', 24);
+	end
+
 	% adjust the gain on the second file
 	if gain == 2
 		% 	data2 = data2/gain; % old way with variable gain (not always 2)
 		data2 = 0.5*data2;
 	end
 
-	% save the first file to wav
-	if first_file
-		wavfile1 = [file1(1:end-3) 'wav'];
-		audiowrite(fullfile(path_wav, wavfile1), data1(:)/(adc_vref), ...
-			hdr1.sampling_rate, 'BitsPerSample', 24);
-	end
+
 
 	% save the second file to wav
 	wavfile2 = [file2(1:end-3) 'wav'];
