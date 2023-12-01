@@ -2,9 +2,9 @@
 % create a new file for each glider and mission
 % Guide for creating configuration files:  
 %    https://sfregosi.github.io/agate-public/get-started.html#create-configuration-files
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%% TEMPLATE - PUT SURVEY METADATA HERE %%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%% TEMPLATE - PUT MISSION METADATA HERE %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % %%%%%% REQUIRED CONFIG PARAMETERS %%%%%%
 % define glider and mission information
