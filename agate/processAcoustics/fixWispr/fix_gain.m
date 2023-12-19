@@ -45,10 +45,12 @@
 %
 % s. fregosi 2023-11-14
 
+addpath(genpath('C:\Users\Selene.Fregosi\Documents\MATLAB\agate-public\agate'));
+
 %% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
 tic
-verbose = true; % or can be false to print less messages/be more automated
+verbose = false; % or can be false to print less messages/be more automated
 
 % set paths
 % path_dat = uigetdir('D:\');
@@ -56,14 +58,18 @@ verbose = true; % or can be false to print less messages/be more automated
 % path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
 % path_wav = fullfile(path_out, 'wav');
 % phase = 'lower_descent';
-dayStr = '230505';
+dayStr = 'workingFolder';
+dive = 1;
+phase = 'descent';
 path_dat = fullfile('D:\sg679_MHI_May2023\dat', dayStr);
 path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
 path_wav = fullfile(path_out, dayStr);
 mkdir(path_wav)
 
 % set up log file
-fid = fopen(fullfile(path_out, ['gainFix_', dayStr, '.log']), 'a');
+fid = fopen(fullfile(path_out, ['gainFix_dive', num2str(dive, '%03.f'), '_', ...
+	phase, '.log']), 'a');
+
 if fid == -1
 	error('Cannot open log file.');
 end
@@ -166,7 +172,7 @@ for m = 2:nfiles
 	data2 = data2(:, 1:nrd2);
 	time2 = time2(:, 1:nrd2);
 
-		if verbose; fprintf(1, 'Comparing file %s and %s\n', file1, file2); end
+	if verbose; fprintf(1, 'Comparing file %s and %s\n', file1, file2); end
 	fprintf(fid, 'Comparing file %s and %s\n', file1, file2);
 
 	%% %%%%%% PROCESS DATA TO BE COMPARED %%%%%
@@ -180,9 +186,9 @@ for m = 2:nfiles
 
 	if nrd2 < 1917 % size of full duration file
 		if verbose
-			fprintf(1, 'Looks like %s is truncated: nrd is %d not %d. Pausing\n', ...
+			fprintf(1, 'Looks like %s is truncated: nrd is %d not %d. Continuing...\n', ...
 				files(m).name, nrd2, 1917);
-			pause;
+			% 			pause;
 		end
 	end
 
@@ -219,7 +225,7 @@ for m = 2:nfiles
 
 	% while isempty(i1) || isempty(i2) % all sig1 is above threshold
 	while (length(i1) < 5 || length(i2) < 5) ... % minimum samples below thresh
-			&& max_thresh <= 4 % max possible max_thresh
+			&& max_thresh < 4 % max possible max_thresh
 		% try increasing threshold
 		max_thresh = max_thresh + 1;
 		if verbose
@@ -233,8 +239,13 @@ for m = 2:nfiles
 	end
 
 	if (length(i1) < 5 || length(i2) < 5) && max_thresh == 4 % reached max
-		fprintf(1, 'Increased max_thresh to 4 and still not enough data points. Pausing.\n')
-		pause;
+		fprintf(1, 'Increased max_thresh to 4 and still not enough data points...')
+		% 		pause;
+		%		fprintf(1, 'Pausing\n')
+		max_thresh = Inf;
+		fprintf(1, 'Will manually set gain to 1.\n')
+		fprintf(fid, ['...still not enough data points...', ...
+			'Manually set gain to 1.\n']);
 	end
 
 	gt.maxThresh(m) = max_thresh;
@@ -268,6 +279,7 @@ for m = 2:nfiles
 
 	% prompt for frequency range (optional)
 	if verbose
+		commandwindow;
 		str = sprintf('Enter freq range to compare [%d %d]: ', f1, f2);
 		in = input(str);
 		if (~isempty(in))
@@ -295,11 +307,11 @@ for m = 2:nfiles
 
 	%% %%%%%% CHECK FOR VALID GAIN %%%%%%%%%%%%
 
-	
-	if gain == 1 % this is most straightforward occurance - no change
-		continue;
 
-	elseif gain < 1 % this can either happen with first file or is a clipping issue	
+	% 	if gain == 1 % this is most straightforward occurance - no change
+	% 		continue;
+
+	if gain < 1 % this can either happen with first file or is a clipping issue
 		if first_file % if it is the first file, it needs to be adjusted down
 			% then first file needs adjustment; adjust and resave data1 to wav
 			fprintf(1, 'Applying gain adjustment of %.1f to the first file\n', gain);
@@ -320,10 +332,17 @@ for m = 2:nfiles
 	% store suggested gain
 	gt.gainSug(m) = gain;
 
+	if isnan(gain) % situation where max_thres needs to be > 4
+		% just set gain to 1
+		gain = 1;
+	end
+
 	% prompt to verify gain
 	if verbose || (gain ~= 1 && gain ~= 2)
+		nonstd = '';
 		if (gain ~= 1 && gain ~= 2)
-			beep
+			beep;
+			nonstd = 'NON-STANDARD';
 		end
 
 		% plot the data segments
@@ -338,8 +357,9 @@ for m = 2:nfiles
 		plotRMSSpec(i1, t1, rms1, spec1, freq1, i2, t2, rms2, spec2, freq2);
 
 		fprintf(1, 'Comparing file %s and %s\n', file1, file2);
-		fprintf(fid, 'NON_STANDARD suggested gain is %.1f.\n', gain);
+		fprintf(fid, '%s suggested gain is %.1f.\n', nonstd, gain);
 
+		commandwindow;
 		str = sprintf('Enter gain adjustment to apply to second file [%.1f]: ', gain);
 		in = input(str);
 		if( ~isempty(in))
@@ -358,6 +378,7 @@ for m = 2:nfiles
 		refresh();
 		pause(0.5);
 
+		commandwindow;
 		if(input('Look ok? Enter 1 to quit [0]: ') == 1)
 			break;
 		end
@@ -370,9 +391,9 @@ for m = 2:nfiles
 	fprintf(fid, 'Gain adjustment for second file is %.1f\n', gain);
 	gt.gainAdj(m) = gain;
 
-	end
+	% 	end
 	%% %%%%%% ADJUST GAIN AND WRITE WAVS %%%%%%
-		% save the first file to wav
+	% save the first file to wav
 	if first_file
 		wavfile1 = [file1(1:end-3) 'wav'];
 		audiowrite(fullfile(path_wav, wavfile1), data1(:)/(adc_vref), ...
@@ -384,8 +405,6 @@ for m = 2:nfiles
 		% 	data2 = data2/gain; % old way with variable gain (not always 2)
 		data2 = 0.5*data2;
 	end
-
-
 
 	% save the second file to wav
 	wavfile2 = [file2(1:end-3) 'wav'];
@@ -406,15 +425,17 @@ for m = 2:nfiles
 	max_thresh = 1;
 
 	if verbose
-		if(input('quit [0]: ') == 1)
+		commandwindow;
+		if(input('Quit? Enter 1 to quit [0]: ') == 1)
 			break;
 		end
 	end
 
-end
+end % end loop through all files in this day
 
 fprintf(fid, 'Processing completed in %i minutes\n\n', round(toc/60));
-save(fullfile(path_out, ['gainFix_', phase, '_', dayStr, '.mat']), 'gt');
+save(fullfile(path_out, ['gainFix_dive', num2str(dive, '%03.f'), '_', ...
+	phase '.mat']), 'gt');
 
 % close log
 fclose(fid);
