@@ -59,8 +59,9 @@ verbose = false; % or can be false to print less messages/be more automated
 % path_wav = fullfile(path_out, 'wav');
 % phase = 'lower_descent';
 dayStr = 'workingFolder';
-dive = 1;
+dive = 7;
 phase = 'descent';
+% phase = 'ascent';
 path_dat = fullfile('D:\sg679_MHI_May2023\dat', dayStr);
 path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
 path_wav = fullfile(path_out, dayStr);
@@ -99,7 +100,7 @@ fprintf(fid, '%s: %i total .dat files to process\n', directoryname, nfiles);
 adc_vref = 5.0;  % reference voltage of the adc (max voltage)
 
 % number of data buffer to compare
-nbufs = 64;
+nbufs = 96;
 
 % don't compare data above this amplitude threshold
 % set this value to eleminate spikes
@@ -112,8 +113,8 @@ win = hamming(fft_size)*1.59; %multiply energy correction
 overlap = fft_size/2;
 
 % freq range (Hz) to compare spectra
-f1 = 80000;
-f2 = 85000;
+f1 = 65000;
+f2 = 75000;
 
 % set up output table
 gt = table({files(:).name}', nan(nfiles, 1), nan(nfiles, 1), nan(nfiles, 1), ...
@@ -176,14 +177,26 @@ for m = 2:nfiles
 	fprintf(fid, 'Comparing file %s and %s\n', file1, file2);
 
 	%% %%%%%% PROCESS DATA TO BE COMPARED %%%%%
-	% find a section of the data at the end of the first file (sig1)
-	% and the start of he second file (sig2)
-	sig1 = data1(:,nrd1-nbufs+1:nrd1); % end of data1
-	sig2 = data2(:,1:nbufs); % beginning of data2
 
-	t1 = time1(:,nrd1-nbufs+1:nrd1) - max(max(time1));
-	t2 = time2(:,1:nbufs) - min(min(time2));
-
+	% do some data size checks - first file
+	if nrd1 < 1917 % size of full duration file
+		if verbose
+			fprintf(1, 'Looks like %s is truncated: nrd is %d not %d. Continuing...\n', ...
+				files(m).name, nrd2, 1917);
+		end
+	end
+	if nrd1 < nbufs
+		if verbose
+			fprintf(1, 'Not enough data in %s. Reducing nbufs to %i\n', ...
+				files(m-1).name, nrd1);
+		end
+		fprintf(fid, 'Not enough data in %s. Reducing nbufs to %i\n', ...
+			files(m-1).name, nrd1);
+		nbufs1 = nrd1;
+	else
+		nbufs1 = nbufs;
+	end
+	% do some data size checks = second file
 	if nrd2 < 1917 % size of full duration file
 		if verbose
 			fprintf(1, 'Looks like %s is truncated: nrd is %d not %d. Continuing...\n', ...
@@ -191,27 +204,26 @@ for m = 2:nfiles
 			% 			pause;
 		end
 	end
-
 	if nrd2 < nbufs
 		if verbose
-			fprintf(1, 'Not enough data in %s. Pausing\n', ...
-				files(m).name);
+			fprintf(1, 'Not enough data in %s. Reducing nbufs to %i\n', ...
+				files(m).name, nrd2);
 		end
-		fprintf(fid, 'Not enough data in %s. Pausing\n', ...
-			files(m).name);
-		pause;
-		% 		continue;
+		fprintf(fid, '**Not enough data in %s. Reducing nbufs to %i\n', ...
+			files(m).name, nrd2);
+		nbufs2 = nrd2;
+	else
+		nbufs2 = nbufs;
 	end
 
-	% 	% plot the data segments
-	% 	if verbose
-	% 		figure(1); clf;
-	% 		subplot(2,1,1);
-	% 		plot(t1(:), sig1(:), t2(:), sig2(:));
-	% 		xlabel('Seconds');
-	% 		ylabel('Volts');
-	% 		title('Original data');
-	% 	end
+	% find a section of the data at the end of the first file (sig1)
+	% and the start of he second file (sig2)
+	sig1 = data1(:,nrd1-nbufs1+1:nrd1); % end of data1
+	sig2 = data2(:,1:nbufs2); % beginning of data2
+
+	% make time matrices
+	t1 = time1(:,nrd1-nbufs1+1:nrd1) - max(max(time1));
+	t2 = time2(:,1:nbufs2) - min(min(time2));
 
 	% find the rms and max of the data segments
 	rms1 = sqrt(mean(sig1.^2));
@@ -219,6 +231,7 @@ for m = 2:nfiles
 	max1 = max(abs(sig1));
 	max2 = max(abs(sig2));
 
+	%% %%%%%% APPLY THRESHOLDING %%%%%%%%%%%%%%
 	% try to ignore the spikes in the data by thresholding
 	i1 = find(abs(max1) < max_thresh);
 	i2 = find(abs(max2) < max_thresh);
@@ -228,49 +241,36 @@ for m = 2:nfiles
 			&& max_thresh < 4 % max possible max_thresh
 		% try increasing threshold
 		max_thresh = max_thresh + 1;
-		if verbose
-			fprintf(1, 'Increasing max_thresh = %i\n', max_thresh);
-		end
-		fprintf(fid, 'Increasing max_thresh = %i\n', max_thresh);
 		% try to ignore the spikes in the data
 		i1 = find(abs(max1) < max_thresh);
 		i2 = find(abs(max2) < max_thresh);
 		% 	   break;
 	end
+	if max_thresh > 1
+		if verbose
+			fprintf(1, 'Increased max_thresh = %i\n', max_thresh);
+		end
+		fprintf(fid, 'Increased max_thresh = %i\n', max_thresh);
+	end
 
 	if (length(i1) < 5 || length(i2) < 5) && max_thresh == 4 % reached max
-		fprintf(1, 'Increased max_thresh to 4 and still not enough data points...')
+		fprintf(1, '...still not enough data points...')
 		% 		pause;
 		%		fprintf(1, 'Pausing\n')
 		max_thresh = Inf;
-		fprintf(1, 'Will manually set gain to 1.\n')
+		fprintf(1, 'gain will be NaN and force manual entry.\n')
 		fprintf(fid, ['...still not enough data points...', ...
-			'Manually set gain to 1.\n']);
+			'gain will be NaN and force manual entry.\n']);
 	end
 
 	gt.maxThresh(m) = max_thresh;
-
-	% alternative could skip if nothing below threshold... but don't think
-	% this is valid approach.
-	% if there's nothing below the threshold then the pumps are probably on
-	% so skip this file and proceed to the next file
-	%     if( isempty(i1) || isempty(i2) )
-	%         data1 = data2;
-	%         time1 = time2;
-	%         name1 = name2;
-	%         file1 = file2;
-	%         nrd1 = nrd2;
-	%         fprintf('Skipping file %s and %s - no signal below threshold\n', file1, file2);
-	%         continue;
-	%     end
-	%
-	% fprintf(fid, 'Comparing file %s and %s for gain change\n', file1, file2);
 
 	% Calc spectrum of data
 	fs = hdr1.sampling_rate;
 	[spec1, freq1] = my_psd(sig1(:,i1), fs, win, overlap, t1(1));
 	[spec2, freq2] = my_psd(sig2(:,i2), fs, win, overlap, t2(1));
 
+	%% %%%%%% PLOT IF VERBOSE %%%%%%%%%%%%%%%%%
 	% plot rms and spectrums
 	if verbose
 		figure(2); clf
@@ -307,43 +307,41 @@ for m = 2:nfiles
 
 	%% %%%%%% CHECK FOR VALID GAIN %%%%%%%%%%%%
 
-
 	% 	if gain == 1 % this is most straightforward occurance - no change
 	% 		continue;
-
-	if gain < 1 % this can either happen with first file or is a clipping issue
-		if first_file % if it is the first file, it needs to be adjusted down
-			% then first file needs adjustment; adjust and resave data1 to wav
-			fprintf(1, 'Applying gain adjustment of %.1f to the first file\n', gain);
-			pause;
-			data1 = gain*data1;
-			sig1 = gain*sig1;
-			gt.gainAdj(m-1) = gain;
-		elseif ~first_file
-			fprintf(1, 'Gain is < 1 and not first file...something went wrong\n');
-			beep;
-			% 			pause;
-		end
-		% else do nothing by resetting gain to 1
-		beep;
-		gain = 1;
-	end
 
 	% store suggested gain
 	gt.gainSug(m) = gain;
 
-	if isnan(gain) % situation where max_thres needs to be > 4
-		% just set gain to 1
-		gain = 1;
-	end
+	% 	if gain < 1 || isnan(gain) % this can either happen with first file or is a clipping issue
+	% 		if first_file % if it is the first file, it needs to be adjusted down
+	% 			% then first file needs adjustment; adjust and resave data1 to wav
+	% 			fprintf(1, 'First file requires gain adjustment. Suggested: %.1f\n', ...
+	% 				gain);
+	% 			fprintf(fid, 'First file requires gain adjustment. Suggested: %.1f\n', ...
+	% 				gain);
+	% % 			fprintf(1, 'Applying gain adjustment of %.1f to the first file\n', gain);
+	%
+	% 			pause;
+	% 			data1 = gain*data1;
+	% 			sig1 = gain*sig1;
+	% 			gt.gainAdj(m-1) = gain;
+	% 		elseif ~first_file
+	% 			fprintf(1, 'Gain is < 1 and not first file...something went wrong\n');
+	% 			beep;
+	% 			% 			pause;
+	% 		end
+	% 		% else do nothing by resetting gain to 1
+	% 		beep;
+	% 		gain = 1;
+	% 	end
+
+
 
 	% prompt to verify gain
 	if verbose || (gain ~= 1 && gain ~= 2)
-		nonstd = '';
-		if (gain ~= 1 && gain ~= 2)
-			beep;
-			nonstd = 'NON-STANDARD';
-		end
+		fprintf(1, 'Comparing file %s and %s\n', file1, file2);
+		nonstd = ''; % if just printing bc verbose, don't flag in log
 
 		% plot the data segments
 		figure(1); clf;
@@ -355,12 +353,45 @@ for m = 2:nfiles
 
 		figure(2); clf
 		plotRMSSpec(i1, t1, rms1, spec1, freq1, i2, t2, rms2, spec2, freq2);
+		figure(2); hold on;
+		subplot(212);
+		xline([f1/1000 f2/1000], 'k:', 'HandleVisibility', 'off');
+		hold off;
 
-		fprintf(1, 'Comparing file %s and %s\n', file1, file2);
-		fprintf(fid, '%s suggested gain is %.1f.\n', nonstd, gain);
+		if (gain ~= 1 && gain ~= 2)
+			beep;
+			nonstd = '**NON-STANDARD';
+			fprintf(fid, '%s suggested gain is %.1f.\n', nonstd, gain);
+
+			% if first file needs adjustment; adjust and resave data1 to wav
+			if first_file
+				gain1 = gain;
+				fprintf(1, 'First file requires adjustment. Suggested: %.1f\n', ...
+					gain1);
+				fprintf(fid, '**First file requires adjustment. Suggested: %.1f\n', ...
+					gain1);
+
+				commandwindow;
+				str = sprintf(['Enter gain adjustment to apply to FIRST ', ...
+					'file [%.1f]: '], gain1);
+				in = input(str);
+				if( ~isempty(in))
+					gain1 = in;
+				end
+				fprintf(1, ['Applying gain adjustment of %.1f to the ', ...
+					'FIRST file\n'], gain1);
+				fprintf(fid, ['**Applying gain adjustment of %.1f to the ', ...
+					'FIRST file\n'], gain1);
+				data1 = data1/gain1;
+				sig1 = sig1/gain1;
+				gt.gainAdj(m-1) = gain1;
+			end % first file check
+
+		end
 
 		commandwindow;
-		str = sprintf('Enter gain adjustment to apply to second file [%.1f]: ', gain);
+		str = sprintf('Enter gain adjustment to apply to second file [%.1f]: ', ...
+			gain);
 		in = input(str);
 		if( ~isempty(in))
 			gain = in;
@@ -377,6 +408,7 @@ for m = 2:nfiles
 
 		refresh();
 		pause(0.5);
+		openvar('gt');
 
 		commandwindow;
 		if(input('Look ok? Enter 1 to quit [0]: ') == 1)
@@ -434,6 +466,7 @@ for m = 2:nfiles
 end % end loop through all files in this day
 
 fprintf(fid, 'Processing completed in %i minutes\n\n', round(toc/60));
+fprintf(1, 'Processing completed in %i minutes\n\n', round(toc/60));
 save(fullfile(path_out, ['gainFix_dive', num2str(dive, '%03.f'), '_', ...
 	phase '.mat']), 'gt');
 
