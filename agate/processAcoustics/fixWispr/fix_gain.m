@@ -44,28 +44,52 @@
 % cjones 10/2023
 %
 % s. fregosi 2023-11-14
-
+warning off
 addpath(genpath('C:\Users\Selene.Fregosi\Documents\MATLAB\agate-public\agate'));
 
 %% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
 tic
 verbose = false; % or can be false to print less messages/be more automated
+% verbose = true;
 
-% set paths
+% %%% SET PATHS %%%
 % path_dat = uigetdir('D:\');
 % path_dat = 'D:\sg679_MHI_May2023\gainFixTest4\raw';
 % path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
 % path_wav = fullfile(path_out, 'wav');
 % phase = 'lower_descent';
 dayStr = 'workingFolder';
-dive = 7;
-phase = 'descent';
+dive = 35;
+% phase = 'descent';
 % phase = 'ascent';
+phase= 'both';
 path_dat = fullfile('D:\sg679_MHI_May2023\dat', dayStr);
 path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
 path_wav = fullfile(path_out, dayStr);
-mkdir(path_wav)
+mkdir(path_wav);
+
+% %%% ANALYSIS SETTINGS %%%
+%R = input('Enter decimation factor [1]: ');
+%if(isempty(R))
+%    R = 1;
+%end
+
+adc_vref = 5.0;  % reference voltage of the adc (max voltage)
+nbufs = 96; % number of data buffer to compare
+
+% don't compare data above this amplitude threshold
+max_thresh = 1.0; % set this value to eliminate spikes
+
+% spectrum parameters
+fft_size = 128;
+win = hamming(fft_size)*1.59; %multiply energy correction
+%window = hann(fft_size)*1.63;
+overlap = fft_size/2;
+
+% freq range (Hz) to compare spectra
+f1 = 60000;
+f2 = 65000;
 
 % set up log file
 fid = fopen(fullfile(path_out, ['gainFix_dive', num2str(dive, '%03.f'), '_', ...
@@ -91,30 +115,6 @@ if verbose
 	fprintf(1, '%s: %i total .dat files to process\n', directoryname, nfiles);
 end
 fprintf(fid, '%s: %i total .dat files to process\n', directoryname, nfiles);
-
-%R = input('Enter decimation factor [1]: ');
-%if(isempty(R))
-%    R = 1;
-%end
-
-adc_vref = 5.0;  % reference voltage of the adc (max voltage)
-
-% number of data buffer to compare
-nbufs = 96;
-
-% don't compare data above this amplitude threshold
-% set this value to eleminate spikes
-max_thresh = 1.0;
-
-% spectrum parameters
-fft_size = 128;
-win = hamming(fft_size)*1.59; %multiply energy correction
-%window = hann(fft_size)*1.63;
-overlap = fft_size/2;
-
-% freq range (Hz) to compare spectra
-f1 = 65000;
-f2 = 75000;
 
 % set up output table
 gt = table({files(:).name}', nan(nfiles, 1), nan(nfiles, 1), nan(nfiles, 1), ...
@@ -253,14 +253,16 @@ for m = 2:nfiles
 		fprintf(fid, 'Increased max_thresh = %i\n', max_thresh);
 	end
 
-	if (length(i1) < 5 || length(i2) < 5) && max_thresh == 4 % reached max
-		fprintf(1, '...still not enough data points...')
-		% 		pause;
-		%		fprintf(1, 'Pausing\n')
+	if (isempty(i1) || isempty(i2)) && max_thresh == 4 % reached max
 		max_thresh = Inf;
-		fprintf(1, 'gain will be NaN and force manual entry.\n')
+		fprintf(1, ['%s ...still not enough data points...', ...
+			'gain will be NaN and force manual entry.\n'], files(m).name);
 		fprintf(fid, ['...still not enough data points...', ...
 			'gain will be NaN and force manual entry.\n']);
+	elseif (length(i1) < 5 || length(i2) < 5) && max_thresh == 4 % reached max
+		fprintf(1, '%s ...warning...very few data points for comparison.\n', ...
+			files(m).name);
+		fprintf(fid, '...warning...very few data points for comparison.\n');
 	end
 
 	gt.maxThresh(m) = max_thresh;
@@ -299,11 +301,12 @@ for m = 2:nfiles
 	ig = find((freq1 > f1) & (freq2 < f2));
 	db_gain = 10*log10(mean(spec2(ig)./spec1(ig)));
 	gain = 10^(db_gain/20);
-	if gain < 1
-		gain = round(gain*2)/2; % if gain < 1 but > 0.5?
-	else
-		gain = round(gain);
-	end
+% 	if gain < 1
+		gain = round(gain*2)/2; % if gain < 1 but >= 0.75, call it 1,
+		% if gain <0.75 >=0.25, call it 0.5, and < 0.25 = 0
+% 	else
+% 		gain = round(gain);
+% 	end
 
 	%% %%%%%% CHECK FOR VALID GAIN %%%%%%%%%%%%
 
@@ -339,7 +342,7 @@ for m = 2:nfiles
 
 
 	% prompt to verify gain
-	if verbose || (gain ~= 1 && gain ~= 2)
+	if verbose || (gain ~= 1 && gain ~= 2) || first_file
 		fprintf(1, 'Comparing file %s and %s\n', file1, file2);
 		nonstd = ''; % if just printing bc verbose, don't flag in log
 
@@ -357,6 +360,31 @@ for m = 2:nfiles
 		subplot(212);
 		xline([f1/1000 f2/1000], 'k:', 'HandleVisibility', 'off');
 		hold off;
+
+		if first_file
+			% check the first file no matter what
+			gain1 = gain;
+			fprintf(1, 'Double check first file. Suggested: %.1f\n', ...
+				gain1);
+			fprintf(fid, '**Double check first file. Suggested: %.1f\n', ...
+				gain1);
+
+			commandwindow;
+			str = sprintf(['Enter gain adjustment to apply to FIRST ', ...
+				'file [%.1f]: '], gain1);
+			in = input(str);
+			if( ~isempty(in))
+				gain1 = in;
+			end
+			fprintf(1, ['Applying gain adjustment of %.1f to the ', ...
+				'FIRST file\n'], gain1);
+			fprintf(fid, ['**Applying gain adjustment of %.1f to the ', ...
+				'FIRST file\n'], gain1);
+			data1 = data1/gain1;
+			sig1 = sig1/gain1;
+			gt.gainAdj(m-1) = gain1;
+		end
+
 
 		if (gain ~= 1 && gain ~= 2)
 			beep;
@@ -408,7 +436,7 @@ for m = 2:nfiles
 
 		refresh();
 		pause(0.5);
-		openvar('gt');
+		% 		openvar('gt');
 
 		commandwindow;
 		if(input('Look ok? Enter 1 to quit [0]: ') == 1)
@@ -472,3 +500,5 @@ save(fullfile(path_out, ['gainFix_dive', num2str(dive, '%03.f'), '_', ...
 
 % close log
 fclose(fid);
+
+beep; beep;
