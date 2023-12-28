@@ -60,7 +60,7 @@ verbose = false; % or can be false to print less messages/be more automated
 % path_wav = fullfile(path_out, 'wav');
 % phase = 'lower_descent';
 dayStr = 'workingFolder';
-dive = 35;
+dive = 61;
 % phase = 'descent';
 % phase = 'ascent';
 phase= 'both';
@@ -301,12 +301,12 @@ for m = 2:nfiles
 	ig = find((freq1 > f1) & (freq2 < f2));
 	db_gain = 10*log10(mean(spec2(ig)./spec1(ig)));
 	gain = 10^(db_gain/20);
-% 	if gain < 1
-		gain = round(gain*2)/2; % if gain < 1 but >= 0.75, call it 1,
-		% if gain <0.75 >=0.25, call it 0.5, and < 0.25 = 0
-% 	else
-% 		gain = round(gain);
-% 	end
+	% 	if gain < 1
+	gain = round(gain*2)/2; % if gain < 1 but >= 0.75, call it 1,
+	% if gain <0.75 >=0.25, call it 0.5, and < 0.25 = 0
+	% 	else
+	% 		gain = round(gain);
+	% 	end
 
 	%% %%%%%% CHECK FOR VALID GAIN %%%%%%%%%%%%
 
@@ -350,6 +350,7 @@ for m = 2:nfiles
 		figure(1); clf;
 		subplot(2,1,1);
 		plot(t1(:), sig1(:), t2(:), sig2(:));
+		xlim([min(t1(:)) max(t2(:))]);
 		xlabel('Seconds');
 		ylabel('Volts');
 		title('Original data');
@@ -392,28 +393,28 @@ for m = 2:nfiles
 			fprintf(fid, '%s suggested gain is %.1f.\n', nonstd, gain);
 
 			% if first file needs adjustment; adjust and resave data1 to wav
-			if first_file
-				gain1 = gain;
-				fprintf(1, 'First file requires adjustment. Suggested: %.1f\n', ...
-					gain1);
-				fprintf(fid, '**First file requires adjustment. Suggested: %.1f\n', ...
-					gain1);
-
-				commandwindow;
-				str = sprintf(['Enter gain adjustment to apply to FIRST ', ...
-					'file [%.1f]: '], gain1);
-				in = input(str);
-				if( ~isempty(in))
-					gain1 = in;
-				end
-				fprintf(1, ['Applying gain adjustment of %.1f to the ', ...
-					'FIRST file\n'], gain1);
-				fprintf(fid, ['**Applying gain adjustment of %.1f to the ', ...
-					'FIRST file\n'], gain1);
-				data1 = data1/gain1;
-				sig1 = sig1/gain1;
-				gt.gainAdj(m-1) = gain1;
-			end % first file check
+			% 			if first_file
+			% 				gain1 = gain;
+			% 				fprintf(1, 'First file requires adjustment. Suggested: %.1f\n', ...
+			% 					gain1);
+			% 				fprintf(fid, '**First file requires adjustment. Suggested: %.1f\n', ...
+			% 					gain1);
+			%
+			% 				commandwindow;
+			% 				str = sprintf(['Enter gain adjustment to apply to FIRST ', ...
+			% 					'file [%.1f]: '], gain1);
+			% 				in = input(str);
+			% 				if( ~isempty(in))
+			% 					gain1 = in;
+			% 				end
+			% 				fprintf(1, ['Applying gain adjustment of %.1f to the ', ...
+			% 					'FIRST file\n'], gain1);
+			% 				fprintf(fid, ['**Applying gain adjustment of %.1f to the ', ...
+			% 					'FIRST file\n'], gain1);
+			% 				data1 = data1/gain1;
+			% 				sig1 = sig1/gain1;
+			% 				gt.gainAdj(m-1) = gain1;
+			% 			end % first file check
 
 		end
 
@@ -430,6 +431,7 @@ for m = 2:nfiles
 		subplot(2,1,2);
 		sig2 = sig2/gain;
 		plot(t1(:), sig1(:), t2(:), sig2(:));
+		xlim([min(t1(:)) max(t2(:))]);
 		ylabel('Volts');
 		xlabel('Seconds');
 		title('Equalized data');

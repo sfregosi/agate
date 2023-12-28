@@ -39,16 +39,26 @@ function plotRMSSpec(i1, t1, rms1, spec1, freq1, i2, t2, rms2, spec2, freq2)
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+blue = '#0072BD';
+orange = '#D95319';
 
 subplot(2,1,1);
-plot(mean(t1(:,i1)), rms1(i1), '.', mean(t2(:,i2)), rms2(i2), '.');
+plot(mean(t1(:,i1)), rms1(i1), '.', 'Color', blue)
+hold on;
+plot(mean(t2(:,i2)), rms2(i2), '.', 'Color', orange);
 %semilogx(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
 %plot(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
 xlabel('Seconds');
 ylabel('RMS');
+xlim([min(mean(t1(:,i1))) max(mean(t2(:,i2)))])
+hold off;
 
 subplot(2,1,2);
-plot(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
+%normalize the power spec
+plot(freq1/1000, 10*log10(spec1), '.-', 'Color', blue);
+hold on;
+plot(freq2/1000, 10*log10(spec2), '.-', 'Color', orange); 
 xlabel('Frequency [kHz]');
 ylabel('dB');
 legend('First file', 'Second file');
+hold off;
