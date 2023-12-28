@@ -50,7 +50,7 @@ plot(mean(t2(:,i2)), rms2(i2), '.', 'Color', orange);
 %plot(freq1/1000, 10*log10(spec1), '.-', freq2/1000, 10*log10(spec2), '.-'); %normalize the power spec
 xlabel('Seconds');
 ylabel('RMS');
-xlim([min(mean(t1(:,i1))) max(mean(t2(:,i2)))])
+xlim([min(t1(:)) max(t2(:))]);
 hold off;
 
 subplot(2,1,2);
