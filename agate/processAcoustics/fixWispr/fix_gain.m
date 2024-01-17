@@ -50,8 +50,8 @@ addpath(genpath('C:\Users\Selene.Fregosi\Documents\MATLAB\agate-public\agate'));
 %% %%% SET UP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
 tic
-verbose = false; % or can be false to print less messages/be more automated
-% verbose = true;
+% verbose = false; % or can be false to print less messages/be more automated
+verbose = true;
 
 % %%% SET PATHS %%%
 % path_dat = uigetdir('D:\');
@@ -60,12 +60,12 @@ verbose = false; % or can be false to print less messages/be more automated
 % path_wav = fullfile(path_out, 'wav');
 % phase = 'lower_descent';
 dayStr = 'workingFolder';
-dive = 173;
+dive = 107;
 % phase = 'descent';
 % phase = 'ascent';
-phase= 'both';
+phase = 'fix';
 path_dat = fullfile('D:\sg679_MHI_May2023\dat', dayStr);
-path_out = 'D:\sg679_MHI_May2023\gain_adjusted_wav';
+path_out = 'D:\sg679_MHI_May2023\wav_gain_adjusted';
 path_wav = fullfile(path_out, dayStr);
 mkdir(path_wav);
 
