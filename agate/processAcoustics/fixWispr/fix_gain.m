@@ -54,19 +54,12 @@ tic
 verbose = true;
 
 % %%% SET PATHS %%%
-% path_dat = uigetdir('D:\');
-% path_dat = 'D:\sg679_MHI_May2023\gainFixTest4\raw';
-% path_out = 'D:\sg679_MHI_May2023\gainFixTest4';
-% path_wav = fullfile(path_out, 'wav');
-% phase = 'lower_descent';
-dayStr = 'workingFolder';
+fldrStr = 'workingFolder';
 dive = 107;
-% phase = 'descent';
-% phase = 'ascent';
-phase = 'fix';
-path_dat = fullfile('D:\sg679_MHI_May2023\dat', dayStr);
+phase = 'both'; % descent, ascent
+path_dat = fullfile('D:\sg679_MHI_May2023\dat', fldrStr);
 path_out = 'D:\sg679_MHI_May2023\wav_gain_adjusted';
-path_wav = fullfile(path_out, dayStr);
+path_wav = fullfile(path_out, fldrStr);
 mkdir(path_wav);
 
 % %%% ANALYSIS SETTINGS %%%
