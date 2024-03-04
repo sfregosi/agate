@@ -1,33 +1,34 @@
 ---
-title: "Process acoustic files"
-subtitle: 'Guide for processing raw acoustic .dat files to .wav'
+title: "Convert acoustic files"
+subtitle: 'Guide for converting raw acoustic .dat files to .wav'
 ---
 
 ```{r, include = FALSE}
 library(fontawesome)
 ```
 
-The Seaglider can be equipped with a variety of acoustic systems. Two - the PMARXL and WISPR systems - both record raw data as .dat files that need to be converted to .wav or .flac for analysis. `agate` includes tools to do this for both of these two systems. All conversion code is located in the `processAcoustics` folder. 
+The Seaglider can be equipped with a variety of acoustic systems. Two - the PMARXL and WISPR systems - both record raw data as .dat files that need to be converted to .wav or .flac for analysis. `agate` includes tools to do this for both of these two systems. All conversion code is located in the `convertAcoustics` folder. 
 
-Additionally, following a mission in Spring 2023, a bug in the WISPR firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to 'fix' this gain in an attempt to standardize it across all files. The code needed to apply this fix is in the `processAcoustics/fixWispr` folder. 
+Additionally, following a mission in Spring 2023, a bug in the WISPR firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to 'fix' this gain in an attempt to standardize it across all files. The code needed to apply this fix is in the `convertAcoustics/fixWispr` folder. 
 
 
 <sub>[Back to top](#)</sub>
 
-## Process/convert PMARXL raw files
-
+## Convert PMAR raw files
 
 See [`workflow_processPMAR.m`](https://github.com/sfregosi/agate-public/blob/main/agate/example_workflows/workflow_processPMAR.m) in the `example_workflows` folder for a simple example workflow for converting a mission's PMAR .dat files to .wav. 
 
-Like other workflows in `agate` it must first be initialized with a mission-level configuration file (e.g., [agate_config_example.cnf]( https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)). Only the top *REQUIRED* and  `CONFIG.pm.cnfFile` setting in the *Acoustics* sections of the configuration file are needed for file conversion. 
+Like other workflows in `agate` it must first be initialized with a mission-level configuration file (e.g., [agate_config_example.cnf]( https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)). Only the top *REQUIRED* and  `CONFIG.pm` settings in the *Acoustics* sections of the configuration file are needed for file conversion. 
 
-Additionally, a PMAR conversion configuration file (e.g., [pmarConvert_example.cnf](( https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)) is also needed. This contains the specific paths and conversion settings. 
+Additionally, a PMAR conversion configuration file (e.g., [pmarConvert_example.cnf](( https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)) is needed. This contains the specific paths and is where you can set your desired conversion settings. Deatiled descriptions of each parameter setting are in the example configuration file or can be found on the [Configuration](./configuration.html#pmar-conversion-configuration-file) page. 
 
 
 
 <sub>[Back to top](#)</sub>
 
-## Process/convert WISPR raw files
+## Convert WISPR raw files
+
+
 
 <sub>[Back to top](#)</sub>
 

@@ -22,5 +22,8 @@
   },
   "get-started.qmd": {
     "get-started.html": "59ab7d03"
+  },
+  "process-acoustics.qmd": {
+    "process-acoustics.html": "9415179c"
   }
 }
