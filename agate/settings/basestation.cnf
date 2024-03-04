@@ -1,5 +1,7 @@
 % agate basestation configuration
 % used to privately store username and password info for individual basestation
+% Guide for creating configuration files:  
+%    https://sfregosi.github.io/agate-public/configuration.html
 
 CONFIG.bs.host = 'url.com';
 CONFIG.bs.username = 'pilot';

@@ -42,6 +42,8 @@ website:
         text: Survey planning
       - href: piloting-functions.qmd
         text: Piloting
+      - href: convert-acoustics.qmd
+        text: Convert acoustic files
       # - href: content/code.qmd
       #   text: Code in your files
       - href: acknowledgements.qmd

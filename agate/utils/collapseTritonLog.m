@@ -17,7 +17,7 @@ function [tl, tlm] = collapseTritonLog(logFile, eventGap)
 %       logFile    [string] fullpath filename to log to be processed. If no
 %                  file is specified (no arguments) or is empty, or is
 %                  incorrect, will prompt to select
-%       eventGap   [integer] optional argument to combine events with the 
+%       eventGap   [integer] optional argument to combine events with the
 %                  same species ID code that are separated by less than the
 %                  integer specified by eventGap
 %
@@ -26,7 +26,7 @@ function [tl, tlm] = collapseTritonLog(logFile, eventGap)
 %
 %   Examples:
 %       tl = collapseTritonLog('E:\sg639_MHI_log_mw.xlsx', 15);
-% 
+%
 %   See also
 %
 %
@@ -40,7 +40,7 @@ function [tl, tlm] = collapseTritonLog(logFile, eventGap)
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 2
-    eventGap = 0;
+	eventGap = 0;
 end
 
 if nargin < 1
@@ -70,10 +70,10 @@ t = sortrows(t, 'StartTime');
 t.EventNumber = dateshift(t.EventNumber, 'start', 'second');
 % this can still end up with single events listed as 1 sec apart
 for f = 1:height(t)-1
-    diff = t.EventNumber(f+1) - t.EventNumber(f);
-    if diff <= seconds(1) && diff > seconds(0) 
-        t.EventNumber(f+1) = t.EventNumber(f);
-    end
+	diff = t.EventNumber(f+1) - t.EventNumber(f);
+	if diff <= seconds(1) && diff > seconds(0)
+		t.EventNumber(f+1) = t.EventNumber(f);
+	end
 end
 
 % get unique species codes
@@ -95,105 +95,141 @@ tl.call = cell(height(tl),1);
 tl.eventDT = uEN;
 
 for f = 1:height(tl)
-    tl.call{f} = t.Call(ic == f);
+	tl.call{f} = t.Call(ic == f);
 end
 
 fprintf(1, ['No event merging: %i unqiue species, %i unique call types,' ...
-    ' %i unique events\n'], length(uSp), length(uCall), height(tl))
+	' %i unique events\n'], length(uSp), length(uCall), height(tl))
 
 % merge by eventGap if non-zero
 tlt = tl; % make a copy to modify in the below loop
 tlm = table;
 tlmIdx = 1;
 if eventGap > 0
-    while tlmIdx <= height(tlt)
-        % set up extended event start and stop times
-        startPlus = tlt.start(tlmIdx) - minutes(eventGap);
-        stopPlus = tlt.stop(tlmIdx) + minutes(eventGap);
-        % check if any rows overlap with this extended event time
-        startYes = find(isbetween(tlt.start, startPlus, stopPlus));
-        startYes = startYes(startYes ~= tlmIdx); % ignore actual event
-        stopYes = find(isbetween(tlt.stop, startPlus, stopPlus));
-        stopYes = stopYes(stopYes ~= tlmIdx); % ignore actual event
-        
-        % do stuff depending on outcome
-        
-        % if no overlaps
-        if isempty(startYes) && isempty(stopYes)
-            % just copy this entry to output
-            tlm(tlmIdx,:) = tlt(tlmIdx, :);
-            tlmIdx = tlmIdx + 1;
-            
-            % single overlap entries
-        elseif length(startYes) == 1 && length(stopYes) == 1
-            % and the single matches are identical meaning whole entry is
-            % within buffer
-            if startYes == stopYes
-                % copy this entry to tlm
-                tlm(tlmIdx,:) = tlt(tlmIdx, :);
-                % double check that match doesn't start or end within
-                % buffer (rather than actual entry)
-                if tlt.start(startYes) < tlm.start(tlmIdx)
-                    tlm.start(tlmIdx) = tlt.start(startYes);
-                end
-                if tlt.stop(stopYes) > tlm.stop(tlmIdx)
-                    tlm.stop(tlmIdx) = tlt.stop(stopYes);
-                end
-                % remove the nested entry
-                tlt(startYes,:) = [];
-                tlmIdx = tlmIdx + 1;
-            end
-            
-            % overlap only on start
-        elseif  isempty(stopYes) && ~isempty(startYes)
-            % single overlap
-            if length(startYes) == 1
-                % copy this entry to tlm
-                tlm(tlmIdx,:) = tlt(tlmIdx, :);
-                % check where the overlap happens
-                if tlt.start(startYes) > tlm.stop(tlmIdx)
-                    % next entry starts before end of this entry
-                    % so replace end time with end time of next entry
-                    tlm.stop(tlmIdx) = tlt.stop(startYes);
-                    tlm.call{tlmIdx} = unique([tlt.call{tlmIdx}(:);
-                        tlt.call{startYes}(:)]);
-                end
-                % remove the overlapping entry and update tlt to match tlm
-                tlt(startYes,:) = [];
-                tlt(tlmIdx,:) = tlm(tlmIdx,:);
-                tlmIdx = tlmIdx + 1;
-            elseif length(startYes) > 1
-                fprintf('more than 1 overlap!')
-            end
-            
-            % overlap only on stop
-        elseif isempty(startYes) && ~isempty(stopYes)
-            % single overlap
-            if length(stopYes) == 1
-                if stopYes < tlmIdx && tlm.stop(stopYes) < tlt.stop(tlmIdx)
-                    % entry before previous entry ends before start or within
-                    % buffer of this entry so update previous entry end time
-                    tlm.stop(stopYes) = tlt.stop(tlmIdx);
-                    tlm.call{stopYes} = unique([tlt.call{stopYes}(:);
-                        tlt.call{tlmIdx}(:)]);
-                    % remove overlapping entry, update tlt, do NOT advance
-                    tlt(tlmIdx,:) = [];
-                    tlt(stopYes,:) = tlm(stopYes,:);
-                end
-            elseif length(stopYes) > 1
-                fprintf('more than 1 overlap!')
-            end
-        elseif length(startYes) > 1 && length(stopYes) > 1
-            fprintf('more than 1 overlap!')
-        elseif length(startYes) > 1 || length(stopYes) > 1
-            fprintf('more than 1 overlap!')
-        end
-    end
-    
-    fprintf(1, ['Events merged within %i minutes: %i unqiue species, ' ...
-        '%i unique call types, %i unique events\n'], ...
-        eventGap, length(uSp), length(uCall), height(tlm))
-    
+	while tlmIdx <= height(tlt)
+		% set up extended event start and stop times
+		startPlus = tlt.start(tlmIdx) - minutes(eventGap);
+		stopPlus = tlt.stop(tlmIdx) + minutes(eventGap);
+		% check if any rows overlap with this extended event time
+		startYes = find(isbetween(tlt.start, startPlus, stopPlus));
+		startYes = startYes(startYes ~= tlmIdx); % ignore actual event
+		stopYes = find(isbetween(tlt.stop, startPlus, stopPlus));
+		stopYes = stopYes(stopYes ~= tlmIdx); % ignore actual event
+
+		% do stuff depending on outcome
+
+		% if no overlaps
+		if isempty(startYes) && isempty(stopYes)
+			% just copy this entry to output
+			tlm(tlmIdx,:) = tlt(tlmIdx, :);
+			tlmIdx = tlmIdx + 1;
+
+			% single overlap entries
+		elseif length(startYes) == 1 && length(stopYes) == 1
+			% and the single matches are identical meaning whole entry is
+			% within buffer
+			type = 'within';
+			if startYes == stopYes
+				% copy this entry to tlm
+				tlm(tlmIdx,:) = tlt(tlmIdx, :);
+				% double check that match doesn't start or end within
+				% buffer (rather than actual entry)
+				if tlt.start(startYes) < tlm.start(tlmIdx)
+					tlm.start(tlmIdx) = tlt.start(startYes);
+				end
+				if tlt.stop(stopYes) > tlm.stop(tlmIdx)
+					tlm.stop(tlmIdx) = tlt.stop(stopYes);
+				end
+				% remove the nested entry
+				tlt(startYes,:) = [];
+				tlmIdx = tlmIdx + 1;
+			end
+
+			% overlap only on start
+		elseif  isempty(stopYes) && ~isempty(startYes)
+			% single overlap
+			if length(startYes) == 1
+				% copy this entry to tlm
+				tlm(tlmIdx,:) = tlt(tlmIdx, :);
+				% check where the overlap happens
+				if tlt.start(startYes) > tlm.stop(tlmIdx)
+					% next entry starts before end of this entry
+					% so replace end time with end time of next entry
+					tlm.stop(tlmIdx) = tlt.stop(startYes);
+					tlm.call{tlmIdx} = unique([tlt.call{tlmIdx}(:);
+						tlt.call{startYes}(:)]);
+				end
+				% remove the overlapping entry and update tlt to match tlm
+				tlt(startYes,:) = [];
+				tlt(tlmIdx,:) = tlm(tlmIdx,:);
+				tlmIdx = tlmIdx + 1;
+			elseif length(startYes) > 1
+				fprintf('more than 1 overlap! See eventNums %i to %i\n', ...
+					startYes(1), startYes(end))
+				pause
+			end
+
+			% overlap only on stop
+		elseif isempty(startYes) && ~isempty(stopYes)
+			% single overlap
+			if length(stopYes) == 1
+				if stopYes < tlmIdx && tlm.stop(stopYes) < tlt.stop(tlmIdx)
+					% entry before previous entry ends before start or within
+					% buffer of this entry so update previous entry end time
+					tlm.stop(stopYes) = tlt.stop(tlmIdx);
+					tlm.call{stopYes} = unique([tlt.call{stopYes}(:);
+						tlt.call{tlmIdx}(:)]);
+					% remove overlapping entry, update tlt, do NOT advance
+					tlt(tlmIdx,:) = [];
+					tlt(stopYes,:) = tlm(stopYes,:);
+				end
+			elseif length(stopYes) > 1
+				fprintf('more than 1 overlap! See eventNums %i to %i\n', ...
+					stopYes(1), stopYes(end))
+				pause
+			end
+		elseif length(startYes) > 1 && length(stopYes) > 1
+			fprintf('more than 1 overlap for start and stop!\n')
+			pause
+		elseif length(startYes) > 1 || length(stopYes) > 1
+			% are any startYes and stopYes identical?
+			if length(find(startYes == stopYes)) == 1
+				type = 'within';
+				fIdx = find(startYes == stopYes);
+				if length(startYes) > length(stopYes)
+					yesIdx = startYes(fIdx);
+				elseif length(stopYes) > length(startYes)
+					yesIdx = stopYes(fIdx);
+				end
+				% copy this entry to tlm
+				tlm(tlmIdx,:) = tlt(tlmIdx, :);
+				% double check that match doesn't start or end within
+				% buffer (rather than actual entry)
+				if tlt.start(yesIdx) < tlm.start(tlmIdx)
+					tlm.start(tlmIdx) = tlt.start(yesIdx);
+				end
+				if tlt.stop(yesIdx) > tlm.stop(tlmIdx)
+					tlm.stop(tlmIdx) = tlt.stop(yesIdx);
+				end
+				% remove the nested entry
+				tlt(yesIdx,:) = [];
+% 				tlmIdx = tlmIdx + 1; don't update to revisit multiples
+
+			elseif length(find(startYes == stopYes)) > 1
+				fprintf('multiple within events!\n')
+				pause
+			else
+				fprintf('more than 1 overlap in either start or stop!\n')
+				pause
+			end
+
+		end
+	end
+
+	fprintf(1, ['Events merged within %i minutes: %i unqiue species, ' ...
+		'%i unique call types, %i unique events\n'], ...
+		eventGap, length(uSp), length(uCall), height(tlm))
+
 end
 
 
