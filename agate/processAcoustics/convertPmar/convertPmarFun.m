@@ -1,4 +1,4 @@
-function convertPMARFun(CONFIG)
+function convertPmarFun(CONFIG)
 %convertPmarFun    Convert and downsample PMAR soundfiles to WAVE (.wav) format
 %
 % Given one or more directories, each full of subdirectories with .dat
