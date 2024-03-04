@@ -16,11 +16,11 @@ Additionally, following a mission in Spring 2023, a bug in the WISPR firmware wa
 
 ## Convert PMAR raw files
 
-See [`workflow_processPMAR.m`](https://github.com/sfregosi/agate-public/blob/main/agate/example_workflows/workflow_processPMAR.m) in the `example_workflows` folder for a simple example workflow for converting a mission's PMAR .dat files to .wav. 
+See [`workflow_convertPMAR.m`](https://github.com/sfregosi/agate-public/blob/main/agate/example_workflows/workflow_convertPMAR.m) in the `example_workflows` folder for a simple example workflow for converting a mission's PMAR .dat files to .wav. 
 
 Like other workflows in `agate` it must first be initialized with a mission-level configuration file (e.g., [agate_config_example.cnf]( https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)). Only the top *REQUIRED* and  `CONFIG.pm` settings in the *Acoustics* sections of the configuration file are needed for file conversion. 
 
-Additionally, a PMAR conversion configuration file (e.g., [pmarConvert_example.cnf](( https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)) is needed. This contains the specific paths and is where you can set your desired conversion settings. Deatiled descriptions of each parameter setting are in the example configuration file or can be found on the [Configuration](./configuration.html#pmar-conversion-configuration-file) page. 
+Additionally, a PMAR conversion configuration file (e.g., [pmarConvert_example.cnf](https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)) is needed. This contains the specific paths and is where you can set your desired conversion settings. Detailed descriptions of each parameter setting are in the example configuration file or can be found on the [Configuration](./configuration.html#pmar-conversion-configuration-file) page. 
 
 
 

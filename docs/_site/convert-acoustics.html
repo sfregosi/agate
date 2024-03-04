@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>AGATE - Configuration file guide</title>
+<title>AGATE - Convert acoustic files</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,69 +20,6 @@ width: 0.8em;
 margin: 0 0.8em 0.2em -1.6em;
 vertical-align: middle;
 }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-{ counter-reset: source-line 0; }
-pre.numberSource code > span
-{ position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-{ content: counter(source-line);
-position: relative; left: -1em; text-align: right; vertical-align: baseline;
-border: none; display: inline-block;
--webkit-touch-callout: none; -webkit-user-select: none;
--khtml-user-select: none; -moz-user-select: none;
--ms-user-select: none; user-select: none;
-padding: 0 4px; width: 4em;
-color: #aaaaaa;
-}
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
-div.sourceCode
-{ }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 
 
@@ -1454,8 +1391,8 @@ function fuseSearch(query, fuse, fuseOptions) {
 }
 </script>
 <meta name="quarto:offset" content="./">
-<link href="./plotting-functions.html" rel="next">
-<link href="./get-started.html" rel="prev">
+<link href="./acknowledgements.html" rel="next">
+<link href="./piloting-functions.html" rel="prev">
 <link href="data:image/x-icon;base64,AAABAAMAEBAAAAEAIABoBAAANgAAACAgAAABACAAKBEAAJ4EAAAwMAAAAQAgAGgmAADGFQAAKAAAABAAAAAgAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg/134JPtf5CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT7X+Qg/134JPtf5CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JPtf5CT/X/wk/1/8JP9f/DEHX/xFF2P8KQNf/CT/X/wk/1/8JP9f/CT/X/wpA1/8RRdj/DEHX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/zhj3v//////SXHh/wk/1/8JP9f/CT/X/wk/1/9FbuH//////zxm3/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8LQNf/7PD8/4Oe6v8JP9f/CT/X/wk/1/8JP9f/f5vq/+/z/P8MQdf/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/6q98f/L1vb/RG3g/0Rt4P9EbeD/RG3g/8jU9v+vwPL/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9hhOX/////////////////////////////////Zojm/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/GEvZ//n6/v9lh+b/C0HX/wtB1/9hhOX/+vv+/xxN2v8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/+yw/L/vMv0/wk/1/8JP9f/ucjz/7fH8/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/U3nj//3+//8sWtz/KVjc//z9/v9YfeT/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wtB1//e5fn/mrDu/5at7v/i6fr/DULY/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/b47n//j6/v/3+f7/dZPo/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/w9E2P/g5/r/5ev7/xJG2P8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/DEHX/wxB1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT7X+Qk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT7X+Qg/134JPtf5CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT7X+Qg/134AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAACAAAABAAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAIIPtZ8CT/X5gk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X5gg+1nwAAIACCD7WfAk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wg+1nwJP9fmCT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X5gk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/FEfY/xpM2f8aTNn/DkPY/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8NQtj/GkzZ/xpM2f8USNn/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/+FoOv///////////9ujuf/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/2aI5v///////////42m7P8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/0hw4f///////////6W58P8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/nrPv////////////UHbi/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/EUXY//f4/v//////3ub5/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1//X4Pj///////r7/v8WSdn/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/vcv0////////////JVXb/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/Hk/a//7+////////xdL2/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/95lun///////////9lhub/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9dgeX///////////+Cner/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/zNg3f///////////8rW9v+AnOr/gJzq/4Cc6v+AnOr/gJzq/4Cc6v+AnOr/gJzq/8bT9v///////////zxn3/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/+Dm+v/////////////////////////////////////////////////////////////////o7fv/CkDX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/lKvt/////////////////////////////////////////////////////////////////56z7/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9FbuH///////////+Wre7/DkPX/w5D1/8OQ9f/DkPX/w5D1/8OQ9f/j6jt////////////T3Xi/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wtB1//m7Pv//////+Xq+/8LQdf/CT/X/wk/1/8JP9f/CT/X/wpA1//e5fn//////+3x/P8OQ9j/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/5Kq7f///////////0py4v8JP9f/CT/X/wk/1/8JP9f/Q2zg////////////nLLv/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/N2Pe////////////qrzx/wk/1/8JP9f/CT/X/wk/1/+itvD///////////9Ca+D/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/z9r3///////4+v7/Hk/a/wk/1/8JP9f/GUvZ//X3/f//////2eL5/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9rjOf///////////+Bner/CT/X/wk/1/96l+n///////////92lOj/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/xNH2f/v8vz//////+jt+/8RRdj/DkPY/+Pp+v//////9ff9/xlM2v8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/4yl7P///////////2+P5/9oieb///////////+Xru7/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/IlLb//j5/v//////5Or6/9/m+v//////+/z+/ypZ3P8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/mK7u//////////////////////+lufD/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8jVNv/9vj9////////////+/z+/y1b3f8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/+Op+z///////////+dsu//CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wtB1/8SRtj/EkbY/wxB1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9fmCT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X5gg+1nwJP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8IPtZ8AACAAgg+1nwJP9fmCT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9fmCD7WfAAAgAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKAAAADAAAABgAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARMwPCD3VXAk+18YJP9j2CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9j2CT7Xxgg91VwARMwPAAAAABFEzA8JP9aVCT/X+Ak/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/gJP9aVEUTMDwg91VwJP9f4CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f4CD3VXAk+18YJP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT7Xxgk/2PYJP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/Y9gk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8NQtf/IlPb/yVV2/8lVdv/JVXb/xdK2f8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/FUnZ/yVV2/8lVdv/JVXb/yJT2/8OQ9j/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8WSdn/1t/4/////////////////6G28P8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/lazu/////////////////9ri+f8dT9r/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/pbjw/////////////////9Lc+P8TR9j/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8PQ9j/y9b3/////////////////7HC8v8KP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/YYTl/////////////////+Tq+/8zYN7/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8sWt3/4ej6/////////////////2+O5/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/IFHa//r7/v////////////H0/f9afuT/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9SeOP/7vL8/////////////P3//yxa3f8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/8jU9v////////////z9/v+Bner/C0HX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wpA1/95l+n/+vv+////////////1d/4/wpA1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/3+b6v////////////////+qvfH/FknZ/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/xNH2f+itvD/////////////////jabt/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/ztm3//5+v7////////////V3vj/JFTb/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/yJS2//N2Pf////////////8/P7/Rm7h/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/yNT2//R2/f////////////4+f7/QWvg/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/zpl3//09v3////////////a4vn/Jlbc/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/xNH2f+itvD/////////////////3ub6/8/a9//P2vf/z9r3/8/a9//P2vf/z9r3/8/a9//P2vf/z9r3/8/a9//P2vf/z9r3/9zk+f////////////////+rvfH/FknZ/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9xkOj/+fr+//////////////////////////////////////////////////////////////////////////////////////////////////v8/v96mOn/CkDX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8/aeD/6O37/////////////////////////////////////////////////////////////////////////////////////////////////+vw/P9JceH/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8SRtj/0Nr3/////////////////////////////////////////////////////////////////////////////////////////////////9jg+P8YStn/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/hJ/r/////////////////9Db9/8bTdn/EkbY/xJG2P8SRtj/EkbY/xJG2P8SRtj/EkbY/xJG2P8YS9n/yNT2/////////////////5Sr7f8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/Llzd//r7/v///////////+nu+/9Ba+D/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/85Zd//5uz7/////////////f7//ztm3/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CkDX/8LP9f////////////v8/v97mOn/CkDX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wo/1/9zkuj/+fr+////////////0Nv3/wxB1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/2SG5f/9/v////////////+3xvP/Gkza/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/xdK2f+vwPL////////////+/v//dJLo/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/ylY3P/f5vr////////////t8fz/OGTe/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/zJf3v/o7fv////////////n7Pv/MF3d/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/xNH2f+jt/D/////////////////jabs/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/4Gd6v/+/v////////////+tv/L/F0rZ/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/9khub/9Pf9////////////7fH8/xdK2f8JP9f/CT/X/wk/1/8JP9f/E0bY/+Xq+/////////////j5/v9vjuf/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8mVtz/2+P5/////////////////3iW6f8JP9f/CT/X/wk/1/8JP9f/a4zn/////////////////+Ho+v8vXd3/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8KQNf/jqfs/////////////////9Te+P8dT9r/CT/X/wk/1/8YS9n/z9n3/////////////////6C17/8LQdf/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/Jlbc//X3/f////////////P1/f9ihOb/CkDX/wo/1/9afuT/8PP9////////////+fv+/zZi3/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/5yx7v////////////////+wwfL/GEvZ/xZJ2f+ou/D//v7/////////////r8Hy/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/zdj3v/u8vz////////////09v3/QGrg/zhk3v/w8/3////////////19/3/QWrg/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/xZJ2f+qvPH//v7/////////////uMjz/6y+8v////////////////+1xfP/Gkza/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wo/1/9afuT/8PP9/////////////f3///r7/v////////////T2/f9miOb/CkDX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8USNn/x9L1/////////////////////////////////9Td+P8cTtr/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/UHbi//r7/v///////////////////////f3//2WH5v8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/C0HX/63A8v//////////////////////ws/1/xBE2P8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/zhk3//r8Pz////////////19/3/Rm/h/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wpA1/8VSdn/GUvZ/xlL2f8WSdn/C0DX/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/2PYJP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/Y9gk+18YJP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT7Xxgg91VwJP9f4CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f4CD3VXABEzA8JP9aVCT/X+Ak/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/gJP9aVAETMDwAAAAARRMwPCD3VXAk+18YJP9j2CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9f/CT/X/wk/1/8JP9j2CT7Xxgg91VwRRMwPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" rel="icon">
 <script>const sectionChanged = new CustomEvent("quarto-sectionChanged", {
   detail: {},
@@ -3990,7 +3927,7 @@ vertical-align: -.125em;
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Configuration file guide</h1>
+      <h1 class="quarto-secondary-nav-title">Convert acoustic files</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -4029,7 +3966,7 @@ vertical-align: -.125em;
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./configuration.html" class="sidebar-item-text sidebar-link active">Configuration guide</a>
+  <a href="./configuration.html" class="sidebar-item-text sidebar-link">Configuration guide</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -4049,7 +3986,7 @@ vertical-align: -.125em;
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./convert-acoustics.html" class="sidebar-item-text sidebar-link">Convert acoustic files</a>
+  <a href="./convert-acoustics.html" class="sidebar-item-text sidebar-link active">Convert acoustic files</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -4066,12 +4003,17 @@ vertical-align: -.125em;
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mission-configuration-file" id="toc-mission-configuration-file" class="nav-link active" data-scroll-target="#mission-configuration-file">Mission configuration file</a></li>
-  <li><a href="#basestation-configuration-file" id="toc-basestation-configuration-file" class="nav-link" data-scroll-target="#basestation-configuration-file">Basestation configuration file</a></li>
-  <li><a href="#acoustic-conversion-configuration-files" id="toc-acoustic-conversion-configuration-files" class="nav-link" data-scroll-target="#acoustic-conversion-configuration-files">Acoustic conversion configuration files</a>
+  <li><a href="#convert-pmar-raw-files" id="toc-convert-pmar-raw-files" class="nav-link active" data-scroll-target="#convert-pmar-raw-files">Convert PMAR raw files</a></li>
+  <li><a href="#convert-wispr-raw-files" id="toc-convert-wispr-raw-files" class="nav-link" data-scroll-target="#convert-wispr-raw-files">Convert WISPR raw files</a></li>
+  <li><a href="#fix-wispr-gain-bug" id="toc-fix-wispr-gain-bug" class="nav-link" data-scroll-target="#fix-wispr-gain-bug">Fix WISPR gain bug</a>
   <ul>
-  <li><a href="#pmar-conversion-configuration-file" id="toc-pmar-conversion-configuration-file" class="nav-link" data-scroll-target="#pmar-conversion-configuration-file">PMAR conversion configuration file</a></li>
-  <li><a href="#wispr-conversion-configuration-file" id="toc-wispr-conversion-configuration-file" class="nav-link" data-scroll-target="#wispr-conversion-configuration-file">WISPR conversion configuration file</a></li>
+  <li><a href="#included-files" id="toc-included-files" class="nav-link" data-scroll-target="#included-files">Included files</a></li>
+  <li><a href="#running-fix_gain" id="toc-running-fix_gain" class="nav-link" data-scroll-target="#running-fix_gain">Running <code>fix_gain</code></a>
+  <ul class="collapse">
+  <li><a href="#set-up-data-to-be-processed" id="toc-set-up-data-to-be-processed" class="nav-link" data-scroll-target="#set-up-data-to-be-processed">Set up data to be processed</a></li>
+  <li><a href="#set-paths-and-other-settings" id="toc-set-paths-and-other-settings" class="nav-link" data-scroll-target="#set-paths-and-other-settings">Set paths and other settings</a></li>
+  <li><a href="#run-the-script" id="toc-run-the-script" class="nav-link" data-scroll-target="#run-the-script">Run the script</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/sfregosi/agate-public/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -4081,8 +4023,8 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Configuration file guide</h1>
-<p class="subtitle lead">Guide for creating and modifying necessary configuration files</p>
+<h1 class="title d-none d-lg-block">Convert acoustic files</h1>
+<p class="subtitle lead">Guide for converting raw acoustic .dat files to .wav</p>
 </div>
 
 
@@ -4097,54 +4039,77 @@ vertical-align: -.125em;
 
 </header>
 
-<p>Running <code>agate</code> requires a few configuration files. Each of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB’s Editor window. The <strong>mission configuration file</strong> is required for all processes, but the others are optional depending on the goals of a specific task.</p>
-<ol type="1">
-<li>An overview <a href="#mission-configuration-file">mission configuration file</a> for a specific glider/mission</li>
-<li>A <a href="#basestation-configuration-file">basestation configuration file</a> with SSH login info - only required if using <code>agate</code> to interact directly with the basestation</li>
-<li>A conversion configuration (for either <a href="#pmar-conversion-configuration-file">PMAR</a> or <a href="#wispr-conversion-configuration-file">WISPR</a>) used when converting raw (.dat) acoustic files to .wav or .flac</li>
-</ol>
-<section id="mission-configuration-file" class="level2">
-<h2 class="anchored" data-anchor-id="mission-configuration-file">Mission configuration file</h2>
-<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
-<p>Lines starting with <code>%</code> are comments. The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. The top section is required to initialize <code>agate</code> and use the most basic functions. The following sections are optional depending on what agate functionality is desired, including interfacing with the basestation, working with acoustic data outputs, and plotting maps. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments.</p>
-<p>To suggest additional configuration items, please open an <a href="https://github.com/sfregosi/agate-public/issues/new" target="_blank">issue</a>.</p>
+<p>The Seaglider can be equipped with a variety of acoustic systems. Two - the PMARXL and WISPR systems - both record raw data as .dat files that need to be converted to .wav or .flac for analysis. <code>agate</code> includes tools to do this for both of these two systems. All conversion code is located in the <code>convertAcoustics</code> folder.</p>
+<p>Additionally, following a mission in Spring 2023, a bug in the WISPR firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to ‘fix’ this gain in an attempt to standardize it across all files. The code needed to apply this fix is in the <code>convertAcoustics/fixWispr</code> folder.</p>
+<p><sub><a href="#">Back to top</a></sub></p>
+<section id="convert-pmar-raw-files" class="level2">
+<h2 class="anchored" data-anchor-id="convert-pmar-raw-files">Convert PMAR raw files</h2>
+<p>See <a href="https://github.com/sfregosi/agate-public/blob/main/agate/example_workflows/workflow_convertPMAR.m"><code>workflow_convertPMAR.m</code></a> in the <code>example_workflows</code> folder for a simple example workflow for converting a mission’s PMAR .dat files to .wav.</p>
+<p>Like other workflows in <code>agate</code> it must first be initialized with a mission-level configuration file (e.g., <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf">agate_config_example.cnf</a>). Only the top <em>REQUIRED</em> and <code>CONFIG.pm</code> settings in the <em>Acoustics</em> sections of the configuration file are needed for file conversion.</p>
+<p>Additionally, a PMAR conversion configuration file (e.g., <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf">pmarConvert_example.cnf</a>) is needed. This contains the specific paths and is where you can set your desired conversion settings. Detailed descriptions of each parameter setting are in the example configuration file or can be found on the <a href="./configuration.html#pmar-conversion-configuration-file">Configuration</a> page.</p>
 <p><sub><a href="#">Back to top</a></sub></p>
 </section>
-<section id="basestation-configuration-file" class="level2">
-<h2 class="anchored" data-anchor-id="basestation-configuration-file">Basestation configuration file</h2>
-<p>The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation.cnf"><code>basestation.cnf</code></a>.</p>
-<p>This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group’s basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the following lines, with the inputs updated for a particular basestation:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>CONFIG.bs.host = &#39;url.com&#39;;</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>CONFIG.bs.username = &#39;pilot&#39;;</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>CONFIG.bs.password = &#39;PsWrD&#39;;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="convert-wispr-raw-files" class="level2">
+<h2 class="anchored" data-anchor-id="convert-wispr-raw-files">Convert WISPR raw files</h2>
 <p><sub><a href="#">Back to top</a></sub></p>
 </section>
-<section id="acoustic-conversion-configuration-files" class="level2">
-<h2 class="anchored" data-anchor-id="acoustic-conversion-configuration-files">Acoustic conversion configuration files</h2>
-<p>A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial call to <code>agate</code> and the mission configuration.</p>
-<section id="pmar-conversion-configuration-file" class="level3">
-<h3 class="anchored" data-anchor-id="pmar-conversion-configuration-file">PMAR conversion configuration file</h3>
-<p>An example configuration file is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf"><code>pmarConvert_example.cnf</code></a></p>
-<p>Lines starting with <code>%</code> are comments. All parameters are added to the existing <code>CONFIG</code> structure, under a nested <code>pm</code> structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.</p>
+<section id="fix-wispr-gain-bug" class="level2">
+<h2 class="anchored" data-anchor-id="fix-wispr-gain-bug">Fix WISPR gain bug</h2>
+<p>A bug was discovered in WISPR in spring 2023 (should be fixed now??) that leads to sound recordings that look like they have variable gain settings applied on different files. One file would be half as loud as the next (6 dB gain change?). For more info on this bug, contact Chris Jones. An imperfect, but workable fix was developed with C. Jones and is included here just in case someone else would find it useful or if the issue arises again in the future. The below instructions are a outline/draft of documentation for this hopefully one-off issue, so please reach out if you encounter the same problem or need further assistance.</p>
+<p>This process assumes you have initially converted the .dat files to .wavs, and in looking at those .wavs, noticed an issue. Those ‘bad’ .wavs will be used to make decisions about file gain adjustments so those need to be retained. Then, this process will <em>reconvert</em> the .dat files into .wavs, making adjustments to the expected gain if needed, as assessed following a set of rules or according to manual user input.</p>
+<p>The general workflow was to work on one dive’s worth of files at a time. That dive’s ‘bad’ .wav files would be opened in Raven so the spectrograms could be visually compared. Jumps in gain are vary obvious as stark changes in noise level from one file to the next. Quieter files are gain settings of ‘1’ and are not changed. The louder files are assumed to have a gain setting of ‘2’ and are reduced to align more with the quieter files.</p>
+<p>A MATLAB script is run for that dive’s worth of files, where .dat files are read in and the noise levels in a specified band are compared. If they are within a similar level, then the gain is assumed to <em>not</em> change and the files are written to .wav as is. If the second file is louder, then it’s gain is adjusted down and this adjusted file is written to .wav format. There are special catches in the script for instances where the noise level between the two files is not a clear 1:1 or 1:2 ratio. In those cases, the script prompts the user to manually assess and specify an adjustment. The user can use the script-generated plots and the spectrograms of the ‘bad’ files to make this decision.</p>
+<p>All code needed to apply the fix is located in the <code>agate/processAcoustics/fixWispr</code> folder.</p>
+<section id="included-files" class="level3">
+<h3 class="anchored" data-anchor-id="included-files">Included files</h3>
+<p><code>fix_gain.m</code>: This is the primary script to apply the fix. The user must update a few paths and settings and then run this script on a folder of acoustic files. More on running it below</p>
+<p><code>my_psd.m</code>: Function to calculate power spectral densities. Should be similar to <code>pwelch</code> but provides outputs normalized by frequency bin size</p>
+<p><code>plotRMSSpec.m</code>: Function to plot RMS level for two files being compared</p>
+<p><code>read_wispr_file.m</code>: Function to read a raw WISPR .dat file, extracting all included header info</p>
+</section>
+<section id="running-fix_gain" class="level3">
+<h3 class="anchored" data-anchor-id="running-fix_gain">Running <code>fix_gain</code></h3>
+<section id="set-up-data-to-be-processed" class="level4">
+<h4 class="anchored" data-anchor-id="set-up-data-to-be-processed">Set up data to be processed</h4>
+<p>The <code>fix_gain</code> script is meant to be run over a folder of files. Depending on deployment length, it may be beneficial to work in smaller batches of files. For example, for a 5 week glider mission, we had 40k files which was unreasonable to work with all at once. Plus, when the glider was at the surface there were short gaps in time and so comparing noise levels of files across that time gap may not be appropriate. We found that working on a folder of just the files for a single dive at a time worked well. You could use a different approach but it would require reworking the paths in this script.</p>
+<p>Create a ‘working’ folder where you will incrementally move the .dat files for just a single dive, process those, then move them out of that folder and replace with the files for the next dive.</p>
+<p>Load the dive’s worth of ‘bad’ .wavs into Raven (use the Page option to load large amounts of data without crashing Raven) to view the spectrograms in cases where manual assessment is needed.</p>
+</section>
+<section id="set-paths-and-other-settings" class="level4">
+<h4 class="anchored" data-anchor-id="set-paths-and-other-settings">Set paths and other settings</h4>
+<p>Within the script, several lines of code will need to be changed for your local paths and settings preferences.</p>
 <ul>
-<li><code>CONFIG.pm.inDir</code>: path to raw PMAR <code>.dat</code> files. These can be within subdirectories by dive (the default write method of PMAR)</li>
-<li><code>CONFIG.pm.outDir</code>: path to folder to save converted <code>.wav</code> files</li>
-<li><code>CONFIG.outTemplate</code>: filename template for the converted files. It must have a <code>%s</code> that becomes a date/time stamp, and an appropriate file extension (<code>.wav</code> or <code>.flac</code>)</li>
-<li><code>CONFIG.pm.showProgress</code>: set to <code>true</code> to display progress in the Command Window</li>
-<li><code>CONFIG.pm.restartDir</code>: location to start processing. Set to <code>&#39;&#39;</code> (empty) to start at the beginning and process all directories. Otherwise, specify a single dive/phase directory (e.g., ‘pm0006a’) to start at that point in the mission. This is used if there are errors so you don’t have to start over at the beginning</li>
-<li><code>CONFIG.pm.decim</code>: set a decimation factor (integer), or set to <code>0</code> for no decimation</li>
-<li><code>CONFIG.pm.relativeCutoffFreq</code>: if decimating, need to set a value from 0 to 1 to specifiy a filter cut off (relative to Nyquist). This is only used if <code>CONFIG.pm.decim &gt; 2</code></li>
-<li><code>CONFIG.pm.forceSRate</code>: set to force the output sample rate to the specified sample rate. This is necessary for PMAR because the sample rate can vary slightly from file to file (by a decimal Hz) which can lead to later analysis issues (e.g., making LTSAs)</li>
+<li><strong>Line 48</strong>: Specify path to <code>agate</code> so all required functions are added to the path</li>
+<li><strong>Line 54</strong>: Set <code>verbose</code> to either <code>&#39;true&#39;</code> or <code>&#39;false&#39;</code>
+<ul>
+<li><code>verbose = &#39;true&#39;</code>: All prompts and all plots will be generated. The user will need to manually click through every file comparison. This is very useful when first fixing this problem to get a feel for how the files compare, but is time consuming. It is also useful in time periods with a lot of animal noise that could lead to incorrect assumptions of gain changes.</li>
+<li><code>verbose = &#39;false&#39;</code>: Plots and prompts only appear if a non-standard gain adjustment is detected (not 1 or 2). This enables the script to run mostly hands off except in cases that aren’t clear</li>
+</ul></li>
+<li><strong>Line 57</strong>: Set <code>fldrStr</code> to the folder where the dive full of files to be processed will be temporarily moved for processing</li>
+<li><strong>Line 58</strong>: Set <code>dive</code> to the dive number to be processed. This is just used in naming the output log files</li>
+<li><strong>Line 59</strong>: Set <code>phase</code> to both, ascent, or descent, depending on how many files are being processed. Working on phases individually means more manual moving of files but allows a bit more checking in on the process as it works in smaller chunks</li>
+<li><strong>Line 60</strong>: Set <code>path_dat</code> to the folder containing the .dat files to be processed, the temporary ‘working folder’</li>
+<li><strong>Line 61</strong>: Set <code>path_out</code> to the overall output folder where the log files and processed .wav files should be saved</li>
+<li><strong>Line 62</strong>: Set <code>path_wav</code> for the subfolder (within <code>path_out</code>) to save this dive’s processed files. I had this also print to a ‘working’ folder and then after each dive was processed and those files were checked (viewed in Raven), then they were manually moved out of the working folder into a ‘complete’ folder</li>
+<li><strong>Line 71</strong>: Set <code>adc_vref</code>. Default for WISPR is 5</li>
+<li><strong>Line 72</strong>: Set <code>nbufs</code> to specify number of buffers to compare (from end of first file to start of second file). For our recording settings, a buffer was 5632 samples, sample rate was 180 kHz, so 96 buffers is just over 3 seconds</li>
+<li><strong>Line 73</strong>: Set <code>max_thresh</code> to remove spikes in waveform that could skew the RMS calculations. This is adaptive, so if it is set at 1 and that removes too many datapoints, the process will try to incrementally increase it. This is necessary for periods of glider pumping which are all very loud Lines 78:79, 81: Set spectrum parameters to provide resonable resolution for a given sampling rate. Larger fft_size will give finer resolution but may lead to ‘spiky’ spectra that aren’t good for comparison</li>
+<li><strong>Lines 84:85</strong>: Set frequency range (<code>f1</code> lower limit, <code>f2</code> upper limit) to compare. Ideal is to select a frequency range a lot of animal or anthropogenic (intermittent/variable) sounds would not be present</li>
 </ul>
-<p><sub><a href="#">Back to top</a></sub></p>
+<p>The remaining lines set up the log file, so don’t need to be changed unless the user wants additional information printed out</p>
 </section>
-<section id="wispr-conversion-configuration-file" class="level3">
-<h3 class="anchored" data-anchor-id="wispr-conversion-configuration-file">WISPR conversion configuration file</h3>
-<p>An example configuration file is located in the ‘agate/settings’ folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/wisprConvert_example.cnf"><code>wisprConvert_example.cnf</code></a></p>
-<p>Lines starting with <code>%</code> are comments. All parameters are added to the existing <code>CONFIG</code> structure, under a nested <code>ws</code> structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.</p>
+<section id="run-the-script" class="level4">
+<h4 class="anchored" data-anchor-id="run-the-script">Run the script</h4>
+<p>Hit the green Run button and interact with the script in the Command Window.</p>
+<p>At the start of a folder, the gain settings for the first two files must always be manually entered, to set the baseline. Use Raven to compare these two files to each other and later files to assess if they are a ‘1’ or ‘2’ (or a combination of those) and manually enter the correct settings.</p>
+<p>At each prompt, the number should be typed in the command window followed by hitting Enter. The suggested value is in square brackets, but can be confusing/unreliable for the first two files so isn’t necessarily correct. To just accept the suggested value, just hit Enter without typing in new number.</p>
+<p>The only valid inputs should be ‘1’ or ‘2’. Values that are not one of these will prompt for user assessment.</p>
+<p>In periods with a lot of dolphins, the script may get confused (noise levels in subsequent 3 seconds can be very different!) so those may require lots of manual assessment.</p>
+<p>If a wrong key is accidentally pressed or a mistake is made, the best approach is to Quit at the next available prompt. Navigate to the log files and rename them with ‘part1’ or something similar. Move the .dat files that were correctly processed out of the working folder, and then re-run the reduced working folder. This will create new log files at this new starting location, and will overwrite any incorrectly adjusted .wavs. A record of what was adjusted for the earlier files will be saved in the original logs with the appended names.</p>
 <p><sub><a href="#">Back to top</a></sub></p>
 
 
+</section>
 </section>
 </section>
 
@@ -4413,13 +4378,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./get-started.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Get started</span>
+      <a href="./piloting-functions.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Piloting</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./plotting-functions.html" class="pagination-link">
-        <span class="nav-page-text">Plots</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./acknowledgements.html" class="pagination-link">
+        <span class="nav-page-text">Acknowledgements</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

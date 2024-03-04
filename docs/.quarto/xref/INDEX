@@ -25,5 +25,8 @@
   },
   "process-acoustics.qmd": {
     "process-acoustics.html": "9415179c"
+  },
+  "convert-acoustics.qmd": {
+    "convert-acoustics.html": "faf06cd1"
   }
 }
