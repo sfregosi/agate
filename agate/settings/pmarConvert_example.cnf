@@ -1,10 +1,13 @@
-% configuration file for convertPMAR.m
+% %%%% PMAR conversion configuration file %%%
+% create a new file for each glider and mission
+% Guide for creating configuration files:  
+%    https://sfregosi.github.io/agate-public/configuration.html
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%% TEMPLATE - PUT SURVEY METADATA HERE %%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% configuration settings here, descriptions are below.
+% configuration parameters here, descriptions are below.
 
 CONFIG.pm.inDir = 'E:\sgXXX_Loc_MonYYYY\raw_acoustic_data\';     % path to raw PMAR .dat files 
 % raw .dat files can be in subdirectories by dive e.g., pm0001a/pm0000.dat
