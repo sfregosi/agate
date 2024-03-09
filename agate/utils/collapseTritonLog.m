@@ -17,7 +17,7 @@ function [tl, tlm] = collapseTritonLog(logFile, eventGap)
 %       logFile    [string] fullpath filename to log to be processed. If no
 %                  file is specified (no arguments) or is empty, or is
 %                  incorrect, will prompt to select
-%       eventGap   [integer] optional argument to combine events with the
+%       eventGap   [integer] optional argument to combine events with the 
 %                  same species ID code that are separated by less than the
 %                  integer specified by eventGap
 %
@@ -100,7 +100,7 @@ end
 
 fprintf(1, ['No event merging: %i unqiue species, %i unique call types,' ...
 	' %i unique events\n'], length(uSp), length(uCall), height(tl))
-
+  
 % merge by eventGap if non-zero
 tlt = tl; % make a copy to modify in the below loop
 tlm = table;
