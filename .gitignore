@@ -21,7 +21,6 @@ agate/draft/
 .Rhistory
 .RData
 .Ruserdata
-*.Rproj
 /.quarto/
 /_site/
 
