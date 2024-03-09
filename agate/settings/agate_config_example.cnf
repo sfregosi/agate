@@ -1,10 +1,13 @@
-% %%%%%% AGATE MISSION CONFIGURATION FILE %%%%%%
+% %%%% agate - mission configuration file %%%
 % create a new file for each glider and mission
 % Guide for creating configuration files:  
-%    https://sfregosi.github.io/agate-public/get-started.html#create-configuration-files
+%    https://sfregosi.github.io/agate-public/configuration.html
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%% TEMPLATE - PUT SURVEY METADATA HERE %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% %%%%%% REQUIRED CONFIG PARAMETERS %%%%%%
+% %%%% REQUIRED CONFIG PARAMETERS %%%%%%%%%%%
 % define glider and mission information
 CONFIG.glider = 'sgXXX';
 CONFIG.mission = 'Location_Mon20XX'; % defined in sg_calib_constants.m 
@@ -18,25 +21,28 @@ CONFIG.tmd = XX; % target mission duration in days
 CONFIG.path.mission = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
 
 
-% %%%%%% OPTIONAL - working with the basestation %%%%%%
+% %%%% OPTIONAL - basestation %%%%%%%%%%%%%%%
 % specify basestation configuration file
 CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
 % specify path to store downloaded basestation files
 CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
 
 
-% %%%%%% OPTIONAL - acoustics %%%%%%
-% pmar settings
+% %%%% OPTIONAL - acoustics %%%%%%%%%%%%%%%%%
+% PMAR settings
 CONFIG.pm.loggers = 0; % 1 for active, 0 for inactive
 CONFIG.pm.activeCard = 0; % current active card; optional for sgVer 66.12 
                           % (will be updated in log file automatically);
                           % necessary to update throughout mission for sgVer 67.0
-CONFIG.pm.numCards = 4;
+CONFIG.pm.numCards = 4; % total number loaded SD cards
+% after mission is complete, set below for raw .dat file conversion
+CONFIG.pm.convert = 0; % 0 during mission, set 1 to run conversion
+CONFIG.pm.convCnfFile = fullfile(CONFIG.path.mission, 'PMARConvert_sgXXX_Location_MonYYYY.cnf');
 
-% wispr settings
+% WISPR settings
 CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
 
-% %%%%%% OPTIONAL - plotting %%%%%%
+% %%%% OPTIONAL - plotting %%%%%%%%%%%%%%%%%%
 % maps
 % path to basemap files (land shape files and bathymetry rasters)
 CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';

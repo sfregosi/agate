@@ -26,11 +26,11 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-agate agate_config_sg639_MHI_Apr2022.cnf
+agate agate_config_sg639_MHI_Apr2023.cnf
 global CONFIG
 
 %% extract positional data
-[gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 0);
+[gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 1);
 % 0 in plotOn argument will not plot 'check' figures, but change to 1 to
 % plot basic figures for output checking
 
@@ -54,10 +54,10 @@ if ~exist('locCalcT', 'var')
 end
 
 plotSoundSpeedProfile(CONFIG, locCalcT);
-print(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, '_', CONFIG.mission, '_SSP.png']), '-dpng')
-export_fig(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.glider, '_', CONFIG.mission, '_SSP.pdf']), '-pdf')
+exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_SSP.png']))
+exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_SSP.pdf']))
 
 %% BELOW SECTIONS ARE NOT YET OPERATIONAL
 % Below called functions are in the 'drafts' folder and need to be adapted

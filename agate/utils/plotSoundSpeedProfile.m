@@ -66,7 +66,7 @@ plot(medianSSP(:,2), medianSSP(:,1), 'k--', 'LineWidth',2)
 
 legend('mean', 'median', 'Location', 'southeast')
 
-title(['Sound Speed Profile: ' CONFIG.glider CONFIG.mission], ...
+title(['Sound Speed Profile: ' CONFIG.glider '_' CONFIG.mission], ...
     'Interpreter','none');
 
 end
