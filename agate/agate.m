@@ -111,6 +111,6 @@ if ~exist(CONFIG.path.settings, 'dir')
 	disp('Settings directory is missing, creating it ...')
 	mkdir(CONFIG.path.settings);
 end
-addpath(CONFIG.path.settings); % no genpath will not add subdirs
+addpath(genpath(CONFIG.path.settings));
 
 end
