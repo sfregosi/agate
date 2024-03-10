@@ -22,9 +22,10 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate - either specify a .cnf or leave blank to browse/select
-agate agate_mission_config.cnf
-
+agate secret/agate_config_sg639_MHI_Apr2023.cnf
 global CONFIG
 
 %% (1) Plot encounter on map
 
+% generate the basemap with bathymetry as figure 82, don't save .fig file
+[baseFig] = createBasemap(CONFIG, 1, 82); 
