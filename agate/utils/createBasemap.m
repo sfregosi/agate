@@ -1,15 +1,18 @@
-function output = createBasemap(CONFIG, bathyOn, figNum, outFig)
+function [baseFig] = createBasemap(CONFIG, bathyOn, figNum, outFig)
 % CREATEBASEMAP	Create a basemap of the bathymetry for the mission area
 %
 %   Syntax:
 %       OUTPUT = CREATEBASEMAP(CONFIG, OUTFIG)
 %
 %   Description:
-%       Detailed description here, please
-%   Inputs:
-%       input   describe, please
+%       Function to create a basemap for a glider mission, using the lat
+%       and lon limits outline in the CONFIG file. If specified, will
+%       include a north arrow and scale bar. Optional to plot bathymetry
+%       data (if available) otherwise will just plot land (specific to US
+%       states at this time). It can be saved as a .fig file that can be
+%       added to (add glider path, labels, and acoustic encounters). 
 %
-%	Outputs:
+%   Inputs:
 %       CONFIG      [struct] mission/agate global configuration variable.
 %                   Required fields: CONFIG.map entries
 %       bathyOn     [double] set to 1 to plot bathymetry or 0 to only plot
@@ -18,7 +21,12 @@ function output = createBasemap(CONFIG, bathyOn, figNum, outFig)
 %                   create repeated versions when updated
 %       outFig      [string] optional argument to save the .fig
 %
+%   Outputs:
+%       baseFig     [handle] figure handle
+%
 %   Examples:
+%       % Create a basemap that includes bathymetry, do not save output
+%       createBasemap(CONFIG, 1);
 %
 %   See also
 %
