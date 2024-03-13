@@ -18,7 +18,7 @@ function ermaDets = combineErmaLogs(path_logs, verbose)
 %
 %   Examples:
 %
-%   See also READERMAREPORT
+%   See also READERMAREPORT, COLLAPSETRITONLOG
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
