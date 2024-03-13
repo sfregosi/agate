@@ -41,6 +41,24 @@ if nargin < 2 || isempty(verbose)
 	verbose = false;
 end
 
+if nargin < 1
+	path_logs = [];
+end
+
+% agate CONFIG is not required, but if it is present, it will be used in
+% file search path if needed
+if ismember('CONFIG', who('global'))
+	global CONFIG
+	searchPath = CONFIG.path.mission;
+else
+	searchPath = cd;
+end
+% check folder exists and if not prompt to select
+if ~exist(path_logs, 'dir')
+	path_logs = uigetdir(fullfile(searchPath), ...
+		'Select folder containing ERMA detection logs');
+end
+
 % get a list of all logs for this mission
 logFiles = dir(fullfile(path_logs, 'ws*z'));
 if verbose == true
