@@ -72,6 +72,7 @@ else
 end
 CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
 parseCnf(CONFIG.missionCnf);
+CONFIG.gmStr = [CONFIG.glider '_' CONFIG.mission];
 
 % if basestation 'bs' configurations exist
 if isfield(CONFIG, 'bs')
