@@ -1,21 +1,20 @@
-function clog = combineErmaLogs(CONFIG, path_logs, verbose)
+function ermaDets = combineErmaLogs(path_logs, verbose)
 % COMBINEERMALOGS	One-line description here, please
 %
 %   Syntax:
-%       OUTPUT = COMBINEERMALOGS(INPUT)
+%       ERMADETS = COMBINEERMALOGS(CONFIG, PATH_LOGS, VERBOSE)
 %
 %   Description:
 %       Detailed description here, please
 %   Inputs:
-%       CONFIG    [struct] agate global mission configuration structure
-%       path_logs [string] fullfile path to the log files to be combined
-%                 If this is not specified or is empty ([]) will use the
-%                 basestation path from CONFIG
+%       path_logs [string] fullfile path to the log files to be combined.
+%                 Within agate system, typically CONFIG.path.bsLocal
 %       verbose   [logical] optional argument to print progress in Command
 %                 Window. Default 'false', set to 'true' or '1' to print.
 %
 %	Outputs:
-%       output  describe, please
+%       ermaDets  [table] start and end time and number of clicks of each
+%                 ERMA detection (encounter)
 %
 %   Examples:
 %
@@ -38,38 +37,45 @@ function clog = combineErmaLogs(CONFIG, path_logs, verbose)
 %%%%%%%%%%%%%%%%%%%
 
 % check args
-if nargin < 2 || isempty(path_logs)
-	path_logs = CONFIG.path.bsLocal;
+if nargin < 2 || isempty(verbose)
+	verbose = false;
 end
-
-if nargin < 3 || isempty(verbose)
-	verbose = 'false';
-end
-
 
 % get a list of all logs for this mission
 logFiles = dir(fullfile(path_logs, 'ws*z'));
-
 if verbose == true
 	fprintf(1, 'Combining %i ERMA log files from %s\n', length(logFiles), path_logs);
 end
 
+% create output variable
+ermaDets = array2table(nan(0, 6), 'VariableNames', ...
+	{'eventNum', 'start', 'stop', 'nClicks', 'startDatenum', 'stopDatenum'});
+ec = 1; % encounter counter (for filling in the table)
+
+% loop through all log files
 for l = 1:length(logFiles)
 	detFile = fullfile(logFiles(l).folder, logFiles(l).name);
 	s = readErmaReport(detFile);
 
-	% if s has some data
+	% if s has some data - pull out start/end time of each encounter
 	if ~isempty(s.enc)
+		for e = 1:length(s.enc)
+		    ermaDets.eventNum(ec)     = ec;
+			ermaDets.startDatenum(ec) = s.enc(e).encT0_D; 
+			ermaDets.stopDatenum(ec)  = s.enc(e).encT1_D;
+			ermaDets.nClicks(ec)      = s.enc(e).nClicks;
+			ec = ec + 1;
+		end
 		if verbose == true
 			fprintf(1, '%s: %i encounters parsed\n', logFiles(l).name, length(s.enc));
-			x = 5;
 		end
 	elseif isempty(s.enc) && verbose == true
 		fprintf(1, '%s: no encounters\n', logFiles(l).name);
 	end
-
-
 end
 
+% get datetime for readability
+ermaDets.start = datetime(ermaDets.startDatenum, 'ConvertFrom', 'datenum');
+ermaDets.stop = datetime(ermaDets.stopDatenum, 'ConvertFrom', 'datenum');
 
 end
