@@ -1,17 +1,16 @@
-function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(CONFIG, ...
-    fileLength, dateFormat, dateStart, gpsSurfT, locCalcT)
+function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(CONFIG, gpsSurfT, locCalcT)
 %EXTRACTPAMSTATUSBYFILE	Extracts PAM system on/off information from sound files
 %
 %   Syntax:
-%	    [gpsSurfT, locCalcT] = EXTRACTPOSITIONALDATA(CONFIG, plotOn)
+%	    [GPSSURFT, LOCCALCT, PAM] = EXTRACTPAMSTATUSBYFILE(CONFIG, GPSSURFT, LOCCALCT)
 %
 %   Description:
 %	    
 %
 %   Inputs:
-%       CONFIG    agate mission configuration file with relevant mission and
-%                 glider information. Minimum CONFIG fields are 'glider',
-%                 'mission', 'path.mission'
+%       CONFIG     agate mission configuration file with relevant mission and
+%                  glider information. Minimum CONFIG fields are 'glider',
+%                  'mission', 'path.mission'
 %       fileLength [double] duration of files expected, in seconds
 %       dateFormat [string] format of timestamp in file name, in datetime
 %                  input format syntax e.g., 'yyMMdd-HHmmss'
@@ -22,34 +21,37 @@ function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(CONFIG, ...
 %                  extractPositionalData
 %
 %   Outputs:
-%       gpsSurfT  [table] glider surface locations, from GPS, one per
-%                 dive. Input gpsSurfT is updated to now include a pam
-%                 column with the minutes of PAM recording for that dive.
-%                 Origingal columns include dive start and end
-%                 time/lat/lon, dive duration, depth average current,
-%                 average speed over ground as northing and easting,
-%                 calculated by the hydrodynamic model or the glide slope
-%                 model
-%       locCalcT  [table] Glider calculated locations underwater every
-%                 science file sampling interval. Input locCalcT is updated
-%                 to include a pam column that has a 1 for pam system on or
-%                 0 for pam system off for each location entry. Original
-%                 instantaneous flight details and includes columns
-%                 for time, lat, lon from hydrodynamic and glide slope
-%                 models, displacement from both models, temperature,
-%                 salinity, density, sound speed, glider vertical and
-%                 horizontal speed (from both models), pitch, glide
-%                 angle, and heading
+%       gpsSurfT   [table] glider surface locations, from GPS, one per
+%                  dive. Input gpsSurfT is updated to now include a pam
+%                  column with the minutes of PAM recording for that dive.
+%                  Origingal columns include dive start and end
+%                  time/lat/lon, dive duration, depth average current,
+%                  average speed over ground as northing and easting,
+%                  calculated by the hydrodynamic model or the glide slope
+%                  model
+%       locCalcT   [table] Glider calculated locations underwater every
+%                  science file sampling interval. Input locCalcT is updated
+%                  to include a pam column that has a 1 for pam system on or
+%                  0 for pam system off for each location entry. Original
+%                  instantaneous flight details and includes columns
+%                  for time, lat, lon from hydrodynamic and glide slope
+%                  models, displacement from both models, temperature,
+%                  salinity, density, sound speed, glider vertical and
+%                  horizontal speed (from both models), pitch, glide
+%                  angle, and heading
 %
 %   Examples:
 %
 %   See also EXTRACTPOSITIONALDATA
 %
+%   TO DO: 
+%      - build in option for FLAC
+%
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %    FirstVersion:   ??
-%    Updated:        09 March 2024
+%    Updated:        03 April 2024
 %
 %    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,19 +70,46 @@ function [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(CONFIG, ...
 
 
 %% initialization
-warning off
 
-% get num of samples per file (if max file length)
-if fileLength == 120 % wispr
-    numSamples = 119931; % for 2 min file
-elseif fileLength == 80 % wispr
-    numSamples = 79954; % for 1 min 20 sec files downsampled to 1000 hz
-elseif fileLength == 600 % PMARXL
-    numSamples = 600000;
+% check acoustic system
+if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
+	loggerType = 'PMARXL';
+elseif isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+	loggerType = 'WISPR';
 else
-    fprintf('Unknown fileLength...aborting\n')
-    return
+	fprintf(1, 'Unknown acoustic logger type. Exiting\n');
+	return
 end
+
+% if specified in CONFIG, get file length (in seconds) and sample rate
+switch loggerType
+	case 'PMARXL'
+		if isfield(CONFIG.pm, 'fileLength')
+			fileLength = CONFIG.pm.fileLength;
+% 			sampleRate = CONFIG.pm.sampleRate;
+		else
+			fprintf(1, ['No file length specified in .cnf, using PMARXL ', ...
+				'default fileLength = 600 s and sampleRate = 180260\n']);
+			fileLength = 600;
+% 			sampleRate = 180260;
+		end
+	case 'WISPR'
+		fprintf(1, 'File length not set up yet for WISPR. Exiting\n');
+		return
+end
+
+% OLD - but saving in case needed - from 1 kHz data!!! 
+% get num of samples per file (if max file length)
+% if fileLength == 120 % wispr
+%     numSamples = 119931; % for 2 min file
+% elseif fileLength == 80 % wispr
+%     numSamples = 79954; % for 1 min 20 sec files downsampled to 1000 hz
+% elseif fileLength == 600 % PMARXL
+%     numSamples = 600000;
+% else
+%     fprintf('Unknown fileLength...aborting\n')
+%     return
+% end
 
 % specify deployment date and time to ignore all files before that
 % (sometimes test files recorded in lab are in dataset)
@@ -93,38 +122,37 @@ path_acous = uigetdir('C:\', 'Select folder with 1 kHz acoustic data');
 path_out = uigetdir(path_acous, 'Select profiles folder to save outputs');
 
 %% Read in files and extract duration information
-files = dir([path_acous '\*.wav']);
+files = dir(fullfile(path_acous, '*.wav'));
 if isempty(files)
     fprintf('No .wav files found...aborting\n');
     return
     % *****later build in switch to flac??
-    % files=dir([path_flac '*.flac']);
-    
+    % files=dir([path_flac '*.flac']); 
 end
 
 pam = table;
 shortfiles = [];
-fprintf(1,'%i files:\n',length(files));
+fprintf(1,'%i files:\n', length(files));
 
 % make matrix with start and end times for all PAM files
 for f = 1:length(files)
-    % calc duration in sec using sampling rate..slow but works - more accurate
+    % calc file duration in sec using sampling rate..slow but works - more accurate
     try
-        wavInfo = audioinfo([path_acous '\' files(f,1).name]); % faster
-        y = [1:wavInfo.TotalSamples];
-        Fs = wavInfo.SampleRate;
-        files(f,1).dur=length(y)./Fs;
-        if length(y) < numSamples % specify this in function inputs. may vary by recording system
-            shortfiles=[shortfiles; f length(y)];
-            fprintf(1,'%s is short: %i\n',files(f,1).name,length(y));
+        wavInfo = audioinfo(fullfile(path_acous, files(f,1).name));
+        files(f,1).dur = wavInfo.TotalSamples./wavInfo.SampleRate;
+        if files(f,1).dur < fileLength 
+            shortfiles = [shortfiles; f wavInfo.TotalSamples]; %#ok<AGROW> 
+            fprintf(1,'%s is short: %i samples, %.2f seconds\n', files(f,1).name, ...
+				wavInfo.TotalSamples, files(f,1).dur);
         end
         % get start timing information from file name
-        pam.fileStart(f,1) = datetime(files(f).name(dateStart:length(dateFormat)),'InputFormat',dateFormat);
+		dtIdx = CONFIG.pm.dateStart:length(CONFIG.pm.dateFormat)+CONFIG.pm.dateStart-1;
+        pam.fileStart(f,1) = datetime(files(f).name(dtIdx), ...
+			'InputFormat', CONFIG.pm.dateFormat);
         pam.fileEnd(f,1) = pam.fileStart(f,1) + seconds(files(f,1).dur);
         
-    catch
-        fprintf(1, '%s is empty\n',files(f,1).name);
-        clear y Fs
+	catch % if there is some issue reading a file
+        fprintf(1, '%s is corrupt\n', files(f,1).name);
     end
     if rem(f,1000)==0; fprintf(1,'%i DONE\n',f);end % counter
 end
