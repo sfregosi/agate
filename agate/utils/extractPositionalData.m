@@ -68,6 +68,8 @@ for f = 1:length(files)
         endLatitude(f,1) = latgps(3);
         endLongitude(f,1) = longps(3);
         duration_hrs(f,1) = hours(endDateTime(f,1)-startDateTime(f,1));
+		distance_km(f,1) = lldistkm([latgps(2) longps(2)], ...
+			[latgps(3) longps(3)]);
         dac_n(f,1) = ncread(fname,'depth_avg_curr_north');
         dac_e(f,1) = ncread(fname,'depth_avg_curr_east');
         dac_qc(f,1) = ncread(fname,'depth_avg_curr_qc');
@@ -84,8 +86,8 @@ end
 
 gpsSurfT = table(dive, startTime, startDateTime, startLongitude, ...
     startLatitude, endTime, endDateTime, endLatitude, endLongitude, ...
-    duration_hrs, dac_n, dac_e, dac_n_gsm, dac_e_gsm, dac_qc, avg_speed_n, ...
-    avg_speed_e, avg_speed_n_gsm, avg_speed_e_gsm, hdm_qc);
+    duration_hrs, distance_km, dac_n, dac_e, dac_n_gsm, dac_e_gsm, dac_qc, ...
+	avg_speed_n, avg_speed_e, avg_speed_n_gsm, avg_speed_e_gsm, hdm_qc);
 
 % optional check by plotting
 if plotOn
