@@ -21,7 +21,7 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	21 April 2023
-%	Updated:        09 March 2024
+%	Updated:        11 April 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,6 +46,41 @@ save(fullfile(CONFIG.path.mission, 'profiles', ...
 writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
     [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.csv']));
 
+%% save positional data for packaging for NCEI
+
+% gps surface table
+load(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']));
+keepCols = {'dive', 'startDateTime', 'startLatitude', 'startLongitude', ...
+	'endDateTime', 'endLatitude', 'endLongitude'};
+gpsSurfSimp = gpsSurfT(:,keepCols);
+newNames = {'DiveNumber', 'StartDateTime_UTC', 'StartLatitude', 'StartLongitude', ...
+	'EndDateTime_UTC', 'EndLatitude', 'EndLongitude'};
+gpsSurfSimp.Properties.VariableNames = newNames;
+writetable(gpsSurfSimp, fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_GPSSurfaceTableSimple.csv']))
+
+% location table
+load(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+keepCols = {'dateTime', 'latitude', 'longitude', 'depth', 'dive'};
+locCalcSimp = locCalcT(:,keepCols);
+newNames = {'DateTime_UTC', 'Latitude', 'Longitude', 'Depth_m', 'DiveNumber'};
+locCalcSimp.Properties.VariableNames = newNames;
+writetable(locCalcSimp, fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_CalculatedLocationTableSimple.csv']))
+
+% environmental data
+load(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+keepCols = {'dive', 'dateTime', 'latitude', 'longitude', 'depth', ...
+	'temperature', 'salinity', 'soundVelocity', 'density'};
+locCalcEnv = locCalcT(:,keepCols);
+newNames = {'DiveNumber', 'DateTime_UTC', 'Latitude', 'Longitude', 'Depth_m', ...
+	'Temperature_C', 'Salinity_PSU', 'SoundSpeed_m_s', 'Density_kg_m3', };
+locCalcEnv.Properties.VariableNames = newNames;
+writetable(locCalcEnv, fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.glider, '_', CONFIG.mission, '_CTD.csv']))
 
 %% plot sound speed profile
 % load locCalcT if not already loaded
