@@ -27,7 +27,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-agate agate_mission_config.cnf
+agate agate_mission_config.cnf % or just agate and select file
 global CONFIG
 
 %% extract positional data
