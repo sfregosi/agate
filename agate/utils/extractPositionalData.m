@@ -67,7 +67,7 @@ for f = 1:length(files)
         endDateTime(f,1) = datetime(endTime(f,1),'ConvertFrom','datenum');
         endLatitude(f,1) = latgps(3);
         endLongitude(f,1) = longps(3);
-        duration_hrs(f,1) = hours(endDateTime(f,1)-startDateTime(f,1));
+        duration_hr(f,1) = hours(endDateTime(f,1)-startDateTime(f,1));
 		distance_km(f,1) = lldistkm([latgps(2) longps(2)], ...
 			[latgps(3) longps(3)]);
  		maxDepth_m(f,1) = max(ncread(fname, 'depth'));
@@ -87,7 +87,7 @@ end
 
 gpsSurfT = table(dive, startTime, startDateTime, startLatitude, ...
 	startLongitude, endTime, endDateTime, endLatitude, endLongitude, ...
-    duration_hrs, distance_km, maxDepth_m, dac_n, dac_e, dac_n_gsm, dac_e_gsm, ...
+    duration_hr, distance_km, maxDepth_m, dac_n, dac_e, dac_n_gsm, dac_e_gsm, ...
 	dac_qc, avg_speed_n, avg_speed_e, avg_speed_n_gsm, avg_speed_e_gsm, hdm_qc);
 
 % optional check by plotting
