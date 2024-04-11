@@ -1,5 +1,8 @@
 function checkPath
 %CHECKPATH	Check the necessasry folders are there and on the path
+%						**********************			
+%                       ******DEPRECATED******
+%						**********************
 %
 %   Syntax:
 %       CHECKPATH
