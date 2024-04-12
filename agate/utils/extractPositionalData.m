@@ -41,7 +41,7 @@ function [gpsSurfT, locCalcT] = extractPositionalData(CONFIG, plotOn)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %    FirstVersion:   03 September 2019
-%    Updated:        21 April 2023
+%    Updated:        11 April 2024
 %
 %    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,7 +67,10 @@ for f = 1:length(files)
         endDateTime(f,1) = datetime(endTime(f,1),'ConvertFrom','datenum');
         endLatitude(f,1) = latgps(3);
         endLongitude(f,1) = longps(3);
-        duration_hrs(f,1) = hours(endDateTime(f,1)-startDateTime(f,1));
+        duration_hr(f,1) = hours(endDateTime(f,1)-startDateTime(f,1));
+		distance_km(f,1) = lldistkm([latgps(2) longps(2)], ...
+			[latgps(3) longps(3)]);
+ 		maxDepth_m(f,1) = max(ncread(fname, 'depth'));
         dac_n(f,1) = ncread(fname,'depth_avg_curr_north');
         dac_e(f,1) = ncread(fname,'depth_avg_curr_east');
         dac_qc(f,1) = ncread(fname,'depth_avg_curr_qc');
@@ -82,10 +85,10 @@ for f = 1:length(files)
     end
 end
 
-gpsSurfT = table(dive, startTime, startDateTime, startLongitude, ...
-    startLatitude, endTime, endDateTime, endLatitude, endLongitude, ...
-    duration_hrs, dac_n, dac_e, dac_n_gsm, dac_e_gsm, dac_qc, avg_speed_n, ...
-    avg_speed_e, avg_speed_n_gsm, avg_speed_e_gsm, hdm_qc);
+gpsSurfT = table(dive, startTime, startDateTime, startLatitude, ...
+	startLongitude, endTime, endDateTime, endLatitude, endLongitude, ...
+    duration_hr, distance_km, maxDepth_m, dac_n, dac_e, dac_n_gsm, dac_e_gsm, ...
+	dac_qc, avg_speed_n, avg_speed_e, avg_speed_n_gsm, avg_speed_e_gsm, hdm_qc);
 
 % optional check by plotting
 if plotOn

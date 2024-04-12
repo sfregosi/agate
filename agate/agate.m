@@ -95,14 +95,15 @@ global CONFIG
 
 % root directory
 CONFIG.path.agate = fileparts(which('agate'));
+addpath(CONFIG.path.agate); % no subdirs
 
 % make sure utils is on path
 CONFIG.path.utils = fullfile(CONFIG.path.agate, 'utils');
-addpath(genpath(CONFIG.path.utils));
+addpath(genpath(CONFIG.path.utils)); % with subdirs
 
 % make sure convertAcoustics is on path
 CONFIG.path.convertAcoustics = fullfile(CONFIG.path.agate, 'convertAcoustics');
-addpath(genpath(CONFIG.path.convertAcoustics));
+addpath(genpath(CONFIG.path.convertAcoustics)); % with subdirs
 
 % check/create settings folder
 CONFIG.path.settings = fullfile(CONFIG.path.agate,'settings');
@@ -111,6 +112,6 @@ if ~exist(CONFIG.path.settings, 'dir')
 	disp('Settings directory is missing, creating it ...')
 	mkdir(CONFIG.path.settings);
 end
-addpath(CONFIG.path.settings); % no genpath will not add subdirs
+addpath(genpath(CONFIG.path.settings)); % with subdirs
 
 end
