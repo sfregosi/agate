@@ -130,8 +130,8 @@ end
 
 pamFiles = table;
 pamFiles.name = cell(length(files), 1);
-pamFiles.start = NaT(length(files), 1, 'Format',  'yyyy-MM-dd HH:mm:ss.SSS');
-pamFiles.stop = NaT(length(files), 1, 'Format',  'yyyy-MM-dd HH:mm:ss.SSS');
+pamFiles.start = NaT(length(files), 1, 'Format', 'yyyy-MM-dd HH:mm:ss.SSS');
+pamFiles.stop = NaT(length(files), 1, 'Format', 'yyyy-MM-dd HH:mm:ss.SSS');
 
 shortfiles = [];
 fprintf(1,'%i files:\n', length(files));

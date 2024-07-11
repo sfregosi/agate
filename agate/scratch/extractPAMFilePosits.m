@@ -1,35 +1,29 @@
-function filePosits = extractPAMFilePosits(CONFIG, ...
-    pam, locCalcT, secs, path_out)
-% EXTRACTPAMSTATUSBYFILE	*PLACEHOLDER - NOT YET WORKING*  Extracts glider location data from nc files
+function pamFilePosits = extractPAMFilePosits(pamFiles, locCalcT, timeBuffer)
+%EXTRACTPAMFILEPOSITS Extracts glider location for each acoustic file
 %
 %	Syntax:
-%		[gpsSurfT, locCalcT] = EXTRACTPAMSTATUSBYFILE(CONFIG, SAVEON)
+%		PAMFILEPOSITS = EXTRACTPAMFILEPOSITS(CONFIG, PAMFILES, LOCCALCT)
 %
 %	Description:
-%		Extracts 
+%		Extract glider positional data for each acoustic file. Includes
+%       depth, lat, lon, vertical velocity, horizontal velocity, speed, and
+%       sound speed. Uses glider data sample closest to start of sound
+%       file, up to an optional buffer time specified as 'timeBuffer'. If
+%       not positional data is available within that buffer, no position is
+%       provided for that file.
 %
 %	Inputs:
-%		CONFIG  agate mission configuration file with relevant mission and
-%		        glider information. Minimum CONFIG fields are 'glider',
-%		        'mission'
-%       plotOn  optional argument to plot basic maps of outputs for
-%               checking; (1) to plot, (0) to not plot
+%       pamFiles   [table] name, start and stop time and duration of all
+%                  recorded sound files
+%       locCalcT   [table] glider fine scale locations exported from
+%                  extractPositionalData
+%       timeBuffer [double] optional argument to specify time (sec) around
+%                  agiven file you are willing to accept a position.
+%                  Default is 180 sec
 %
 %	Outputs:
-%		gpsSurfT    Table with glider surface locations, from GPS, one per
-%		            dive, and includes columns for dive start and end
-%		            time/lat/lon, dive duration, depth average current,
-%                   average speed over ground as northing and easting,
-%                   calculated by the hydrodynamic model or the glide slope
-%                   model
-%       locCalcT    Table with glider calculated locations underwater every
-%                   science file sampling interval. This gives more
-%                   instantaneous flight details and includes columns
-%                   for time, lat, lon from hydrodynamic and glide slope
-%                   models, displacement from both models, temperature,
-%                   salinity, density, sound speed, glider vertical and
-%                   horizontal speed (from both models), pitch, glide
-%                   angle, and heading
+%       pamFilePosits  [table] glider positional info at the start of each
+%                      acoustic file
 %
 %	Examples:
 %
@@ -41,66 +35,44 @@ function filePosits = extractPAMFilePosits(CONFIG, ...
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	26 July 2018
-%	Updated:        23 April 2023
+%	Updated:        11 July 2024
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-% extract instrument positional data for each PAM file, including depth,
-% lat, lon, vertical velocity, horizontal velocity, speed, and sound speed
-%
-% Inputs:   pam = table of
-%fileName = acoustic file (either .wav or .flac) with date in
-%               filename in format yyMMdd-HHmmss (*in future could adapt this?)
-%           locCalcT = table with location/positional information for
-%               instrument of interest
-%           secs = buffer around file that you are willing to look for a
-%               corresponding position. ~3 mins for glider, up to 10+ for
-%               quephone because it samples location less often.
-%
-% Output:   pFilePosits - a table with instrument positional information at
-%           the start of each PAM file
-%
-% S. Fregosi 2018/07/26
-% updated 2019/09/04
-
-global CONFIG
-if nargin < 6
-    path_out = [];
+if nargin < 3
+	timeBuffer = 180; % in seconds
 end
 
-filePosits = table;
-if strcmp(glider,'q003')
-    noMatch = locCalcT(1,:);
-    noMatch.dateTime = NaT;
-    noMatch(1,2:end) = array2table(NaN(1,width(locCalcT) - 1));
-else % actually a glider
-    noMatch = locCalcT(1,:);
-    noMatch(1,[1:2 4:end]) = array2table(NaN(1,width(locCalcT)-1));
-    noMatch.dateTime = NaT;
-    
-end
+% set up empty output table
+pamFilePosits = table;
+pamFilePosits.fileName = pamFiles.name;
+pamFilePosits.fileStart = pamFiles.start;
 
+% set up a row of nan's for situations with no sample match
+noMatch = locCalcT(1,:);
+noMatch(1,[1:2 4:end]) = array2table(NaN(1,width(locCalcT)-1));
+noMatch.dateTime = NaT;
 
 % fileDate = datetime(fileName(1:end-4),'InputFormat','yyMMdd-HHmmss');
-for f = 1:height(pam)
-    filePosits.date(f,1) = pam.fileStart(f);
-    [m,i] = min(abs(pam.fileStart(f)-locCalcT.dateTime)); % find the closest positional data
-    if m < seconds(secs) % if the closest position is within buffer specified by secs
-        filePosits(f,2:width(locCalcT)+1) = locCalcT(i,:);
-    elseif m > seconds(secs) % if closest positional data is greater than buffer
-        fprintf(1,'file %s closest time is > %i seconds\n',pam.fileStart(f),secs)
-        filePosits(f,2:width(locCalcT)+1) = noMatch;
-    else
-        fprintf(1,'file %s error\n',pam.fileStart(f))
-        filePosits(f,2:width(locCalcT)+1) = noMatch;
-    end
+for f = 1:height(pamFilePosits)
+	% find the closest positional data
+% 	[m,i] = min(abs(pamFilePosits.fileStart(f)-locCalcT.dateTime)); 
+	i = find(pamFilePosits.fileStart(f) <= locCalcT.dateTime, 1, 'first');
+    m = pamFilePosits.fileStart(f) - locCalcT.dateTime(i);
+	if m < seconds(timeBuffer) % within buffer specified by timeBuffer
+		pamFilePosits(f,3:width(locCalcT)+2) = locCalcT(i,:);
+	elseif m > seconds(timeBuffer) % outside buffer
+		fprintf(1, 'file %s closest time is > %i seconds\n', ...
+			pamFilePosits.fileStart(f), timeBuffer)
+		pamFilePosits(f, 3:width(locCalcT) + 2) = noMatch;
+	else % error??
+		fprintf(1, 'file %s error\n', pamFilePosits.fileStart(f))
+		pamFilePosits(f,3:width(locCalcT)+2) = noMatch;
+	end
 end
 
-filePosits.Properties.VariableNames(2:end) = locCalcT.Properties.VariableNames;
-
-if ~isempty(path_out)
-    save([path_out '\' glider '_' deploymentStr '_pamFilePosits.mat'],'filePosits');
-    writetable(filePosits, [path_out '\' glider '_' deploymentStr '_pamFilePosits.csv']);
-end
+% add locCalc column names and clean up a bit
+pamFilePosits.Properties.VariableNames(3:end) = locCalcT.Properties.VariableNames;
+pamFilePosits.time = [];
+pamFilePosits.Properties.VariableNames(4) = {'sampleDateTime'};
 
 end
