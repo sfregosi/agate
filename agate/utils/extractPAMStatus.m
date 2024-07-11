@@ -192,6 +192,7 @@ for f = 1:height(locCalcT)
 		fprintf(1, '\n%3d', floor((height(locCalcT) - f)/8000));
 	end
 end
+fprintf(1, '\n');
 
 % % plotting test
 %  plotDiveProfile(locCalcT)
