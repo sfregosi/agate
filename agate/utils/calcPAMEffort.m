@@ -1,17 +1,22 @@
 function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
     calcPAMEffort(CONFIG, gpsSurfT, pamFiles, pamByDive, expLimits)
-%CALCPAMEFFORT	Extracts PAM system on/off information from sound files
+%CALCPAMEFFORT	Calculates acoustic recording effort by minute, hour, day
 %
 %   Syntax:
-%	    [GPSSURFT, LOCCALCT, pamFiles] = EXTRACTPAMSTATUS(CONFIG, GPSSURFT, LOCCALCT)
+%	    [GPSSURFT, LOCCALCT, pamFiles] = CALCPAMEFFORT(CONFIG, GPSSURFT, PAMFILES, PAMBYDIVE, EXPLIMITS)
 %
 %   Description:
-% make a table of PAM on or off by minute for single glider
-% and build up by hour and by day table with total minutes of recording in
-% each of those bins
-% need to define experiment limits externally if want padding because of
-% other instruments in the water, otherwise make [] and will pull from dive
-% data
+%       Summarizes recording effort in several ways by creating tables of
+%       all possible recording minutes, hours, and days, and quantifying
+%       how many of each of those bins contain recordings. The assessment
+%       of minutes is someone imperfect because some minutes only contain
+%       partial recordings (if a file ends within that minute) and some
+%       minutes are missed (if a recording starts partway through a minute)
+%
+%       Experiment limits can be defined if multiple instruments were
+%       deployed and you want to compare across the maximum deployment time
+%       for all of them. Optionally can be left out and the bins will just
+%       populate from the first sound file to the end of the last file
 %
 %   Inputs:
 %       CONFIG     agate mission configuration file with relevant mission and
@@ -26,34 +31,42 @@ function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
 %       gpsSurfT   [table] glider surface locations exported from
 %                  extractPositionalData
 %       pamFiles   [table] name, start and stop time and duration of all
-%                  recorded sound files
+%                  recorded sound files, created with extractPAMStatus
 %       pamByDive  [table] summary of recording start and stop, number of
 %                  files for each dive. Includes dive start and stop times
 %                  and offset of start and stop of pam relative to dive
-%                  times
-%
-%       locCalcT   [table] glider fine scale locations exported from
-%                  extractPositionalData
+%                  times, created with extractPAMStatus
+%       expLimits  [vector] two datetimes defining the start and end of an
+%                  'experiment' to set limits of the maximum possible
+%                  recording times
 %
 %   Outputs:
+%       pamByMin      [table] one minute bins with 1 for recordings during
+%                     this minute, 0 for no recordings this minute, and
+%                     NaNs if the glider was at the surface or not deployed
+%       pamMinPerHour [table] one hour bins with the total number of
+%                     minutes of that hour with recordings
+%       pamMinPerDay  [table] daily bins with total number of minutes with
+%                     recordings per day
+%       pamHrPerDay   [table] daily bins with total hours with recordings
+%                     each day. This is the total minutes/60 so is total
+%                     complete hours, not the number of hour bins with any
+%                     partial amount of recording
 %
 %   Examples:
 %
-%   See also 
-%
-%   TO DO:
-%      - build in option for FLAC
+%   See also EXTRACTPAMSTATUS
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %    FirstVersion:   ??
-%    Updated:        11 July 2024
+%    Updated:        12 July 2024
 %
 %    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin < 3 % default 'experiment time' is deploy start/end
+if nargin < 5 % default 'experiment time' is deploy start/end
     expLimits(1) = dateshift(gpsSurfT.startDateTime(1), 'start', 'minute');
     expLimits(2) = dateshift(gpsSurfT.endDateTime(end), 'end', 'minute');
 end
@@ -92,12 +105,12 @@ diveCheck = [pamByDive.diveStart pamByDive.diveStop];
 for f = 1:length(dm)
     dc = dm(f);
     % is this minute within a dive?
-    [rD, ~] = find(isbetween(dc,diveCheck(:,1), diveCheck(:,2)));
+    [rD, ~] = find(isbetween(dc, diveCheck(:,1), diveCheck(:,2)));
     if isempty(rD) % if not, put NaN
         pamByMin.pam(f,1) = nan;
     end
     % is PAM on in this minute?
-    [rP, ~] = find(isbetween(dc,pamCheck(:,1), pamCheck(:,2)));
+    [rP, ~] = find(isbetween(dc, pamCheck(:,1), pamCheck(:,2)));
     if ~isempty(rP)
         pamByMin.pam(f,1) = 1;
     end
@@ -133,7 +146,7 @@ for f = 1:length(ddh)
     dc = ddh(f);
     dayTmp = pamMinPerHour.pam(isbetween(pamMinPerHour.hour, dc, ...
 		dc + minutes(1439) + seconds(59)));
-    pamHrPerDay.pam(f,1) = sum(dayTmp, 'omitnan');
+    pamHrPerDay.pam(f,1) = round(sum(dayTmp, 'omitnan')/60, 2);
 end
 pamHrPerDay.pam(pamHrPerDay.pam == 0) = nan;
 
