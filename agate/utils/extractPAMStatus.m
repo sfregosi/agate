@@ -11,17 +11,17 @@ function [gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(...
 %       folder of .wav (or .flac?) files which will be opened one at a
 %       time. Because this is slow, best to use the lowest frequency
 %       dataset available (if it was downsampled) or from a local hard
-%       drive rather than data on a server. The file start time is 
+%       drive rather than data on a server. The file start time is
 %       extracted from the filename and the duration is pulled from the
 %       file itself so stop time can be calculated. A list of all files and
-%       timing info is output to the 'pamFiles' table. 
+%       timing info is output to the 'pamFiles' table.
 %
 %       'pamFiles' is then used to populate an additional 'pam' column in
 %       locCalcT with a 0 (off) or 1 (on) for the pam system status at each
 %       glider positional sample. Several columns are also added to
 %       gpsSurfT with the pam duration and number of files for each dive. A
 %       a separate 'pamByDive' summary table is also created with dive and
-%       recording system timing info. 
+%       recording system timing info.
 %
 %   Inputs:
 %       CONFIG     agate mission configuration file with relevant mission and
@@ -30,7 +30,7 @@ function [gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(...
 %                  'ws') and logger sub fields 'fileLength', 'dateStart',
 %                  'dateFormat'
 %                  See exaxmple config file and config file help for more
-%                  detail on each field: 
+%                  detail on each field:
 %                  https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf
 %                  https://sfregosi.github.io/agate-public/configuration.html#mission-configuration-file
 %       gpsSurfT   [table] glider surface locations exported from
@@ -105,8 +105,29 @@ switch loggerType
 			% 			sampleRate = 180260;
 		end
 	case 'WISPR'
-		fprintf(1, 'File length not set up yet for WISPR. Exiting\n');
-		return
+		if isfield(CONFIG.ws, 'fileLength')
+			fileLength = CONFIG.ws.fileLength;
+		else
+			fprintf(1, ['No file length specified in .cnf, using WISPR ', ...
+				'default fileLength = 60 s and sampleRate = 180 kHz\n']);
+			fileLength = 60;
+		end
+		if isfield(CONFIG.ws, 'dateStart')
+			dateStart = CONFIG.ws.dateStart;
+		else
+			fprintf(1, ['No dateStart specified in .cnf. Must specify ', ...
+				'character where date string starts in file name.', ...
+				'Exiting...'])
+			return
+		end
+		if isfield(CONFIG.ws, 'dateFormat')
+			dateFormat = CONFIG.ws.dateFormat;
+		else
+			fprintf(1, ['No dateFormat specified in .cnf. Must specify ', ...
+				'format of date string in file name.', ...
+				'Exiting...'])
+			return
+		end
 end
 
 % specify deployment date and time to ignore all files before that
@@ -149,10 +170,9 @@ for f = 1:length(files)
 		end
 		% get start timing information from file name
 		pamFiles.name{f} = files(f).name;
-		dtIdx = CONFIG.pm.dateStart:length(CONFIG.pm.dateFormat) + ...
-			CONFIG.pm.dateStart-1;
-		pamFiles.start(f) = datetime(files(f).name(dtIdx), ...
-			'InputFormat', CONFIG.pm.dateFormat);
+		dtIdx = dateStart:length(dateFormat) + dateStart - 1;
+		pamFiles.start(f) = datetime(files(f).name(dtIdx), 'InputFormat', ...
+			dateFormat);
 		pamFiles.stop(f) = datetime(pamFiles.start(f,1) + ...
 			seconds(files(f,1).dur), 'Format', 'yyyy-MM-dd HH:mm:ss.SSS');
 		pamFiles.dur(f) = seconds(files(f,1).dur);
@@ -184,7 +204,7 @@ for f = 1:height(locCalcT)
 	end
 	clear idx
 
-% 	fprintf(1, '.');
+	% 	fprintf(1, '.');
 	if rem(f, 100) == 0
 		fprintf(1, '.');
 	end
