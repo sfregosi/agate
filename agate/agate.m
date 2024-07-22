@@ -37,7 +37,7 @@ global CONFIG
 % CONFIG = struct;
 
 CONFIG.ver = '0.1.20240309   https://github.com/sfregosi/agate-public';
-fprintf('      agate   version %s\n\n', CONFIG.ver)
+fprintf('      agate   version %s\n', CONFIG.ver)
 
 if nargin < 1
 	CONFIG.missionCnf = [];
@@ -51,6 +51,8 @@ CONFIG.mver = version;
 checkPath;
 
 setCONFIG(CONFIG.missionCnf);
+
+fprintf('      loaded config file   %s\n\n', CONFIG.missionCnf)
 
 end
 
