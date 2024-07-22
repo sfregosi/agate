@@ -1,4 +1,4 @@
-function [baseFig] = createBasemap(CONFIG, bathyOn, figNum, outFig)
+function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum, outFig)
 % CREATEBASEMAP	Create a basemap of the bathymetry for the mission area
 %
 %   Syntax:
@@ -10,13 +10,15 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, figNum, outFig)
 %       include a north arrow and scale bar. Optional to plot bathymetry
 %       data (if available) otherwise will just plot land (specific to US
 %       states at this time). It can be saved as a .fig file that can be
-%       added to (add glider path, labels, and acoustic encounters). 
+%       added to (add glider path, labels, and acoustic encounters).
 %
 %   Inputs:
 %       CONFIG      [struct] mission/agate global configuration variable.
 %                   Required fields: CONFIG.map entries
 %       bathyOn     [double] set to 1 to plot bathymetry or 0 to only plot
 %                   land
+%       contourOn   [double] set to 1 to plot bathymetry contours or 0 for
+%                   no contour lines
 %       figNum      [double] optional to specify figure number so won't
 %                   create repeated versions when updated
 %       outFig      [string] optional argument to save the .fig
@@ -34,7 +36,7 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, figNum, outFig)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   09 March 2024
-%   Updated:
+%   Updated:        22 July 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,12 +48,12 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, figNum, outFig)
 %%%%%%%%%%%%%%
 
 % save output fig or not
-if nargin < 4
+if nargin < 5
 	outFig = [];
 end
 
 % specify a figure number
-if nargin < 3
+if nargin < 4
 	figNum = [];
 end
 
@@ -63,8 +65,8 @@ else
 	baseFig = figure(figNum);
 end
 
-mapFigPosition = [100    100    800    600];
-baseFig.Position = mapFigPosition;
+% mapFigPosition = [100    100    800    600];
+% baseFig.Position = mapFigPosition;
 baseFig.Name = 'Base map';
 
 % clear figure
@@ -97,9 +99,10 @@ if isfield(CONFIG.map, 'scalePos')
 end
 
 
-%%  plot bathymetry - slow step
+%%  plot bathymetry and/or contours - slow step
 
-if bathyOn == 1
+if contourOn == 1 || bathyOn == 1 % if either, load raster data
+
 	if isfield(CONFIG.map, 'bathyFile')
 		bathyFile = CONFIG.map.bathyFile;
 	else % prompt to choose file
@@ -113,21 +116,34 @@ if bathyOn == 1
 	[Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
 
 	Z(Z >= 10) = 100;
-	geoshow(Z, refvec, 'DisplayType', 'surface', ...
-		'ZData', zeros(size(Z)), 'CData', Z);
 
-	cmap = cmocean('ice');
-	cmap = cmap(150:256,:);
-	colormap(cmap)
-	% matlab renamed caxis to clim in R2022a...so try both
-	try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<SEPEX>
-	brighten(.4);
+	if bathyOn == 1 % plot it
 
-	[~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
-	[~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
-		'LineWidth', 0.8);
-	[~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
-	[~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+		Z(Z >= 10) = 100;
+		geoshow(Z, refvec, 'DisplayType', 'surface', ...
+			'ZData', zeros(size(Z)), 'CData', Z);
+
+		cmap = cmocean('ice');
+		cmap = cmap(150:256,:);
+		colormap(cmap)
+		% matlab renamed caxis to clim in R2022a...so try both
+		try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<CAXIS,SEPEX>
+		brighten(.4);
+
+		% colorbar for bathymetry is too unreliable
+% 		cb = colorbar;
+% 		cb.Location = 'eastoutside';
+% 		cb.Label.String = 'depth [m]';
+% 		cbPosit = cb.Position;
+	end
+
+	if contourOn == 1 % plot it
+		[~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
+		[~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
+			'LineWidth', 0.8);
+		[~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
+		[~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+	end
 end
 
 %% plot land
