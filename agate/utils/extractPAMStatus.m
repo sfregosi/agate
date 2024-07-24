@@ -104,6 +104,23 @@ switch loggerType
 			fileLength = 600;
 			% 			sampleRate = 180260;
 		end
+		if isfield(CONFIG.pm, 'dateStart')
+			dateStart = CONFIG.pm.dateStart;
+		else
+			fprintf(1, ['No dateStart specified in .cnf. Must specify ', ...
+				'character where date string starts in file name.', ...
+				'Exiting...'])
+			return
+		end
+		if isfield(CONFIG.pm, 'dateFormat')
+			dateFormat = CONFIG.pm.dateFormat;
+		else
+			fprintf(1, ['No dateFormat specified in .cnf. Must specify ', ...
+				'format of date string in file name.', ...
+				'Exiting...'])
+			return
+		end
+
 	case 'WISPR'
 		if isfield(CONFIG.ws, 'fileLength')
 			fileLength = CONFIG.ws.fileLength;
@@ -201,6 +218,8 @@ for f = 1:height(locCalcT)
 		pamFiles.stop), 1);
 	if ~isempty(idx)
 		locCalcT.pam(f) = 1;
+% 	else % for debugging
+% 		fprintf(1, 'no idx match %s\n', locCalcT.dateTime(f));
 	end
 	clear idx
 
