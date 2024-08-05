@@ -19,7 +19,7 @@ library(fontawesome)
 
 A collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals. 
 
-This package is very much under development and is hosted and version controlled on [GitHub](https://github.com/sfregosi/agate-public). My hope is that I will maintain a [stable release](https://github.com/sfregosi/agate-public/releases) and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in contributing to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!
+This package is very much under development and is hosted and version controlled on [GitHub](https://github.com/sfregosi/agate-public). My hope is that I will maintain a [stable release](https://github.com/sfregosi/agate-public/releases) and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in [contributing](contribute.html) to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!
 
 selene [dot] fregosi [at] noaa.gov or [report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
 

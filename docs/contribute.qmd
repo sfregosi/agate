@@ -1,0 +1,89 @@
+---
+title: "How to contribute"
+page-layout: full
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
+
+We welcome contributions from the passive acoustic glider community! If you would like to contribute to this repository, you can do so in a few ways: 
+
+### **If you find a bug...**
+
+Please [report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}. Please use the 'Bug report' template. 
+
+### **If you'd like to request a feature or suggest an enhancement...**
+
+Please [report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}. There is a 'Feature request' template just for this purpose. 
+
+### **If you'd like to add a feature or fix a bug yourself...**
+
+[Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) the `agate-public` repository. This will create a copy of the repository in your own GitHub account. You can clone this fork to your local machine to work with the toolbox and make changes directly to the code, but also continue to pull changes from the primary repository to stay up to date. Then, when you have a feature you'd like to contribute back to the main repository, you can use a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to incorporate those changes. 
+
+We are happy to help get folks set up with this process, so please reach out with any questions! 
+
+For consistency in documentation, we ask that you use the following templates to create any new functions or scripts:
+
+#### New function
+
+Paste the below code into the top of the new function and updated as needed. Refer to existing functions in the `utils` folder for examples of what kind of detail to include. For consistency, use 'camelCase' for the function name. Include your name, contact info, and MATLAB version info which can be checked with `version`. 
+
+```matlab
+function output = newFunction(input)
+% NEWFUNCTION	One-line description here, please
+%
+%   Syntax:
+%       OUTPUT = NEWFUNCTION(INPUT)
+%
+%   Description:
+%       Detailed description here, please
+%   Inputs:
+%       input   describe, please
+%
+%	Outputs:
+%       output  describe, please
+%
+%   Examples:
+%
+%   See also
+%
+%   Authors:
+%       F. Last <first.last@email.com> <https://github.com/username>
+%
+%   FirstVersion:   05 August 2024
+%   Updated:
+%
+%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+```
+
+#### New script
+
+Paste the below code into the top of the new script and fill in the detail as needed. Refer to existing scripts in the `example_workflows` folder. Please include your name, contact info, and MATLAB version info which can be checked with `version`. 
+
+```matlab
+% NEWSCRIPT
+%	One-line description here, please
+%
+%	Description:
+%		Detailed description here, please
+%
+%	Notes
+%
+%	See also
+%
+%
+%	Authors:
+%       F. Last <first.last@email.com> <https://github.com/username>
+%
+%	FirstVersion: 	05 August 2024
+%	Updated:
+%
+%	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+```
