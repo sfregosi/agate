@@ -4,10 +4,26 @@
 
 $font-family: "Atkinson Hyperlegible", sans-serif;
 
+/*-- color definitions --*/
+$beaver-orange:   #D73F09 !default;
+$stratosphere:    #006A8E !default;
+$star-canvas:     #003B5C !default;
+$rogue-wave:      #0D5257 !default;
+$crater:          #8E9089 !default;
+$primary:         $beaver-orange !default;
+$success:         $star-canvas !default;
+$link-color:      $stratosphere !default;
+$progress-bg:     #e8e8e7 !default;
+$code-color:      $rogue-wave !default;
+$code-bg:         #e8e8e7 !default;
+$code-block-bg:   #e8e8e7 !default;
+$btn-code-copy-color:  $rogue-wave !default;
+
+
 // Base document colors
 $body-bg: #181818;
 $body-color: white;
-$link-color: #75AADB;
+$link-color: #D73F09;
 
 $light: #525252;
 
@@ -24,3 +40,9 @@ $popover-bg: #242424;
 
 // Bootstrap inputs
 $input-bg: #242424;
+
+/* code blocks */
+pre {
+  color:            $rogue-wave;
+  background-color: #e8e8e7;
+}

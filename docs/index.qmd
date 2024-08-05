@@ -1,6 +1,6 @@
 ---
-title: 'agate'
-subtitle: 'Documentation for agate: Acoustic Glider Tools and Environment'
+title: '*agate*: Acoustic Glider Analysis Tools and Environment'
+# subtitle: 
 page-layout: full
 ---
 
@@ -13,41 +13,38 @@ library(fontawesome)
 ```
 
 
-# Acoustic Glider Analysis Tools and Environment
+<!-- # Acoustic Glider Analysis Tools and Environment -->
 
 `r fa(name = "calendar-check")` *Last Update: `r format(Sys.Date(), "%d %b %Y")`*
 
 A collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals. 
 
-This package is very much under development, but my hope is that I will maintain a [stable release](https://github.com/sfregosi/agate-public/releases) and then for those interested in the latest functionality, the repository can be cloned. For those interested in contributing to the package, I suggest creating a fork and using pull requests to contribute. 
+This package is very much under development and is hosted and version controlled on [GitHub](https://github.com/sfregosi/agate-public). My hope is that I will maintain a [stable release](https://github.com/sfregosi/agate-public/releases) and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in contributing to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!
 
-This code was either developed or most recently updated and tested with MATLAB version 2022b, but has undergone some testing with 2020b.  
-
+selene [dot] fregosi [at] noaa.gov or [report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
 
 ## Background
 
-These tools were initially developed for use with passive acoustic glider surveys conducted by the OSU/NOAA CIMERS Bioacoustics Lab [bioacoustics.us](https://bioacoustics.us){index='_blank'}. Initial development was for surveys using Seaglider platforms and either the Wideband Intelligent Signal Processor and Recorder (WISPR) or the PMAR-XL recording systems. 
+These tools were initially developed for use with passive acoustic glider surveys conducted by the [OSU/NOAA CIMERS Bioacoustics Lab](https://cimers.oregonstate.edu/our-research){index='_blank'}. Initial development was for surveys using Seaglider platforms and either the Wideband Intelligent Signal Processor and Recorder (WISPR) or the Passive Miniaturized Acoustic Recorder XL (PMARXL) recording systems. 
 
-Through NOAA's Uncrewed Systems Initiative (UxS) we received funding to develop and improve these tools into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals. 
+NOAA's [Uncrewed Systems Operations Center (UxSOC)](https://www.omao.noaa.gov/uncrewed-systems/about-noaa-uncrewed-systems-operations) funded additional development into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals. 
 
-Ready? [Get started](https://sfregosi.github.io/agate-public/get-started.html)
+**Ready? [Get started](https://sfregosi.github.io/agate-public/get-started.html)**
 
-Please contact me if you have any questions, feedback, or suggestions!
-
-selene [dot] fregosi [at] noaa.gov or [Report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
-
-![diagram showing the different components of agate](images/tool_workflow_v5-01.png){#fig-components width=75%}
+![Diagram showing the different components of __*agate*__. Tools can be broken up into two main categories: piloting tools, which are used for survey planning and execution, and processing tools which are used in post-mission analyses. The processing tools can further be broken up into flight, acoustic, and cetacean encounter processing tools. The cetacean encounter processing tools can incorporate externally identified cetacean detections (white balloon) or process on-board detections if available.](images/tool_workflow_v5-01.png){#fig-components width=75%}
 
 ## Dependencies
 
 This code was either developed or most recently updated and tested with MATLAB version 2022b, but has undergone some testing with 2020b.  
 
-MATLAB toolboxes:
+#### MATLAB toolboxes
 
 - Mapping Toolbox  
-`agate` requires the MATLAB Mapping toolbox. In the future, we may try modify the mapping tools to work with the freely available `m_map` package to make it more accessible, but are not there yet!
+__*agate*__ requires the MATLAB Mapping toolbox. In the future, we may try modify the mapping tools to work with the freely available `m_map` package to make it more accessible, but are not there yet!
 
-This package requires a few resources from MATLAB File Exchange. They come packaged within the utils/fileExchange folder. More info about each can be found below:
+#### MATLAB File Exchange
+
+This package requires a few resources from MATLAB File Exchange. They come packaged within the `utils/fileExchange` folder. More info about each can be found below:
 
 - [SSH/SFTP/SCP For MATLAB (v2)](https://www.mathworks.com/matlabcentral/fileexchange/35409-ssh-sftp-scp-for-matlab-v2)  
 <sub>*David Freedman (2023). SSH/SFTP/SCP For Matlab (v2), MATLAB Central File Exchange. Retrieved April 24, 2023.*</sub>
@@ -60,10 +57,14 @@ This package requires a few resources from MATLAB File Exchange. They come packa
 <sub>*Gabriel Ruiz-Martinez (2023). Seawater density from salinity, temperature and pressure, MATLAB Central File Exchange. Retrieved April 24, 2023.* </sub>
 
 
-Basemap rasters:
+#### Basemap rasters
 
-- A raster file is needed to plot bathymetry data on any of the maps. Detailed basemaps are available from [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model).  
-Depending on the needed resolution, the 60 arc second .tiff file may be sufficient, and is a reasonable size for download and plotting, but is a bit slow to load. Alternatively, finer resolution (15-60 arc second resolution options) for the specific area of interest can be extracted using the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) to download .tiff files in a smaller file size for faster loading and plotting. 
+A raster file is needed to plot bathymetry data on any of the maps. Detailed basemaps are available from [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model).  
+
+There are tradeoffs in the resolution of basemap raster selected.
+
+- High resolution basemaps are necessary for fine-scale piloting to ensure the glider does not hit the bottom, but they require manual export of a .tiff from NCEI. 15 arc second is the finest resolution option and can be extracted for the specific area of interest using the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/). The smaller the area extracted, the faster it will load and plot. 
+- Lower resolution may be sufficient for post-mission plotting. The global 60 arc second tiff is a good mid-resolution option that is easy, although slow, to download, import, and plot. Alternatively, 60 arc second resolution for just a specific area of interest can be extracted with the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) providing a smaller file size and faster loading/plotting.  
 
 ## Disclaimer
 

@@ -7,29 +7,150 @@ subtitle: 'Guide for creating and modifying necessary configuration files'
 library(fontawesome)
 ```
 
-Running `agate` requires a few configuration files. Each of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB's Editor window. The **mission configuration file** is required for all processes, but the others are optional depending on the goals of a specific task. 
+Running __*agate*__ requires a few configuration files. Each of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB's Editor window. The **mission configuration file** is required for all processes, but the others are optional depending on the goals of a specific task. 
 
 1. An overview [mission configuration file](#mission-configuration-file) for a specific glider/mission
-2. A [basestation configuration file](#basestation-configuration-file) with SSH login info - only required if using `agate` to interact directly with the basestation
+2. A [basestation configuration file](#basestation-configuration-file) with SSH login info - only required if using __*agate*__ to interact directly with the basestation
 3. A conversion configuration (for either [PMAR](#pmar-conversion-configuration-file) or [WISPR](#wispr-conversion-configuration-file)) used when converting raw (.dat) acoustic files to .wav or .flac
 
 ## Mission configuration file
 
 An example configuration file is located in the `agate/settings` folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)
 
-Lines starting with `%` are comments. The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. The top section is required to initialize `agate` and use the most basic functions. The following sections are optional depending on what agate functionality is desired, including interfacing with the basestation, working with acoustic data outputs, and plotting maps. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
+The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Lines starting with `%` are comments. 
+
+The top section is [required](#required-configuration-settings) to initialize __*agate*__ and use the most basic functions. The remaining sections are optional depending on what __*agate*__ functionality is desired, including interfacing with the [basestation](), working with [acoustic]() data outputs, and [plotting maps](). Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
 
 To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}.
 
 <sub>[Back to top](#)</sub>
 
+#### Required configuration settings
+
+The top section `% %%%% REQUIRED CONFIG PARAMETERS %%%%%%%%%%%` is required to initialize __*agate*__ and use the most basic functions. Explanations for each parameter are in the example configuration file as comments.
+
+```matlab
+CONFIG.glider = 'sgXXX'; % glider serial number
+CONFIG.mission = 'Location_Mon20XX'; % mission identifier defined in sg_calib_constants.m 
+CONFIG.sgVer = XX.XX; % 66.12 or 67.0, firmware version displayed on glider start up
+CONFIG.tmd = XX; % target mission duration in days
+
+% define paths
+% mission path - path to umbrella folder that either contains previously 
+%                downloaded basestation and output files or will contain 
+%                downloaded and processed/produced files and figures
+CONFIG.path.mission = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
+% analysis path - optional path to an 'analysis' folder that would typically
+%                 contain the outputs of acoustic analyses (e.g., Pamguard
+%                 or Triton)
+CONFIG.path.analysis = 'C:\Users\User.Name\project\analysis';
+```
+
+#### Optional basestation settings
+
+```matlab
+% %%%% OPTIONAL - basestation %%%%%%%%%%%%%%%
+% specify basestation configuration file
+CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
+% specify path to store downloaded basestation files
+CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
+```
+
+#### Optional acoustics settings
+
+Various settings required to operate an acoustic system or to process acoustic data after a mission is over. Depending on which acoustic system is installed, only PMAR or WISPR settings are needed. Unneeded lines can be deleted or ignored by adding a `%` at the start of the line.
+
+```matlab
+% %%%% OPTIONAL - acoustics %%%%%%%%%%%%%%%%%
+```
+
+For PMAR, some settings are required during a mission to track remaining memory available. The conversion settings are only required after a mission is complete to convert .dat to .wav and should be turned off after conversion is done. The processing and analysis settings are only needed after a mission is complete. 
+
+```matlab
+% PMAR settings
+CONFIG.pm.loggers = 0; % 1 for active, 0 for inactive
+CONFIG.pm.activeCard = 0; % current active card; optional for sgVer 66.12 
+                          % (will be updated in log file automatically);
+                          % necessary to update throughout mission for sgVer 67.0
+CONFIG.pm.numCards = 4; % total number loaded SD cards
+% after mission is complete, set below for raw .dat file conversion
+CONFIG.pm.convert = 0; % 0 during mission or analysis, set 1 to run conversion
+CONFIG.pm.convCnfFile = fullfile(CONFIG.path.mission, 'PMARConvert_sgXXX_Location_MonYYYY.cnf');
+% after mission is complete, set below for data processing/analysis
+CONFIG.pm.fileLength = 600; % in seconds
+CONFIG.pm.sampleRate = 180260; % sample rate
+CONFIG.pm.dateFormat = 'yyMMdd-HHmmss.SSS';
+CONFIG.pm.dateStart = 19; % what character of file name starts the date format
+% example file name: sg639_MHI_Apr2023_230411-185050.484.wav
+```
+
+WISPR settings are only required for processing and analysis after a mission is complete; there is no piloting interaction with the WISPR system at this time.  
+
+```matlab
+% WISPR settings
+% only needed after mission is complete (no piloting functionality for WISPR)
+CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
+CONFIG.ws.fileLength = 60; % in seconds
+CONFIG.ws.sampleRate = 180000; % sample rate
+CONFIG.ws.dateFormat = 'yyMMdd_HHmmss';
+CONFIG.ws.dateStart = 7; % what character of file name starts the date format
+% example file name: WISPR_230504_202206.wav
+```
+
+#### Optional plotting settings
+
+If using __*agate*__ for plotting during a mission or for analysis and processing after, it is useful to set some plot settings and paths so they don't have to be repeatedly manually modified. 
+
+```matlab
+% %%%% OPTIONAL - plotting %%%%%%%%%%%%%%%%%%
+```
+
+For mapping: 
+
+```matlab
+% maps
+% path to basemap files (land shape files and bathymetry rasters)
+CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
+% optional: can specify full path to bathymetry file, otherwise agate 
+% will prompt to select file
+CONFIG.map.bathyFile =  'C:\Users\User.Name\Documents\GIS\etopo\etopo1_ice_g_i2.bin';
+% define map extents and location of map elements
+CONFIG.map.latLim = [000.00 000.00];
+CONFIG.map.lonLim = [-000.00 -000.00];
+CONFIG.map.naLat = 00.00; % optional arguments for north arrow location on map; 
+                          % leave empty '[]' for no north arrow
+CONFIG.map.naLon = 000.00;
+CONFIG.map.scalePos = [0 0]; % optional arguments for scale bar location 
+                             % and ticks, leave empty '[]' for no scale bar
+CONFIG.map.scaleMajor = [0:50:100];
+CONFIG.map.scaleMinor = [0:12.5:25];
+```
+
+For piloting related plots:
+
+```matlab
+% piloting plot settings
+% pre allocate fig numbers so figures are updated rather than created new
+CONFIG.plots.figSeed = 111; % suggest using the glider serial e.g., 639
+CONFIG.plots.figNumList = CONFIG.plots.figSeed + [0 1 2 3 4 5 6 7 8 9]; 
+% figNumList (1) = battery, (2) = voltagePackUse, (3) = humidity
+% and pressure, (4) = map, (5) = zoomed map, (6) = minimum voltage, 
+% (7) = voltage normalized, (8) = ERMA detections, (9) = ERMA reference
+
+% load plot positions 
+% load('C:\Users\User.Name\Documents\gliders\figPositions.mat');
+% CONFIG.plots.positions = positions;
+```
+
+<sub>[Back to top](#)</sub>
+
 ## Basestation configuration file
 
-The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the 'agate/settings' folder: [`basestation.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation.cnf). 
+The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the `agate/settings` folder: [`basestation_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation_example.cnf). 
 
 This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group's basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the following lines, with the inputs updated for a particular basestation:
 
-```default
+```matlab
 CONFIG.bs.host = 'url.com';
 CONFIG.bs.username = 'pilot';
 CONFIG.bs.password = 'PsWrD';
@@ -39,14 +160,14 @@ CONFIG.bs.password = 'PsWrD';
 
 ## Acoustic conversion configuration files
 
-A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial call to `agate` and the mission configuration. 
+A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial `agate` call and the mission configuration. 
 
 
 ### PMAR conversion configuration file
 
-An example configuration file is located in the 'agate/settings' folder: [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)
+An example configuration file is located in the `agate/settings` folder: [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)
 
-Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `pm` structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings. 
+Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `pm` structure. All the changeable parameters are listed/grouped at the top, but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings. 
 
 
 - `CONFIG.pm.inDir`: path to raw PMAR `.dat` files. These can be within subdirectories by dive (the default write method of PMAR)
@@ -63,7 +184,9 @@ Lines starting with `%` are comments. All parameters are added to the existing `
 
 ### WISPR conversion configuration file
 
-An example configuration file is located in the 'agate/settings' folder: [`wisprConvert_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/wisprConvert_example.cnf)
+**UNDER CONSTRUCTION**
+
+An example configuration file is located in the `agate/settings` folder: [`wisprConvert_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/wisprConvert_example.cnf)
 
 Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `ws` structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings. 
 
