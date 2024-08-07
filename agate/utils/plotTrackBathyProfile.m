@@ -104,7 +104,7 @@ end
 	'CoordinateSystemType', 'geographic');
 
 % interpolate locations/depths
-[zq,distq,latq,lonq] = mapprofile(Z, refvec, targets.lat, targets.lon);
+[zq, distq, latq, lonq] = mapprofile(Z, refvec, targets.lat, targets.lon);
 distq_km = distq/1000;
 
 % find indices of waypoints only
