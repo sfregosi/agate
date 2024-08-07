@@ -1,8 +1,8 @@
-function setCONFIG(missionCnf)
-%SETCONFIG Set up global CONFIG structure for agate
+function CONFIG = setCONFIG(CONFIG)
+%SETCONFIG Set up CONFIG structure for agate
 %
 %   Syntax:
-%      CONFIG = SETCONFIG
+%      CONFIG = SETCONFIG(CONFIG)
 %
 %   Description:
 %       Called from the agate initialization. Sets the default
@@ -10,11 +10,11 @@ function setCONFIG(missionCnf)
 %       present in the settings folder
 %
 %   Inputs:
-%      input    none
-%
+%       CONFIG  [struct] containing all the user-set configurations such as
+%               paths, basestation login info, etc
 %   Outputs:
-%       CONFIG  Global structure containing all the user-set configurations
-%               such as paths, basestation login info, etc
+%       CONFIG  [struct] containing all the user-set configurations such as
+%               paths, basestation login info, etc
 %
 %   Examples:
 %
@@ -27,24 +27,10 @@ function setCONFIG(missionCnf)
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
 %   FirstVersion: 	06 April 2023
-%   Updated:        11 April 2024
+%   Updated:        06 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-global CONFIG
-
-% set defaults in case no config file
-% % paths
-% CONFIG.path.shp = 'C:\Users\User.Name\Documents\GIS\';
-% CONFIG.path.survey = 'C:\Desktop\glider_mission\';
-% % basestation configuration
-% CONFIG.bs.cnfFile = 'basestation.cnf';
-% CONFIG.bs.host = 'url.com';
-% CONFIG.bs.username = 'pilot';
-% CONFIG.bs.password = 'PsWrD';
-
 
 % update based on user-defined configuration file if it exists
 
@@ -57,22 +43,19 @@ if isempty(CONFIG.missionCnf)
 else
 	% check if full file or just parts
 	[path, ~, ~] = fileparts(CONFIG.missionCnf);
-	if ~isempty(path)
-		CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
-		parseCnf(CONFIG.missionCnf);
-	else % no path specified
+	if isempty(path) % no path specified
 		% default location is within agate\settings folder, so try that
 		CONFIG.missionCnf = fullfile(CONFIG.path.settings, CONFIG.missionCnf);
 		% otherwise prompt to select one
-		if ~exist(missionCnf, 'file')
+		if ~exist(CONFIG.missionCnf, 'file')
 			[name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], ...
 				'Select survey configuration file');
 			CONFIG.missionCnf = fullfile(path, name);
 		end
 	end
 end
-CONFIG.path.cnfFid = fopen(CONFIG.missionCnf,'r');
-parseCnf(CONFIG.missionCnf);
+% CONFIG.path.cnfFid = fopen(CONFIG.missionCnf, 'r');
+CONFIG = parseCnf(CONFIG.missionCnf, CONFIG);
 CONFIG.gmStr = [CONFIG.glider '_' CONFIG.mission];
 
 % if basestation 'bs' configurations exist
@@ -84,8 +67,7 @@ if isfield(CONFIG, 'bs')
 			'Select basestation configuration file');
 		CONFIG.bs.cnfFile = fullfile(path, name);
 	end
-	% CONFIG.bs.cnfFid = fopen(CONFIG.bs.cnfFile,'r');
-	parseCnf(CONFIG.bs.cnfFile);
+	CONFIG = parseCnf(CONFIG.bs.cnfFile, CONFIG);
 end
 
 % if pm configurations exist
@@ -96,7 +78,7 @@ if isfield(CONFIG, 'pm') && (CONFIG.pm.loggers == 1) && (CONFIG.pm.convert == 1)
 			'Select PMAR convert configuration file');
 		CONFIG.pm.cnfFile = fullfile(path, name);
 	end
-	parseCnf(CONFIG.pm.cnfFile);
+	CONFIG = parseCnf(CONFIG.pm.cnfFile, CONFIG);
 end
 end
 
@@ -104,9 +86,7 @@ end
 function CONFIG = parseCnf(userCnf, CONFIG)
 % parse info from .cnf text files
 
-global CONFIG
-
-fid = fopen(userCnf,'r');
+fid = fopen(userCnf, 'r');
 if fid == -1
 	fprintf(1, 'No file selected. Exiting.\n')
 	return

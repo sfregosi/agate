@@ -76,9 +76,11 @@ The `makeTargetsFile` function will read in an existing `.kml` (that contains a 
 
 Waypoint names can be generated one of three ways:
 
-**(1) prefix**: specify a character string prefix in the function call and alphanumeric names will be created automatically. 
-**(2) file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate/example_workflows/waypointNames.txt`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/waypointNames.txt)
-**(3) manual**: waypoint names are manually entered in the Command window within the function call
+**1. prefix**: specify a character string prefix in the function call and alphanumeric names will be created automatically. 
+
+**2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate/example_workflows/waypointNames.txt`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/waypointNames.txt)
+
+**3. manual**: waypoint names are manually entered in the Command window within the function call
 
 ```matlab
 % specify file name to .kml path
@@ -148,6 +150,8 @@ export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 ### Plot bathymetry profile
 
 It can be useful to have a profile of the bathymetry the planned track will traverse, to highlight periods where the glider's target dive depth may need to be adjusted more shallow, or can be extended deeper. 
+
+See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
 
 An indicator line (dashed red line) will be plotted at 990 m as the default (max `$D_TGT` for Seagliders) but can be specified to a different value with the `yLine` argument. 
 
