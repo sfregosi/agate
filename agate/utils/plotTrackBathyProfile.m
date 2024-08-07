@@ -2,7 +2,7 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 % PLOTTRACKBATHYPROFILE	Create bathymetric profile for planned targets
 %
 %   Syntax:
-%       OUTPUT = PLOTTRACKBATHYPROFILE(CONFIG, TARGETSFILE, BATHYFILE, YLINE, FIGNUM)
+%       OUTPUT = PLOTTRACKBATHYPROFILE(CONFIG, TARGETSFILE, YLINE, FIGNUM)
 %
 %   Description:
 %       Create a plot of the bathymetric profile along a targets file to
@@ -18,7 +18,9 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 %       targetsFile   [string] optional argument to targets file. If no file
 %                     specified, will prompt to select one, and if no path
 %                     specified, will prompt to select path
-%       yLine         [vector] optional argument to set depth to place 
+%                     [table] alternatively can just reference a targets
+%                     table that has already been read in to the workspace
+%       yLine         [vector] optional argument to set depth to place
 %                     horizontal indicator line; default is 990 m
 %       figNum        optional argument defining figure number so it
 %                     doesn't keep making new figs but refreshes existing
@@ -43,6 +45,7 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 if nargin < 4
 	figNum = 211;
 end
+
 if nargin < 3
 	figNum = 211;
 	yLine = -990;
@@ -58,17 +61,19 @@ if nargin < 2
 end
 
 % check that targetsFile exists if specified, otherwise prompt to select
-if ~exist(targetsFile, 'file')
-	fprintf(1, 'Specified targetsFile does not exist. Select targets file to continue.\n');
-	[fileName, filePath] = uigetfile([CONFIG.path.mission, '*.*'], ...
-		'Select targets file');
-	targetsFile = fullfile(filePath, fileName);
-	fprintf('targets file selected: %s\n', fileName);
-
+if ischar(targetsFile)
+	if ~exist(targetsFile, 'file')
+		fprintf(1, 'Specified targetsFile does not exist. Select targets file to continue.\n');
+		[fileName, filePath] = uigetfile([CONFIG.path.mission, '*.*'], ...
+			'Select targets file');
+		targetsFile = fullfile(filePath, fileName);
+		fprintf('targets file selected: %s\n', fileName);
+	end
+	% read in targets file
+	[targets, ~] = readTargetsFile(CONFIG, targetsFile);
+elseif istable(targetsFile)
+	targets = targetsFile;
 end
-
-% read in targets file
-[targets, ~] = readTargetsFile(CONFIG, targetsFile);
 
 % estimate cumulative track length
 targets.cumDist_km = zeros(height(targets), 1);
@@ -147,7 +152,7 @@ hold on;
 scatter(targets.cumDist_km, targets.depth, 10, 'k', 'filled')
 % label the waypoints
 text(targets.cumDist_km + max(targets.cumDist_km)*.006, targets.depth - 100, ...
-	targets.name, 'FontSize', 10);	
+	targets.name, 'FontSize', 10);
 yline(yLine, '--', 'Color', '#900C3F');
 grid on;
 hold off;
