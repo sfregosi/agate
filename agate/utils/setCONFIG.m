@@ -27,7 +27,7 @@ function CONFIG = setCONFIG(CONFIG)
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
 %   FirstVersion: 	06 April 2023
-%   Updated:        06 August 2024
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

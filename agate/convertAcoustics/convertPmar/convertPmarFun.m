@@ -17,7 +17,7 @@ function convertPmarFun(CONFIG)
 
 % Dave Mellinger
 % Oregon State Univ.
-% last modified 2024 02 28 S. Fregosi selene.fregosi@gmail.com
+% last modified 2024 08 07 S. Fregosi selene.fregosi@gmail.com
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%% Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

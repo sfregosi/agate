@@ -20,11 +20,6 @@
 %       information on creating a path in Google Earth can be found at 
 %       https://sfregosi.github.io/agate-public/mission-planning.html#create-planned-track-using-google-earth-pro
 %
-%	See also
-%
-%   TO DO:
-%       [ ] simplify how header information is input/updated (have it all
-%           be changed in one place in the script instead of several lines
 %
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>

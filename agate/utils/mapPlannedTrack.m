@@ -48,7 +48,7 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   22 March 2023
-%   Updated:        25 May 2023
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

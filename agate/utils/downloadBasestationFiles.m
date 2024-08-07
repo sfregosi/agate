@@ -39,7 +39,7 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:        02 June 2023
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
