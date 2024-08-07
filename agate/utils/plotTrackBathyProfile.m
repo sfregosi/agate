@@ -8,10 +8,20 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 %       Create a plot of the bathymetric profile along a targets file to
 %       get an overview of the bathymetry the planned track will cover and
 %       identify areas where the bathymetry is less than 1000 m. A targets
-%       file is read in, interpolated at 0.1 decimal degree resolution, and
-%       bathymetric depths are extracted from an etopo raster (or other
-%       specified bathymetric raster). Interpolated points as well as
-%       depths at actual targets waypoints are plotted.
+%       file and bathymetry raster are loaded and interpolated to pull the
+%       seafloor depth along the targets file trackline. Depths along the
+%       trackline are plotted as well as actual targets waypoints.
+%       Interpolation between the waypoints is done using the great circle
+%       distance and the reference ellipsoid specified by the loaded raster
+%       (WGS84 if using an NCEI ETOPO tiff)
+%
+%       Note: The total distance is slightly different than the distance
+%       calculated using lldistkm. lldistkm uses the Haversine formula
+%       which calculates great circle distance of a sphere with radius 6371
+%       km. The mapprofile function calculates great circle distance using
+%       a reference ellipsoid (WGS84 for NCEI ETOPO tiffs) so is slightly
+%       more accurate but should only be off a few km at the scale of
+%       typical glider missions.
 %
 %   Inputs:
 %       CONFIG        [struct] agate configuration settings from .cnf
@@ -36,7 +46,7 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   10 May 2023
-%   Updated:        06 August 2024
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,21 +85,6 @@ elseif istable(targetsFile)
 	targets = targetsFile;
 end
 
-% estimate cumulative track length
-targets.cumDist_km = zeros(height(targets), 1);
-for f = 2:height(targets)
-	targets.cumDist_km(f) = targets.cumDist_km(f-1) + ...
-		lldistkm([targets.lat(f-1) targets.lon(f-1)], [targets.lat(f) targets.lon(f)]);
-end
-
-% interpolate between targets at 0.1 dec deg resolution
-ti = table;
-ti.lat = interp1(targets.lat, 1:0.1:length(targets.lat))';
-ti.lon = interp1(targets.lon, (1:0.1:length(targets.lon))');
-ti.cumDist_km = interp1(targets.cumDist_km, 1:0.1:length(targets.lat))';
-ti.depth = nan(height(ti), 1);
-
-
 % check for bathy file or select if not specified/doesn't exist
 if isfield(CONFIG.map, 'bathyFile')
 	bathyFile = CONFIG.map.bathyFile;
@@ -104,38 +99,21 @@ elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file') % prompt t
 	bathyFile = fullfile(path, fn);
 end
 
-% read in and crop bathymetry data
+% read in bathymetry data
 [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
 	'CoordinateSystemType', 'geographic');
-[Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
 
-% Pull out lat/lon vectors from refvec
-% use 0.5*cell extent to get midpoints of each cell
-Zlat = [refvec.LatitudeLimits(1)+0.5*refvec.CellExtentInLatitude: ...
-	refvec.CellExtentInLatitude:refvec.LatitudeLimits(2)]';
-Zlat = flipud(Zlat); % have to flip bc small latitudes are at poles
-Zlon = [refvec.LongitudeLimits(1)+0.5*refvec.CellExtentInLongitude: ...
-	refvec.CellExtentInLongitude:refvec.LongitudeLimits(2)]';
+% interpolate locations/depths
+[zq,distq,latq,lonq] = mapprofile(Z, refvec, targets.lat, targets.lon);
+distq_km = distq/1000;
 
-% loop through interpolated lat/lons and pull depth at closest Z cell
-for f = 1:height(ti)
-	[mLat, idxLat] = min(abs(Zlat-ti.lat(f)));
-	[mLon, idxLon] = min(abs(Zlon-ti.lon(f)));
-	% make sure the mins are below the cell extent
-	if mLat <= refvec.CellExtentInLatitude && mLon <= refvec.CellExtentInLongitude
-		ti.depth(f) = Z(idxLat, idxLon);
-	end
-end
-
-% repeat for just the waypoints
-targets.depth = nan(height(targets), 1);
+% find indices of waypoints only
+targets.dist_km = zeros(height(targets), 1);
+targets.depth_m = nan(height(targets), 1);
 for f = 1:height(targets)
-	[mLat, idxLat] = min(abs(Zlat-targets.lat(f)));
-	[mLon, idxLon] = min(abs(Zlon-targets.lon(f)));
-	% make sure the mins are below the cell extent
-	if mLat <= refvec.CellExtentInLatitude && mLon <= refvec.CellExtentInLongitude
-		targets.depth(f) = Z(idxLat, idxLon);
-	end
+	wpIdx = find(latq == targets.lat(f) & lonq == targets.lon(f));
+	targets.dist_km(f) = distq_km(wpIdx);
+	targets.depth_m(f) = zq(wpIdx);
 end
 
 % set up figure
@@ -147,22 +125,74 @@ fig.Position = [100   50   900    300];
 clf
 cla reset;
 
-plot(ti.cumDist_km, ti.depth, 'k:');
+plot(distq_km, zq, 'k:');
 hold on;
-scatter(targets.cumDist_km, targets.depth, 10, 'k', 'filled')
+scatter(targets.cumDist_km, targets.depth_m, 10, 'k', 'filled')
 % label the waypoints
-text(targets.cumDist_km + max(targets.cumDist_km)*.006, targets.depth - 100, ...
+text(targets.dist_km + max(targets.dist_km)*.006, targets.depth_m - 100, ...
 	targets.name, 'FontSize', 10);
 yline(yLine, '--', 'Color', '#900C3F');
 grid on;
 hold off;
 
 xlabel('track length [km]')
-ylim([round(min(ti.depth) + min(ti.depth)*.1) 10])
-xlim([0 round(targets.cumDist_km(end) + targets.cumDist_km(end)*.05)])
+ylim([round(min(zq) + min(zq)*.1) 10])
+xlim([0 round(targets.dist_km(end) + targets.dist_km(end)*.05)])
 ylabel('depth [m]')
 set(gca, 'FontSize', 12)
 title(sprintf('%s %s %s', CONFIG.glider, CONFIG.mission, ...
 	'Targets Bathymetry Profile'), 'Interpreter', 'none')
+
+
+
+
+% OLD MANUAL METHOD
+% [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
+
+% % Pull out lat/lon vectors from refvec
+% % use 0.5*cell extent to get midpoints of each cell
+% Zlat = [refvec.LatitudeLimits(1)+0.5*refvec.CellExtentInLatitude: ...
+% 	refvec.CellExtentInLatitude:refvec.LatitudeLimits(2)]';
+% Zlat = flipud(Zlat); % have to flip bc small latitudes are at poles
+% Zlon = [refvec.LongitudeLimits(1)+0.5*refvec.CellExtentInLongitude: ...
+% 	refvec.CellExtentInLongitude:refvec.LongitudeLimits(2)]';
+%
+% % estimate cumulative track length
+% targets.cumDist_km = zeros(height(targets), 1);
+% for f = 2:height(targets)
+% 	targets.cumDist_km(f) = targets.cumDist_km(f-1) + ...
+% 		lldistkm([targets.lat(f-1) targets.lon(f-1)], [targets.lat(f) targets.lon(f)]);
+% end
+%
+% % interpolate between targets at 0.1 dec deg resolution
+% ti = table;
+% ti.lat = interp1(targets.lat, 1:0.1:length(targets.lat))';
+% ti.lon = interp1(targets.lon, (1:0.1:length(targets.lon))');
+% ti.cumDist_km = interp1(targets.cumDist_km, 1:0.1:length(targets.lat))';
+% ti.depth = nan(height(ti), 1);
+%
+%
+% % loop through interpolated lat/lons and pull depth at closest Z cell
+% for f = 1:height(ti)
+% 	[mLat, idxLat] = min(abs(Zlat-ti.lat(f)));
+% 	[mLon, idxLon] = min(abs(Zlon-ti.lon(f)));
+% 	% make sure the mins are below the cell extent
+% 	if mLat <= refvec.CellExtentInLatitude && mLon <= refvec.CellExtentInLongitude
+% 		ti.depth(f) = Z(idxLat, idxLon);
+% 	end
+% end
+% 
+% % repeat for just the waypoints
+% targets.depth = nan(height(targets), 1);
+% for f = 1:height(targets)
+% 	[mLat, idxLat] = min(abs(Zlat-targets.lat(f)));
+% 	[mLon, idxLon] = min(abs(Zlon-targets.lon(f)));
+% 	% make sure the mins are below the cell extent
+% 	if mLat <= refvec.CellExtentInLatitude && mLon <= refvec.CellExtentInLongitude
+% 		targets.depth(f) = Z(idxLat, idxLon);
+% 	end
+% end
+
+
 
 end
