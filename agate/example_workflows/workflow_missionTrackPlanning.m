@@ -9,7 +9,7 @@
 %       (2) creates a high quality planned mission map
 %       (3) creates a plot of the bathymetry profile along the targets
 %       track 
-%       (4) exports a .csv of 5-km spaced trackpoints for estimating
+%       (4) exports a .csv of approx 5-km spaced trackpoints for estimating
 %       arrival dates/times
 %       (5) calculates full planned track distance and distance to end from
 %       each waypoint for mission duration estimation
@@ -105,6 +105,8 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
 interpTrack = interpolatePlannedTrack(CONFIG, targetsFile, 5);
 % the spacing will not be perfectly at 5 km, but will break each track
 % segment up into the number of points to be near 5 km betwee each
+% If spacing is required to be more exact, it needs to be done in a
+% GIS program (QGIS or ArcGIS) using the line splitting tools
 
 % write to csv
 writetable(interpTrack, fullfile(CONFIG.path.mission, ...
