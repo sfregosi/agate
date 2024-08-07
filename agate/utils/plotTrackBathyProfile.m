@@ -127,7 +127,7 @@ cla reset;
 
 plot(distq_km, zq, 'k:');
 hold on;
-scatter(targets.cumDist_km, targets.depth_m, 10, 'k', 'filled')
+scatter(targets.dist_km, targets.depth_m, 10, 'k', 'filled')
 % label the waypoints
 text(targets.dist_km + max(targets.dist_km)*.006, targets.depth_m - 100, ...
 	targets.name, 'FontSize', 10);
