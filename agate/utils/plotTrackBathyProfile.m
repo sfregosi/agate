@@ -1,8 +1,8 @@
-function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, yLine, figNum)
+function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 % PLOTTRACKBATHYPROFILE	Create bathymetric profile for planned targets
 %
 %   Syntax:
-%       OUTPUT = PLOTTRACKBATHYPROFILE(CONFIG, TARGETSFILE)
+%       OUTPUT = PLOTTRACKBATHYPROFILE(CONFIG, TARGETSFILE, BATHYFILE, YLINE, FIGNUM)
 %
 %   Description:
 %       Create a plot of the bathymetric profile along a targets file to
@@ -14,7 +14,7 @@ function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, yLine, figNum)
 %       depths at actual targets waypoints are plotted.
 %
 %   Inputs:
-%       CONFIG        [struct] agate global configuration settings from .cnf
+%       CONFIG        [struct] agate configuration settings from .cnf
 %       targetsFile   [string] optional argument to targets file. If no file
 %                     specified, will prompt to select one, and if no path
 %                     specified, will prompt to select path
@@ -23,7 +23,7 @@ function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, yLine, figNum)
 %       figNum        optional argument defining figure number so it
 %                     doesn't keep making new figs but refreshes existing
 %
-%	Outputs:
+%   Outputs:
 %       none, creates figure
 %
 %   Examples:
@@ -34,36 +34,18 @@ function plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, yLine, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   10 May 2023
-%   Updated:        01 June 2023
+%   Updated:        06 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-global CONFIG
-
 % argument checks
-if nargin < 5
-	figNum = 211;
-end
 if nargin < 4
 	figNum = 211;
-	yLine = -990;
 end
-
-% use default bathy if none specified
-if nargin < 3 || isempty(bathyFile)
-	% try this default
-	if isfield(CONFIG.path, 'shp')
-		shpDir = CONFIG.path.shp;
-	else
-		shpDir = 'C:\';
-	end
-	bathyFile = fullfile(shpDir, 'etopo', 'ETOPO2022_v1_60s_N90W180_surface.tif');
-	if nargin < 3 % also need to set these
-		figNum = 211;
-		yLine = -990;
-	end
+if nargin < 3
+	figNum = 211;
+	yLine = -990;
 end
 
 % select targetsFile if none specified
@@ -86,7 +68,7 @@ if ~exist(targetsFile, 'file')
 end
 
 % read in targets file
-[targets, targetsFile] = readTargetsFile(CONFIG, targetsFile);
+[targets, ~] = readTargetsFile(CONFIG, targetsFile);
 
 % estimate cumulative track length
 targets.cumDist_km = zeros(height(targets), 1);
@@ -97,17 +79,26 @@ end
 
 % interpolate between targets at 0.1 dec deg resolution
 ti = table;
-ti.lat = interp1(targets.lat, [1:0.1:length(targets.lat)])';
-ti.lon = interp1(targets.lon, [1:0.1:length(targets.lon)]');
-ti.cumDist_km = interp1(targets.cumDist_km, [1:0.1:length(targets.lat)])';
+ti.lat = interp1(targets.lat, 1:0.1:length(targets.lat))';
+ti.lon = interp1(targets.lon, (1:0.1:length(targets.lon))');
+ti.cumDist_km = interp1(targets.cumDist_km, 1:0.1:length(targets.lat))';
 ti.depth = nan(height(ti), 1);
 
 
-% check that specified bathymetric file exists
-if ~exist(bathyFile, 'file')
-	[fn, path] = uigetfile([shpDir '*.tif;*.tiff'], 'Select etopo .tif file');
+% check for bathy file or select if not specified/doesn't exist
+if isfield(CONFIG.map, 'bathyFile')
+	bathyFile = CONFIG.map.bathyFile;
+elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file') % prompt to choose file
+	if isfield(CONFIG.path, 'shp')
+		shpDir = CONFIG.path.shp;
+	else
+		shpDir = 'C:\';
+	end
+	[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+		'Select bathymetry raster file');
 	bathyFile = fullfile(path, fn);
 end
+
 % read in and crop bathymetry data
 [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
 	'CoordinateSystemType', 'geographic');
@@ -120,7 +111,6 @@ Zlat = [refvec.LatitudeLimits(1)+0.5*refvec.CellExtentInLatitude: ...
 Zlat = flipud(Zlat); % have to flip bc small latitudes are at poles
 Zlon = [refvec.LongitudeLimits(1)+0.5*refvec.CellExtentInLongitude: ...
 	refvec.CellExtentInLongitude:refvec.LongitudeLimits(2)]';
-
 
 % loop through interpolated lat/lons and pull depth at closest Z cell
 for f = 1:height(ti)
@@ -156,14 +146,15 @@ plot(ti.cumDist_km, ti.depth, 'k:');
 hold on;
 scatter(targets.cumDist_km, targets.depth, 10, 'k', 'filled')
 % label the waypoints
-text(targets.cumDist_km + sum(targets.cumDist_km)*.006, targets.depth - 100, ...
+text(targets.cumDist_km + max(targets.cumDist_km)*.006, targets.depth - 100, ...
 	targets.name, 'FontSize', 10);	
 yline(yLine, '--', 'Color', '#900C3F');
 grid on;
 hold off;
 
 xlabel('track length [km]')
-ylim([-round((max(Z(:)) + max(Z(:))*.1)) 10])
+ylim([round(min(ti.depth) + min(ti.depth)*.1) 10])
+xlim([0 round(targets.cumDist_km(end) + targets.cumDist_km(end)*.05)])
 ylabel('depth [m]')
 set(gca, 'FontSize', 12)
 title(sprintf('%s %s %s', CONFIG.glider, CONFIG.mission, ...
