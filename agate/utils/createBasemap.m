@@ -1,8 +1,8 @@
-function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum, outFig)
+function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
 % CREATEBASEMAP	Create a basemap of the bathymetry for the mission area
 %
 %   Syntax:
-%       OUTPUT = CREATEBASEMAP(CONFIG, OUTFIG)
+%       BASEFIG = CREATEBASEMAP(CONFIG, BATHYON, CONTOURON, FIGNUM, OUTFIG)
 %
 %   Description:
 %       Function to create a basemap for a glider mission, using the lat
@@ -13,7 +13,7 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum, outFig)
 %       added to (add glider path, labels, and acoustic encounters).
 %
 %   Inputs:
-%       CONFIG      [struct] mission/agate global configuration variable.
+%       CONFIG      [struct] mission/agate configuration variable.
 %                   Required fields: CONFIG.map entries
 %       bathyOn     [double] set to 1 to plot bathymetry or 0 to only plot
 %                   land
@@ -21,14 +21,13 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum, outFig)
 %                   no contour lines
 %       figNum      [double] optional to specify figure number so won't
 %                   create repeated versions when updated
-%       outFig      [string] optional argument to save the .fig
 %
 %   Outputs:
 %       baseFig     [handle] figure handle
 %
 %   Examples:
-%       % Create a basemap that includes bathymetry, do not save output
-%       createBasemap(CONFIG, 1);
+%       % Create a basemap that includes bathymetry but no contour lines
+%       baseFig = createBasemap(CONFIG, 1, 0);
 %
 %   See also
 %
@@ -36,7 +35,7 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum, outFig)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   09 March 2024
-%   Updated:        22 July 2024
+%   Updated:        06 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,13 +43,7 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum, outFig)
 %%%%%%%%%%%%%%
 % for testing
 % figNum = 82;
-% outFig = [];
 %%%%%%%%%%%%%%
-
-% save output fig or not
-if nargin < 5
-	outFig = [];
-end
 
 % specify a figure number
 if nargin < 4
@@ -85,7 +78,7 @@ tightmap
 % add north arrow - if location specified
 if isfield(CONFIG.map, 'naLat') && isfield(CONFIG.map, 'naLon')
 	CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
-		CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
+		CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [0 0 0]);
 end
 if isfield(CONFIG.map, 'scalePos')
 	scaleruler on
@@ -109,7 +102,6 @@ if contourOn == 1 || bathyOn == 1 % if either, load raster data
 		[fn, path] = uigetfile(fullfile(CONFIG.path.shp, '*.tif;*.tiff'), ...
 			'Select etopo raster file');
 		bathyFile = fullfile(path, fn);
-
 	end
 	[Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
 		'CoordinateSystemType', 'geographic');
@@ -150,12 +142,6 @@ end
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
 	'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
 geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
-
-
-%% save as .fig
-if ~isempty(outFig)
-	savefig(outFig);
-end
 
 end
 
