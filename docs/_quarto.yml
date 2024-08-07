@@ -38,8 +38,8 @@ website:
         text: Configuration guide
       - href: plotting-functions.qmd
         text: Plots
-      - href: survey-planning.qmd
-        text: Survey planning
+      - href: mission-planning.qmd
+        text: Mission planning
       - href: piloting-functions.qmd
         text: Piloting
       - href: convert-acoustics.qmd

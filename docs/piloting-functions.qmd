@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 library(fontawesome)
 ```
 
-This page is meant to demonstrate some suggested workflows and examples of how the piloting functions may be used in an active survey to help the pilot download basestation files, create monitoring plots, and monitor mission progress.
+This page is meant to demonstrate some suggested workflows and examples of how the piloting functions may be used in an active mission to help the pilot download basestation files, create monitoring plots, and monitor mission progress.
 
 All code on this page combined in the [`workflow_downloadScript.m`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_downloadScript.m) in the 'example_workflows' folder within the 'agate-public/agate' folder. 
 

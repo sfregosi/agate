@@ -1,22 +1,24 @@
-% WORKFLOW_SURVEYTRACKPLANNING
+% WORKFLOW_MISSIONTRACKPLANNING
 %	Planned mission path kmls to targets file and pretty map
 %
 %	Description:
-%       This script takes a survey track created in Google Earth and saved
-%       as a .kml file and prepares it for the survey
+%       This script takes a planned track created in Google Earth and saved
+%       as a .kml file and prepares it for the mission
 %       (1) creates a properly formatted 'targets' file to be loaded onto
 %       the glider
-%       (2) creates a high quality planned survey map figure
+%       (2) creates a high quality planned mission map
 %       (3) creates a plot of the bathymetry profile along the targets
 %       track 
-%       (4) calculates full planned track distance and distance to end from
+%       (4) exports a .csv of 5-km spaced trackpoints for estimating
+%       arrival dates/times
+%       (5) calculates full planned track distance and distance to end from
 %       each waypoint for mission duration estimation
 %       
 %       This requires access to bathymetric basemaps for plotting and
 %       requires manual creation of the track in Google Earth. Track must
 %       be saved as a kml containing just a single track/path. More
 %       information on creating a path in Google Earth can be found at 
-%       https://sfregosi.github.io/agate-public/survey-planning.html#create-planned-track-using-google-earth-pro
+%       https://sfregosi.github.io/agate-public/mission-planning.html#create-planned-track-using-google-earth-pro
 %
 %	See also
 %
@@ -28,7 +30,7 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	05 April 2023
-%	Updated:        06 August 2024
+%	Updated:        07 August 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,7 +104,21 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
 	CONFIG.mission, '_targetsBathymetryProfile_' targetsName, '.png']), ...
     'Resolution', 300)
 
-%% (4) Calculate track distance and mission duration
+%% (4) Export interpolated track points
+
+% create interpolated trackpoints every approx 5 km
+interpTrack = interpolatePlannedTrack(CONFIG, targetsFile, 5);
+% the spacing will not be perfectly at 5 km, but will break each track
+% segment up into the number of points to be near 5 km betwee each
+
+% write to csv
+writetable(interpTrack, fullfile(CONFIG.path.mission, ...
+	['trackPoints_', targetsName, '.csv']));
+% timing information can now be manually added in Exxcel based on planned
+% deployment date/time and estimated speed
+
+
+%% (5) Calculate track distance and mission duration
 
 % if no targetsFile specified, will prompt to select
 [targets, targetsFile] = readTargetsFile(CONFIG);

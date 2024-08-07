@@ -17,7 +17,7 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %       download_files_cache.txt
 %
 %   Inputs:
-%       CONFIG          Deployment parameters - glider serial num, survey
+%       CONFIG          Deployment parameters - glider serial num, mission
 %                       ID, pmcard
 %       path_bsLocal    Path to directory to save the downloaded files
 %                       locally, e.g., path_bsLocal =

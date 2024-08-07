@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 library(fontawesome)
 ```
 
-This page provides example calls and outputs for each of the plotting functions contained within __*agate*__. There are plotting functions that may be useful during survey planning, active piloting, and in post-processing and analysis, and the plots are grouped by those categories below.
+This page provides example calls and outputs for each of the plotting functions contained within __*agate*__. There are plotting functions that may be useful during mission planning, active piloting, and in post-processing and analysis, and the plots are grouped by those categories below.
 
 Basic details for each plotting function are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc <function>` or `help <function>` within the MATLAB Command Window.
 

@@ -1,11 +1,11 @@
 function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
-%MAPPLANNEDTRACK Create static map of planned survey track
+%MAPPLANNEDTRACK Create static map of planned mission track
 %
 %   Syntax:
 %       MAPPLANNEDTRACK(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %
 %   Description:
-%       Create a static map of the planned survey track from an input
+%       Create a static map of the planned mission track from an input
 %       targets file. Optional argument to plot bathymetry (requires etopo
 %       raster from NCEI) and land (requires shape files from Natural Earth
 %
@@ -42,7 +42,7 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 %   See also   MAKETARGETSFILE
 %
 %   TO DOs:
-%       - [ ] make possible to plot multiple gliders for one survey
+%       - [ ] make possible to plot multiple gliders for one mission
 % 
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>

@@ -13,7 +13,7 @@ function convertPmarFun(CONFIG)
 % convertPMARFun.m is a functionized version of the convertPmar.m script.
 % it allows for a CONFIG input argument that is created from the
 % pmarConvertConfig_template.m, which is meant to keep configuration for
-% each survey organized in its own file
+% each mission organized in its own file
 
 % Dave Mellinger
 % Oregon State Univ.

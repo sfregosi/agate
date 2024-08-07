@@ -49,7 +49,7 @@ else
 		% otherwise prompt to select one
 		if ~exist(CONFIG.missionCnf, 'file')
 			[name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], ...
-				'Select survey configuration file');
+				'Select mission configuration file');
 			CONFIG.missionCnf = fullfile(path, name);
 		end
 	end
