@@ -14,14 +14,13 @@
 %       
 %       This requires access to bathymetric basemaps for plotting and
 %       requires manual creation of the track in Google Earth. Track must
-%       be saved as a kml containing just a single track/path. To properly 
-%       save: within Google Earth, right click on track name in left panel, 
-%       select save place as, change file type from .kmz to .kml, save
+%       be saved as a kml containing just a single track/path. More
+%       information on creating a path in Google Earth can be found at 
+%       https://sfregosi.github.io/agate-public/survey-planning.html#create-planned-track-using-google-earth-pro
 %
 %	See also
 %
 %   TO DO:
-%       [ ] link to documentation on kml track creation
 %       [ ] simplify how header information is input/updated (have it all
 %           be changed in one place in the script instead of several lines
 %
@@ -29,16 +28,13 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	05 April 2023
-%	Updated:        10 May 2023
+%	Updated:        06 August 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate - either specify a .cnf or leave blank to browse/select
-agate agate_mission_config.cnf
-
-global CONFIG
-
+CONFIG = agate('agate_mission_config.cnf');
 
 %% (1) Generate targets file from Google Earth path saved as .kmml
 
@@ -113,7 +109,7 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
 % OR specify targetsFile variable from above
 [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile);
 
-% loop through all targets (expect RECV), calc distance between waypoints
+% loop through all targets (except RECV), calc distance between waypoints
 for f = 1:height(targets) - 1
     [targets.distToNext_km(f), ~] = lldistkm([targets.lat(f+1) targets.lon(f+1)], ...
         [targets.lat(f) targets.lon(f)]);
