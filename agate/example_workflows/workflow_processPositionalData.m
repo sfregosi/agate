@@ -12,6 +12,19 @@
 %
 %       It requires an agate configuration file during agate initialization
 %
+%   Sections
+%       (0) Initialization - initializes agate with proper config file
+%       (1) Extract positional data - create `locCalcT` and `gpsSurfT` 
+%       tables with glider timing, positions, speed, etc
+%       (2) Simplify positional data into smaller .csvs for to include with
+%       as metadata when sending sound files to NCEI
+%       (3) Plot sound speed profiles
+%       (4) PAM status get more accurate info on recording times and
+%       durations from the files themselves, and update positional data
+%       tables with a flag for PAM on or off at each sample or dive
+%       (5) Extract location data for each individual PAM file
+%       (6) Summarize acoustic effort by minutes, hours, and days
+%
 %	Notes
 %
 %	See also
@@ -21,16 +34,15 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	21 April 2023
-%	Updated:        11 April 2024
+%	Updated:        08 August 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-agate agate_mission_config.cnf % or just agate and select file
-global CONFIG
+CONFIG = agate('agate_mission_config.cnf'); % or just agate and select file
 
-%% extract positional data
+%% (1) Extract positional data
 % This step can take some time to process through all .nc files
 
 [gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 1);
@@ -48,49 +60,65 @@ save(fullfile(CONFIG.path.mission, 'profiles', ...
 writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.csv']));
 
-%% save positional data for packaging for NCEI
+%% (2) Simplify positional data for packaging for NCEI
 
-% gps surface table
+% surface location table
+% load gpsSurfT if not already loaded
 if ~exist('gpsSurfT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
 		[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']));
 end
+
+% clean up columns/names
 keepCols = {'dive', 'startDateTime', 'startLatitude', 'startLongitude', ...
 	'endDateTime', 'endLatitude', 'endLongitude'};
 gpsSurfSimp = gpsSurfT(:,keepCols);
 newNames = {'DiveNumber', 'StartDateTime_UTC', 'StartLatitude', 'StartLongitude', ...
 	'EndDateTime_UTC', 'EndLatitude', 'EndLongitude'};
 gpsSurfSimp.Properties.VariableNames = newNames;
+
+% write to csv
 writetable(gpsSurfSimp, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.glider, '_', CONFIG.mission, '_GPSSurfaceTableSimple.csv']))
 
-% location table
+% claculated location table
+% load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
 		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
 end
+
+% clean up columns/names
 keepCols = {'dateTime', 'latitude', 'longitude', 'depth', 'dive'};
 locCalcSimp = locCalcT(:,keepCols);
 newNames = {'DateTime_UTC', 'Latitude', 'Longitude', 'Depth_m', 'DiveNumber'};
 locCalcSimp.Properties.VariableNames = newNames;
+
+% write to csv
 writetable(locCalcSimp, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.glider, '_', CONFIG.mission, '_CalculatedLocationTableSimple.csv']))
 
 % environmental data
+% load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
 		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
 end
+
+% clean up columns/names
 keepCols = {'dive', 'dateTime', 'latitude', 'longitude', 'depth', ...
 	'temperature', 'salinity', 'soundVelocity', 'density'};
 locCalcEnv = locCalcT(:,keepCols);
 newNames = {'DiveNumber', 'DateTime_UTC', 'Latitude', 'Longitude', 'Depth_m', ...
 	'Temperature_C', 'Salinity_PSU', 'SoundSpeed_m_s', 'Density_kg_m3', };
 locCalcEnv.Properties.VariableNames = newNames;
+
+% write to csv
 writetable(locCalcEnv, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.glider, '_', CONFIG.mission, '_CTD.csv']))
 
-%% plot sound speed profile
+%% (3) Plot sound speed profile
+
 % load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
@@ -98,50 +126,95 @@ if ~exist('locCalcT', 'var')
 end
 
 plotSoundSpeedProfile(CONFIG, locCalcT);
+
+% save as .png and .pdf
 exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.glider, '_', CONFIG.mission, '_SSP.png']))
 exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.glider, '_', CONFIG.mission, '_SSP.pdf']))
 
-%% BELOW SECTIONS ARE NOT YET OPERATIONAL
-% Below called functions are in the 'drafts' folder and need to be adapted
-% for WISPR2 and also updated to new CONFIG system of agate
 
-%% extract acoustic system status for each dive and sample time
+%% (4) Extract acoustic system status for each dive and sample time
 
-% *** NEEDS WORK! *** to be updated to deal with WISPR2 and speed up with
-% PMARXL using .eng files rather than having to read in list of sound files
+% load locCalcT and gpsSurfT if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+end
+if ~exist('gpsSurfT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']));
+end
 
-% % this looks at each recorded file timestamp to populate a 'pam' column
-% % that is added to locCalcT and gpsSurfT that specifies the status of the
-% % pam system for each entry.
-%
-% fileLength = 600; % in seconds
-% dateFormat = 'yyMMdd-HHmmss';
-% dateStart = 1; % what part of file name starts the date format
-%
-% [gpsSurfT, locCalcT, pam] = extractPAMStatusByFile(gldr, lctn, dplymnt, ...
-%     fileLength, dateFormat, dateStart, gpsSurfT, locCalcT);
-% % saved automatically gpsSurfTable_pam.mat and locCalcT_pam.mat and
-% % _pamByFile.mat
+% loop through sound files to gets 'status' for existing positional tables
+[gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(CONFIG, ...
+	gpsSurfT, locCalcT);
+
+fprintf('Total PAM duration: %.2f hours\n', hours(sum(pamFiles.dur, 'omitnan')));
+
+% save updated positional tables and pam tables
+save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider, '_', ...
+	CONFIG.mission, '_pamFiles.mat']), 'pamFiles');
+save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider, '_', ...
+	CONFIG.mission, '_pamByDive.mat']), 'pamByDive');
+
+save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
+	CONFIG.mission '_locCalcT_pam.mat']), 'locCalcT');
+writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.glider '_' CONFIG.mission '_locCalcT_pam.csv']));
+
+save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
+	CONFIG.mission '_gpsSurfaceTable_pam.mat']), 'gpsSurfT');
+writetable(gpsSurfT, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.glider '_' CONFIG.mission '_gpsSurfaceTable_pam.csv']));
 
 
-%% extract positional data for each sound file
-%
-% secs = 180;
-%
-% filePosits = extractPositsPerPAMFile(gldr, lctn, dplymnt, ...
-%     pam, locCalcT,secs, path_profiles);
-%
-% % this saves _pamFilePosits.mat and .csv
+%% (5) Extract positional data for each sound file
 
-%% extract positional data and acoustic effort by minute
+% load locCalcT and pamFiles if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+end
+if ~exist('pamFiles', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_pamFiles.mat']))
+end
 
-% % create byMin, minPerHour, minPerDay matrices for full experiment extent
-% % will need this for comparison down the line
-% [pamByMin, pamMinPerHour, pamMinPerDay] = ...
-%     calcPAMEffort(gldr, lctn, dplymnt, expLimits, gpsSurfT, path_profiles);
-% % this saves _pamByMin.mat
-%
-%
+% set a time buffer around which locations are acceptable
+timeBuffer = 180;
+% get position at start of each sound file
+pamFilePosits = extractPAMFilePosits(pamFiles, locCalcT, timeBuffer);
+
+% save as .mat and .cs 
+save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
+	CONFIG.mission '_pamFilePosits.mat']), 'pamFilePosits');
+writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.glider '_' CONFIG.mission '_pamFilePosits.csv']));
+
+
+%% (6) Summarize acoustic effort
+
+% load gpsSurfT, pamFiles, pamByDive if not already loaded
+if ~exist('gpsSurfT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']))
+end
+if ~exist('pamFiles', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_pamFiles.mat']))
+end
+if ~exist('pamByDive', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_pamByDive.mat']))
+end
+
+% create byMin, minPerHour, minPerDay matrices 
+[pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = calcPAMEffort(...
+	CONFIG, gpsSurfT, pamFiles, pamByDive);
+
+% save as .mat
+save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
+	CONFIG.mission '_pamEffort.mat']), ...
+    'pamByMin', 'pamMinPerHour', 'pamMinPerDay', 'pamHrPerDay');
 

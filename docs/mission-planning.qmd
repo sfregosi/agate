@@ -1,28 +1,30 @@
 ---
-title: "Survey planning"
-subtitle: 'Suggested workflows for the survey planning tools'
+title: "Mission planning"
+subtitle: 'Suggested workflows for the mission planning tools'
 ---
 
 ```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 library(fontawesome)
 ```
 
-This page is meant to provide some examples of how the survey planning piloting functions maybe be used ahead of a planned mission. The below sections include examples for creating a targets file, creating a planned survey map, plotting a bathymetry profile for the planned track, and summarizing total mission distance and duration. 
+This page is meant to provide some examples of how the mission planning piloting functions maybe be used ahead of a planned mission. The below sections include examples for creating a targets file, creating a planned mission map, plotting a bathymetry profile for the planned track, and summarizing total mission distance and duration. 
 
-All code on this page combined in the [`workflow_surveyTrackPlanning.m`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_surveyTrackPlanning.m) in the 'example_workflows' folder within the 'agate-public/agate' folder. 
+All code on this page combined in the [`workflow_missionTrackPlanning.m`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_missionTrackPlanning.m) in the `example_workflows` folder within the `agate-public/agate` folder. 
 
 Details for each function used below (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
 
 ### Initialization
 
-To run any of the `agate` functions, the toolbox must be initialized with a configuration file. 
+To run any of the __*agate*__ functions, the toolbox must be initialized with a configuration file. 
 
-No configuration file yet? Go back to [Get started - Create configuration files](get-started.html#create-configuration-files). At a minimum, for `agate` to initialize, the configuration file must include the top *required* portion.
+No configuration file yet? Go to the [Configuration Guide](configuration.html). The examples on this page include some plotting, so the ` OPTIONAL - plotting ` section must be complete. 
 
-The examples on this page include some plotting, so the ` OPTIONAL - plotting ` section should be complete. 
-
-```default
-% !ensure agate is on the path!
+```matlab
+% !make sure agate is on the path!
 
 % initialize with specified configuration file, 'agate_config.cnf'
 agate agate_config.cnf
@@ -38,9 +40,32 @@ global CONFIG
 
 <sub>[Back to top](#)</sub>
 
+### Create planned track using Google Earth Pro
+
+Use Google Earth Pro (the desktop app) to plan a mission trackline and save it as a `.kml`.
+
+- Create a path object by navigating to the *Add* menu and selecting *Path*
+- A popup will appear where you can name the path
+- While the popup is still the top window, the cursor will become a square; can click anywhere on the map to make a waypoint
+- Continue to click to make the desired waypoints
+- Waypoints can be moved by clicking and dragging
+- Right-clicking on a given waypoint will delete it
+- View the total track length under the *Measurements* tab
+- Once you are happy with the track, hit *Ok* in the popup
+
+The path must be saved as a `.kml` containing just a single path/track. To properly  save: 
+
+- Within Google Earth, right-click on the path name in the panel on the left hand side
+- Select *Save place as*
+- Change the file type from `.kmz` to `.kml` and hit *Save*
+
+An example is located in [`agate/example_workflows/exampleTrack.kml`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/exampleTrack.kml)
+
+![Example path in Google Earth  saved as a `.kml` and ready to be converted to a `targets` file.](images/screenshot_googleEarth_path.PNG){#fig-example-kml fig-align='center' width=90%}
+
 ### Create targets file from .kml
 
-The `makeTargetsFile` function will read in an existing .kml (that contains a single path) and use it to create a properly formatted Seaglider 'targets' file. The generated targets file will be named 'targets_' plus the name of the .kml file (e.g., 'targets_exampleTrack'). It will contain header information with the glider and mission information defined in `CONFIG`, the date it was created, and the specified radius. 
+The `makeTargetsFile` function will read in an existing `.kml` (that contains a single path) and use it to create a properly formatted Seaglider `targets` file. The generated targets file will be named `targets_` plus the name of the `.kml` file (*e.g.*, `targets_exampleTrack`). It will contain header information with the glider and mission information defined in `CONFIG`, the date it was created, and the specified radius. 
 
 ```default
 / Targets file for mission sgXXX_Location_Mon20XX
@@ -49,18 +74,15 @@ The `makeTargetsFile` function will read in an existing .kml (that contains a si
 / template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=XXXX goto=WPzz
 ```
 
-The .kml can be made in Google Earth [MORE INFO ON THAT TO COME LATER!]
-Track must be saved as a kml containing just a single track/path. To properly  save: within Google Earth, right click on track name in left panel, select save place as, change file type from .kmz to .kml, save.
-An example is located in ['agate/example_workflows/exampleTrack.kml'](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/exampleTrack.kml)
-
 Waypoint names can be generated one of three ways:
-(1) prefix: specify a character string prefix in the function call and alphanumeric names will be created automatically. 
-(2) file: list the desired waypoint names within a simple .txt files, with one name per line and the number of waypoint names must equal the number of waypoints in the .kml; the function will prompt to select the file. An example can be found in ['agate/example_workflows/waypointNames.txt'](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/waypointNames.txt)
-(3) manual: waypoint names are manually entered in the command window within the function call
 
+**1. prefix**: specify a character string prefix in the function call and alphanumeric names will be created automatically. 
 
-```default
+**2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate/example_workflows/waypointNames.txt`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/waypointNames.txt)
 
+**3. manual**: waypoint names are manually entered in the Command window within the function call
+
+```matlab
 % specify file name to .kml path
 kmlFile = fullfile(CONFIG.path.mission, 'exampleTrack.kml');
 % OR
@@ -121,7 +143,7 @@ export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 
 ```
 
-![](images/examplePlots/sg639_MHI_Apr2023_plannedTrack.png){#planned-map fig-align='center' width=60%}
+![Planned track map with each waypoint labeled.](images/examplePlots/sg639_MHI_Apr2023_plannedTrack.png){#fig-planned-map fig-align='center' width=60%}
 
 <sub>[Back to top](#)</sub>
 
@@ -129,10 +151,11 @@ export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 
 It can be useful to have a profile of the bathymetry the planned track will traverse, to highlight periods where the glider's target dive depth may need to be adjusted more shallow, or can be extended deeper. 
 
-An indicator line (dashed red line) will be plotted at 990 m as the default (max $D_TGT for Seagliders) but can be specified to a different value with the `yLine` argument. 
+See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
 
-```default
+An indicator line (dashed red line) will be plotted at 990 m as the default (max `$D_TGT` for Seagliders) but can be specified to a different value with the `yLine` argument. 
 
+```matlab
 % can specify bathymetry file
 bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
 plotTrackBathyProfile(CONFIG, targetsFile, bathyFile)
@@ -146,14 +169,14 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
     'Resolution', 300)
 ```
 
-![](images/examplePlots/sg639_MHI_Apr2023_targetsBathymetryProfile_targets.png){#track-bathy fig-align='center' width=80%}
+![Bathymetry profile for set targets file which shows the seafloor depth at each target and in the straight line between each target. The 990 m depth limit is marked with a dashed line.](images/examplePlots/sg639_MHI_Apr2023_targetsBathymetryProfile_targets.png){#fig-track-bathy fig-align='center' width=80%}
 
 ### Summarize planned track 
 
 The below code reads in an existing (or newly created!) targets file and will loop through to calculate the distance between each waypoint and then print out the total planned track distance. If an estimate of glider speed (in km/day) is available, that can be used to estimate mission duration. 
 
 
-```default
+```matlab
 % if no targetsFile specified, will prompt to select
 [targets, targetsFile] = readTargetsFile(CONFIG);
 % OR specify targetsFile variable from above
@@ -178,12 +201,9 @@ fprintf(1, 'Estimated mission duration, at %i km/day: %.1f days\n', avgSpd, ...
 
 The output will look something like this: 
 
-```
->>
+```matlab
 Total tracklength for targets_exampleTrack: 54 km
 Estimated mission duration, at 15 km/day: 3.6 days
->>
-
 ```
 
 <sub>[Back to top](#)</sub>

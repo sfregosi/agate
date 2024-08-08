@@ -35,7 +35,7 @@ function plotSoundSpeedProfile(CONFIG, locCalcT)
 global CONFIG
 
 figure;
-plot(locCalcT.soundVelocity, -locCalcT.depth, 'Color', [0.8 0.8 0.8], ...
+plot(locCalcT.soundVelocity, -locCalcT.depth, 'Color', [0.8 0.8 0.8 0.3], ...
     'HandleVisibility', 'off')
 hold on
 ylim([-1010 10]);

@@ -8,7 +8,7 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %        Summarize and print out several metrics about mission distances
 %        covered (over ground and along trackline), average speeds (over
 %        ground and along trackline), and estimates of remaining days to
-%        reach the end of the survey trackline.
+%        reach the end of the mission trackline.
 %
 %   Inputs:
 %       CONFIG      Global config variable from agate mission configuration
@@ -42,7 +42,7 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   25 April 2023
-%   Updated:        27 May 2023
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

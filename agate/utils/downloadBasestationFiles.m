@@ -17,7 +17,7 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %       download_files_cache.txt
 %
 %   Inputs:
-%       CONFIG          Deployment parameters - glider serial num, survey
+%       CONFIG          Deployment parameters - glider serial num, mission
 %                       ID, pmcard
 %       path_bsLocal    Path to directory to save the downloaded files
 %                       locally, e.g., path_bsLocal =
@@ -39,7 +39,7 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %
 %   FirstVersion:   7/22/2016.
 %                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:        02 June 2023
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

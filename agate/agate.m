@@ -1,4 +1,4 @@
-function agate(missionCnf)
+function CONFIG = agate(missionCnf)
 %AGATE	Initialize a new session of agate
 %
 %   Syntax:
@@ -14,7 +14,8 @@ function agate(missionCnf)
 %                   particular mission e.g., 'sg639_MHI_Apr2023.cnf'
 %
 %   Outputs:
-%      No workspace outputs. Generates a global CONFIG variable
+%       CONFIG  [struct] containing all the user-set configurations such as
+%               paths, basestation login info, etc
 %
 %   Examples:
 %       agate agate_sgXXX_Location_MonYear_config.cnf
@@ -25,19 +26,18 @@ function agate(missionCnf)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   06 April 2023
-%   Updated:        09 March 2024
+%   Updated:        06 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clear global CONFIG;  % clear out old globals
+clear CONFIG;
 warning off % this is turned off for plotting messages
 
-global CONFIG
-% CONFIG = struct;
+CONFIG = struct;
 
-CONFIG.ver = '0.1.20240309   https://github.com/sfregosi/agate-public';
-fprintf('      agate   version %s\n\n', CONFIG.ver)
+CONFIG.ver = '0.1.20240806   https://github.com/sfregosi/agate-public';
+fprintf('      agate   version %s\n', CONFIG.ver)
 
 if nargin < 1
 	CONFIG.missionCnf = [];
@@ -48,18 +48,20 @@ end
 % get matlab version for differences and backwards compatibility
 CONFIG.mver = version;
 
-checkPath;
+CONFIG = checkPath(CONFIG);
 
-setCONFIG(CONFIG.missionCnf);
+CONFIG = setCONFIG(CONFIG);
+
+fprintf('      loaded config file   %s\n\n', CONFIG.missionCnf)
 
 end
 
 
-function checkPath
+function CONFIG = checkPath(CONFIG)
 %CHECKPATH	Check the necessasry folders are there and on the path
 %
 %   Syntax:
-%       CHECKPATH
+%       CONFIG = CHECKPATH(CONFIG)
 %
 %   Description:
 %       Called from the agate initialization. Sets up the necessary paths
@@ -67,13 +69,15 @@ function checkPath
 %       are present and on the path. If not, it makes them.
 %
 %   Inputs:
-%       none
+%       CONFIG  [struct] containing all the user-set configurations such as
+%               paths, basestation login info, etc
 %
 %	Outputs:
-%       none
+%       CONFIG  [struct] containing all the user-set configurations such as
+%               paths, basestation login info, etc
 %
 %   Examples:
-%       checkPath
+%       CONFIG = checkPath(CONFIG);
 %
 %	See also
 %       agate
@@ -86,12 +90,10 @@ function checkPath
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
 %   FirstVersion:   06 April 2023
-%   Updated:        04 March 2024
+%   Updated:        06 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-global CONFIG
 
 % root directory
 CONFIG.path.agate = fileparts(which('agate'));

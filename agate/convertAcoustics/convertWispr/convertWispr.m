@@ -19,7 +19,7 @@ function convertWispr(CONFIG)
 % % % convertPmarFun.m is a functionized version of the convertPmar.m script.
 % % % it allows for a CONFIG input argument that is created from the
 % % % pmarConvertConfig_template.m, which is meant to keep configuration for
-% % % each survey organized in its own file
+% % % each mission organized in its own file
 %
 %   Inputs:
 %       CONFIG   [struct] optional agate global mission configuration
@@ -40,7 +40,7 @@ function convertWispr(CONFIG)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   30 June 2023
-%   Updated:        
+%   Updated:        07 August 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

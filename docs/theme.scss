@@ -38,13 +38,19 @@ main ul ul ul{
   margin-bottom:    0;
 }
 
-
+/*-- SIDEBAR NAVIGATION --*/
+div.sidebar-title {
+  color:              white;
+}
+div.sidebar-tools-main {
+  color:              white;  
+}
 /*-- SECTION HEADER STYLING --*/
 h1 {
-letter-spacing:       0.8px;  
-line-height:          1.1em;  
-margin-top:           1.5rem; 
-margin-bottom:        0.5rem;
+  letter-spacing:     0.8px;  
+  line-height:        1.1em;  
+  margin-top:         1.5rem; 
+  margin-bottom:      0.5rem;
 }
 
 h2 {
