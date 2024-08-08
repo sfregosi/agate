@@ -33,8 +33,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-agate agate_mission_config.cnf
-global CONFIG
+CONFIG = agate('agate_mission_config.cnf');
 
 % specify the local piloting folder for this trip in CONFIG.path.mission
 % set up nested folders for basestation files and piloting outputs
@@ -46,7 +45,7 @@ mkdir(path_status);
 mkdir(path_bsLocal);
 
 %% (1) download files from the basestation
-downloadBasestationFiles(CONFIG639, path_bsLocal)
+downloadBasestationFiles(CONFIG, path_bsLocal)
 
 % To plot Seaglider Piloting Tools plots at this point, run DiveData below
 % DiveData

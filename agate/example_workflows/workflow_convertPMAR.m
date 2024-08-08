@@ -31,8 +31,7 @@
 % - specify path to PMAR convert configuration file with CONFIG.pm.cnfFile
 
 % initialize agate - either specify the mission .cnf or leave blank to browse/select
-agate agate_mission_config.cnf
-global CONFIG
+CONFIG = agate('agate_mission_config.cnf');
 
 % convert!
 convertPmarFun(CONFIG)
