@@ -46,6 +46,8 @@ website:
         text: Convert acoustic files
       # - href: content/code.qmd
       #   text: Code in your files
+      - href: contribute.qmd
+        text: Contribute
       - href: acknowledgements.qmd
         text: Acknowledgements
 

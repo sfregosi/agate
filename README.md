@@ -3,9 +3,8 @@
 
 # Acoustic Glider Analysis Tools and Environment
 
-<img
-src="README_files/figure-gfm/fa-icon-bcbd573b0c4bf742a1242819bebaac28.svg"
-style="width:0.88em;height:1em" /> *Last Update: 05 Aug 2024*
+<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/regular/calendar-check.svg" style="width:0.88em;height:1em" />
+*Last Update: 14 Aug 2024*
 
 A collection of MATLAB-based tools for piloting passive acoustic
 gliders, processing glider positional and environmental data, and
