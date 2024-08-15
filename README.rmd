@@ -1,5 +1,8 @@
 ---
-output: github_document
+output:
+  md_document:
+    pandoc_args: ["--wrap=preserve"]
+    variant: markdown_github
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -14,7 +17,7 @@ knitr::opts_chunk$set(
 
 # Acoustic Glider Analysis Tools and Environment
 
-<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/regular/calendar-check.svg" style="width:0.88em;height:1em" /> *Last Update: `r format(Sys.Date(), "%d %b %Y")`*
+<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/regular/calendar-check.svg" style="width:0.88em;height:1em"> *Last Update: `r format(Sys.Date(), "%d %b %Y")`*
 
 A collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals.
 
