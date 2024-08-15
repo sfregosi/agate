@@ -29,12 +29,12 @@ The examples on this page include some plotting, so the ` OPTIONAL - plotting ` 
 % !make sure agate is on the path!
 
 % initialize with specified configuration file, 'agate_config.cnf'
-agate agate_config.cnf
+CONFIG = agate(agate_config.cnf);
 
 % OR
 
 % initialize with prompt to select configuration file
-agate
+CONFIG = agate;
 ```
 
 <sub>[Back to top](#)</sub>

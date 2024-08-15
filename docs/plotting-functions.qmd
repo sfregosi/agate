@@ -25,10 +25,10 @@ No configuration file yet? Go back to [Get started - Create configuration files]
 % ensure agate is on the path
 
 % initialize with specified configuration file, 'agate_config.cnf'
-agate agate_config.cnf
+CONFIG = agate(agate_config.cnf);
 
 % initialize with prompt to select configuration file
-agate
+CONFIG = agate;
 ```
 
 Most of the plotting functions rely on a `pp` (piloting parameters) variable that is a large table with various outputs from the .nc and .log files compiled in one place. If this has already be created, it can be loaded directly. If not, use `extractPilotingParams` to build it. 

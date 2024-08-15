@@ -27,15 +27,12 @@ No configuration file yet? Go to the [Configuration Guide](configuration.html). 
 % !make sure agate is on the path!
 
 % initialize with specified configuration file, 'agate_config.cnf'
-agate agate_config.cnf
+CONFIG = agate(agate_config.cnf);
 
 % OR
 
 % initialize with prompt to select configuration file
-agate
-
-% call CONFIG so it can be used later
-global CONFIG
+CONFIG = agate;
 ```
 
 <sub>[Back to top](#)</sub>
@@ -201,7 +198,7 @@ fprintf(1, 'Estimated mission duration, at %i km/day: %.1f days\n', avgSpd, ...
 
 The output will look something like this: 
 
-```matlab
+```default
 Total tracklength for targets_exampleTrack: 54 km
 Estimated mission duration, at 15 km/day: 3.6 days
 ```
