@@ -4888,10 +4888,10 @@ vertical-align: -.125em;
 </ol>
 <section id="mission-configuration-file" class="level2">
 <h2 class="anchored" data-anchor-id="mission-configuration-file">Mission configuration file</h2>
-<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
+<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf"><code>agate_config_example.cnf</code></a></p>
 <p>The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Lines starting with <code>%</code> are comments.</p>
 <p>The top section is <a href="#required-configuration-settings">required</a> to initialize <strong><em>agate</em></strong> and use the most basic functions. The remaining sections are optional depending on what <strong><em>agate</em></strong> functionality is desired, including interfacing with the <a href>basestation</a>, working with <a href>acoustic</a> data outputs, and <a href>plotting maps</a>. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments.</p>
-<p>To suggest additional configuration items, please open an <a href="https://github.com/sfregosi/agate-public/issues/new" target="_blank">issue</a>.</p>
+<p>To suggest additional configuration items, please open an <a href="https://github.com/sfregosi/agate/issues/new" target="_blank">issue</a>.</p>
 <p><sub><a href="#">Back to top</a></sub></p>
 <section id="required-configuration-settings" class="level4">
 <h4 class="anchored" data-anchor-id="required-configuration-settings">Required configuration settings</h4>
@@ -4987,7 +4987,7 @@ vertical-align: -.125em;
 </section>
 <section id="basestation-configuration-file" class="level2">
 <h2 class="anchored" data-anchor-id="basestation-configuration-file">Basestation configuration file</h2>
-<p>The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation_example.cnf"><code>basestation_example.cnf</code></a>.</p>
+<p>The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate/blob/main/agate/settings/basestation_example.cnf"><code>basestation_example.cnf</code></a>.</p>
 <p>This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group’s basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the following lines, with the inputs updated for a particular basestation:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode matlab code-with-copy"><code class="sourceCode matlab"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">CONFIG</span>.<span class="va">bs</span>.<span class="va">host</span> <span class="op">=</span> <span class="ss">&#39;url.com&#39;</span><span class="op">;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="va">CONFIG</span>.<span class="va">bs</span>.<span class="va">username</span> <span class="op">=</span> <span class="ss">&#39;pilot&#39;</span><span class="op">;</span></span>
@@ -4999,7 +4999,7 @@ vertical-align: -.125em;
 <p>A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial <code>agate</code> call and the mission configuration.</p>
 <section id="pmar-conversion-configuration-file" class="level3">
 <h3 class="anchored" data-anchor-id="pmar-conversion-configuration-file">PMAR conversion configuration file</h3>
-<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf"><code>pmarConvert_example.cnf</code></a></p>
+<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate/blob/main/agate/settings/pmarConvert_example.cnf"><code>pmarConvert_example.cnf</code></a></p>
 <p>Lines starting with <code>%</code> are comments. All parameters are added to the existing <code>CONFIG</code> structure, under a nested <code>pm</code> structure. All the changeable parameters are listed/grouped at the top, but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.</p>
 <ul>
 <li><code>CONFIG.pm.inDir</code>: path to raw PMAR <code>.dat</code> files. These can be within subdirectories by dive (the default write method of PMAR)</li>
@@ -5016,7 +5016,7 @@ vertical-align: -.125em;
 <section id="wispr-conversion-configuration-file" class="level3">
 <h3 class="anchored" data-anchor-id="wispr-conversion-configuration-file">WISPR conversion configuration file</h3>
 <p><strong>UNDER CONSTRUCTION</strong></p>
-<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate-public/blob/main/agate/settings/wisprConvert_example.cnf"><code>wisprConvert_example.cnf</code></a></p>
+<p>An example configuration file is located in the <code>agate/settings</code> folder: <a href="https://github.com/sfregosi/agate/blob/main/agate/settings/wisprConvert_example.cnf"><code>wisprConvert_example.cnf</code></a></p>
 <p>Lines starting with <code>%</code> are comments. All parameters are added to the existing <code>CONFIG</code> structure, under a nested <code>ws</code> structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.</p>
 <p><sub><a href="#">Back to top</a></sub></p>
 

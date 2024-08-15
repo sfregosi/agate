@@ -4877,7 +4877,7 @@ vertical-align: -.125em;
 
 
 <p>This page is meant to demonstrate some suggested workflows and examples of how the piloting functions may be used in an active mission to help the pilot download basestation files, create monitoring plots, and monitor mission progress.</p>
-<p>All code on this page combined in the <a href="https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_downloadScript.m"><code>workflow_downloadScript.m</code></a> in the ‘example_workflows’ folder within the ‘agate-public/agate’ folder.</p>
+<p>All code on this page combined in the <a href="https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_downloadScript.m"><code>workflow_downloadScript.m</code></a> in the <code>agate\example_workflows</code> folder.</p>
 <p>Details for each piloting function (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing <code>doc function</code> or <code>help function</code> within the MATLAB Command Window.</p>
 <section id="initialization" class="level3">
 <h3 class="anchored" data-anchor-id="initialization">Initialization</h3>
@@ -4933,7 +4933,7 @@ vertical-align: -.125em;
 <h4 class="anchored" data-anchor-id="map">Map</h4>
 <p><em>…with target waypoints, dives completed thus far, and vector arrows for the currents.</em></p>
 <p>In this example, bathymetry is plotted, specified by <code>CONFIG.map.bathyFile</code>. That last argument can be left out to not plot bathymetry (which can be slow depending on the resolution of the selected bathymetry raster). If the last argument is set to <code>1</code>, a prompt will appear to select the correct bathymetry file.</p>
-<p>The below example code saves the map both as a <code>.fig</code> file and a <code>.png</code>. The <code>.fig</code> version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The .png is good for a quick easy overview and is sharable, but doesn’t allow the interactive zooming that a pilot may need.</p>
+<p>The below example code saves the map both as a <code>.fig</code> file and a <code>.png</code>. The <code>.fig</code> version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The .png is good for a quick easy overview and ease of sharing, but doesn’t allow the interactive zooming that a pilot may need.</p>
 <p>High resolution bathymetry TIFF files can be downloaded from <a href="https://www.ncei.noaa.gov/products/etopo-global-relief-model">NCEI</a>. See <a href="index.html#basemap-rasters">Dependecies - Basemap rasters</a> for more info on how to select and download bathymetry rasters.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode matlab code-with-copy"><code class="sourceCode matlab"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">% print map **SLOWISH** - figNumList(1)</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">targetsFile</span> <span class="op">=</span> <span class="va">fullfile</span>(<span class="va">CONFIG</span>.<span class="va">path</span>.<span class="va">mission</span><span class="op">,</span> <span class="ss">&#39;targets&#39;</span>)<span class="op">;</span></span>
