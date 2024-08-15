@@ -13,7 +13,7 @@ library(fontawesome)
 
 This page is meant to demonstrate some suggested workflows and examples of how the piloting functions may be used in an active mission to help the pilot download basestation files, create monitoring plots, and monitor mission progress.
 
-All code on this page combined in the [`workflow_downloadScript.m`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_downloadScript.m) in the 'example_workflows' folder within the 'agate-public/agate' folder. 
+All code on this page combined in the [`workflow_downloadScript.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_downloadScript.m) in the `agate\example_workflows` folder. 
 
 Details for each piloting function (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
 
@@ -92,7 +92,7 @@ load(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 In this example, bathymetry is plotted, specified by `CONFIG.map.bathyFile`. That last argument can be left out to not plot bathymetry (which can be slow depending on the resolution of the selected bathymetry raster). If the last argument is set to `1`, a prompt will appear to select the correct bathymetry file. 
 
-The below example code saves the map both as a `.fig` file and a `.png`. The `.fig` version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The .png is good for a quick easy overview and is sharable, but doesn't allow the interactive zooming that a pilot may need. 
+The below example code saves the map both as a `.fig` file and a `.png`. The `.fig` version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The .png is good for a quick easy overview and ease of sharing, but doesn't allow the interactive zooming that a pilot may need. 
 
 High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters.  
 

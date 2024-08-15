@@ -13,29 +13,35 @@ It page is not a detailed list of all available functions and their specific doc
 
 ## Installation
 
-*See the [Dependencies](https://sfregosi.github.io/agate-public/#dependencies) section of the home page for more info on the required Mathworks File Exchange packages (copies of these come packaged with __agate__) and MATLAB Toolbox requirements.*
+*See the [Dependencies](https://sfregosi.github.io/agate/#dependencies) section of the home page for more info on the required Mathworks File Exchange packages (copies of these come packaged with __agate__) and MATLAB Toolbox requirements.*
 
-- Download __*agate*__ from [GitHub](https://github.com/sfregosi/agate-public) 
+- Download __*agate*__ from [GitHub](https://github.com/sfregosi/agate) 
   - **Option 1:** Download the latest release
     - This option ensures a stable release and removes the requirement of working with GitHub but will need manual updating
-    - Visit the [Releases](https://github.com/sfregosi/agate-public/releases) page and download the latest release source code as a zip or tar.gz file 
+    - Visit the [Releases](https://github.com/sfregosi/agate/releases) page and download the latest release source code as a zip or tar.gz file 
+    - Unzip the downloaded folder and place within the default MATLAB directory (*e.g.*, `C:\Users\User.Name\Documents\MATLAB\`). You only need the `agate` folder (the `docs` folder contains the files for this website so they can be deleted). 
   - **Option 2:** Clone the repository using GitHub or GitHub Desktop 
     - This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub, but this comes with risks as it may be buggy
     - Click on the green *Code* button and select *Open with GitHub Desktop* 
     - Specify where to clone the cloned local copy. Suggest the default MATLAB directory (*e.g.*, `C:\Users\User.Name\Documents\MATLAB\`)
     - For more help with GitHub see this [Git Started Doc](https://github.com/PIFSC-Protected-Species-Division/PSDOS/blob/main/files/git_started.md)
-  - **Option 3:** Download the repository as a zip file
+  - **Option 3:** Fork the repository using GitHub, then clone your fork via the **Option 2** steps above
+    - This is the best option if you would like to modify the tools and contribute to **agate** but also stay up to date with the latest developer changes
+    - Click on the grey *Fork* button in the upper right and follow the prompts to create a copy of the repository in your personal GitHub account
+    - Follow the **Option 2** steps to clone your fork to your local computer
+    - In the future, use the *Sync fork* button on GitHub to update your fork with any changes in the main repository, while maintaining any of your own modification and use the *Contribute* button to create pull requests so contribute your modifications to the package
+  - **Option 4:** Download the repository as a zip file
     - This provides the latest functionality before an official release and removes requirement of working with GitHub but will need manual updating
     - Click the green *Code* button at the landing page of the repository and choose *Download ZIP*
     - Unzip the downloaded folder and place within the default MATLAB directory (*e.g.*, `C:\Users\User.Name\Documents\MATLAB\`)
 - Add __*agate*__ to the MATLAB path
   - Open MATLAB and click on *Set Path* in the Environment section of the Home tab (@fig-screenshot-matlab-setpath)
-  - In the Set Path dialog box, choose *Add with Subfolders...*, select the `agate-public` folder, and click *Save*, then *Close* (@fig-screenshot-matlab-setpath-save)
+  - In the Set Path dialog box, choose *Add with Subfolders...*, select the `agate` folder, and click *Save*, then *Close* (@fig-screenshot-matlab-setpath-save)
   - This will now be saved for future MATLAB sessions, but would need to be repeated for any installation on a new computer
 
-[![Screenshot of MATLAB Home Tab showing where to click to Set Path](images/screenshot_matlab_setpath.png){#fig-screenshot-matlab-setpath fig-align="center" width='700'}](https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png)
+[![Screenshot of MATLAB Home Tab showing where to click to Set Path](images/screenshot_matlab_setpath.png){#fig-screenshot-matlab-setpath fig-align="center" width='700'}](https://github.com/sfregosi/agate/blob/main/docs/images/screenshot_matlab_setpath.png)
 
-[![Example screenshot of the Set Pat dialog box showing the 'Add with Subfolders\...' and 'Save' buttons.](images/screenshot_matlab_setpath_save.png){#fig-screenshot-matlab-setpath-save fig-align="center" width='400'}](https://github.com/sfregosi/agate-public/blob/main/img/screenshot_matlab_setpath.png)
+[![Example screenshot of the Set Path dialog box showing the *Add with Subfolders\...* and *Save* buttons.](images/screenshot_matlab_setpath_save.png){#fig-screenshot-matlab-setpath-save fig-align="center" width='400'}(https://github.com/sfregosi/agate/blob/main/docs/images/screenshot_matlab_setpath_save.png)
 
 
 <sub>[Back to top](#)</sub>
@@ -51,21 +57,21 @@ Running __*agate*__ requires a few configuration files. Both of these are plain 
 
 #### Mission configuration file
 
-An example configuration file is located in the `agate/settings` folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)
+An example configuration file is located in the `agate/settings` folder: [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)
 
 The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. The top section is required to initialize __*agate*__ and use the most basic functions. The remaining sections are optional depending on what __*agate*__ functionality is desired. Make a copy and save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments that start with `%`. 
 
-Additional info on setting up configuration files can be found in the [Configuration file guide](https://sfregosi.github.io/agate-public/configuration.html).
+Additional info on setting up configuration files can be found in the [Configuration file guide](https://sfregosi.github.io/agate/configuration.html).
 
-To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}.
+To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate/issues/new){target='_blank'}.
 
 #### Basestation configuration file
 
-The path and filename for a basestation configuration file is specified in the mission configuration file. An example is located in the `agate/settings` folder: [`basestation_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/basestation_example.cnf). 
+The path and filename for a basestation configuration file is specified in the mission configuration file. An example is located in the `agate/settings` folder: [`basestation_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/basestation_example.cnf). 
 
 This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group's basestation. *This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons.* 
 
-Additional info on setting up configuration files can be found in the [Configuration file guide](https://sfregosi.github.io/agate-public/configuration.html).
+Additional info on setting up configuration files can be found in the [Configuration file guide](https://sfregosi.github.io/agate/configuration.html).
 
 <sub>[Back to top](#)</sub>
 

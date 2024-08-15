@@ -8,7 +8,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(fontawesome)
 ```
 
 Development of this toolbox was funded by:

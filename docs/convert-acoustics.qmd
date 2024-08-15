@@ -11,20 +11,20 @@ knitr::opts_chunk$set(
 library(fontawesome)
 ```
 
-The Seaglider can be equipped with a variety of acoustic systems. Two - the PMARXL and WISPR systems - both record raw data as .dat files that need to be converted to `.wav` or `.flac` for analysis. __*agate*__ includes tools to do this for both of these two systems. All conversion code is located in the `convertAcoustics` folder. 
+The Seaglider can be equipped with a variety of acoustic systems. Two - the PMARXL and WISPR systems - both record raw data as .dat files that need to be converted to `.wav` or `.flac` for analysis. __*agate*__ includes tools to do this for both of these two systems. All conversion code is located in the `agate\convertAcoustics` folder. 
 
-Additionally, following a mission in Spring 2023, a bug in the WISPR firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to 'fix' this gain in an attempt to standardize it across all files. The code needed to apply this fix is in the `convertAcoustics/fixWispr` folder. 
+Additionally, following a mission in Spring 2023, a bug in the WISPR firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to 'fix' this gain in an attempt to standardize it across all files. The code needed to apply this fix is in the `agate\convertAcoustics\fixWispr` folder. 
 
 
 <sub>[Back to top](#)</sub>
 
 ## Convert PMAR raw files
 
-See [`workflow_convertPMAR.m`](https://github.com/sfregosi/agate-public/blob/main/agate/example_workflows/workflow_convertPMAR.m) in the `example_workflows` folder for a simple example workflow for converting a mission's PMAR `.dat` files to `.wav`. 
+See [`workflow_convertPMAR.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_convertPMAR.m) in the `example_workflows` folder for a simple example workflow for converting a mission's PMAR `.dat` files to `.wav`. 
 
-Like other workflows in __*agate*__ it must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`]( https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf)). Only the top `REQUIRED` and `CONFIG.pm` settings in the `OPTIONAL - acoustics` sections of the configuration file are needed for file conversion. 
+Like other workflows in __*agate*__ it must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`]( https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)). Only the top `REQUIRED` and `CONFIG.pm` settings in the `OPTIONAL - acoustics` sections of the configuration file are needed for file conversion. 
 
-Additionally, a PMAR conversion configuration file (*e.g.*, [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate-public/blob/main/agate/settings/pmarConvert_example.cnf)) is needed. This contains the specific paths and is where you can set your desired conversion settings. Detailed descriptions of each parameter setting are in the example configuration file or can be found on the [Configuration - PMAR conversion](./configuration.html#pmar-conversion-configuration-file) page. 
+Additionally, a PMAR conversion configuration file (*e.g.*, [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/pmarConvert_example.cnf)) is needed. This contains the specific paths and is where you can set your desired conversion settings. Detailed descriptions of each parameter setting are in the example configuration file or can be found on the [Configuration - PMAR conversion](./configuration.html#pmar-conversion-configuration-file) page. 
 
 
 
@@ -46,13 +46,13 @@ The general workflow was to work on one dive's worth of files at a time. That di
 
 A MATLAB script is run for that dive's worth of files, where `.dat` files are read in and the noise levels in a specified band are compared. If they are within a similar level, then the gain is assumed to *not* change and the files are written to `.wav` as is. If the second file is louder, then it's gain is adjusted down and this adjusted file is written to `.wav` format. There are special catches in the script for instances where the noise level between the two files is not a clear 1:1 or 1:2 ratio. In those cases, the script prompts the user to manually assess and specify an adjustment. The user can use the script-generated plots and the spectrograms of the 'bad' files to make this decision. 
 
-All code needed to apply the fix is located in the `agate/processAcoustics/fixWispr` folder. 
+All code needed to apply the fix is located in the `agate\convertAcoustics\fixWispr` folder. 
 
 ### Included files
 
 `fix_gain.m`: This is the primary script to apply the fix. The user must update a few paths and settings and then run this script on a folder of acoustic files. More on running it below 
 
-`my_psd.m`: Function to calculate power spectral densities. Should be similar to `pwelch` but provides outputs normalized by frequency bin size
+`my_psd.m`: Function to calculate power spectral densities. Results are similar to `pwelch` but provides outputs normalized by frequency bin size
 
 `plotRMSSpec.m`: Function to plot RMS level for two files being compared
 

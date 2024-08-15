@@ -19,9 +19,9 @@ library(fontawesome)
 
 A collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals. 
 
-This package is very much under development and is hosted and version controlled on [GitHub](https://github.com/sfregosi/agate-public). My hope is that I will maintain a [stable release](https://github.com/sfregosi/agate-public/releases) and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in [contributing](contribute.html) to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!
+This package is very much under development and is hosted and version controlled on [GitHub](https://github.com/sfregosi/agate). My hope is that I will maintain a [stable release](https://github.com/sfregosi/agate/releases) and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in [contributing](contribute.html) to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!
 
-selene [dot] fregosi [at] noaa.gov or [report an issue on GitHub](https://github.com/sfregosi/agate-public/issues/new){target='_blank'}
+selene [dot] fregosi [at] noaa.gov or [report an issue on GitHub](https://github.com/sfregosi/agate/issues/new){target='_blank'}
 
 ## Background
 
@@ -29,7 +29,7 @@ These tools were initially developed for use with passive acoustic glider survey
 
 NOAA's [Uncrewed Systems Operations Center (UxSOC)](https://www.omao.noaa.gov/uncrewed-systems/about-noaa-uncrewed-systems-operations) funded additional development into a more broadly applicable and user-friendly tool box that could be used by all interested in conducting glider-based passive acoustic surveys for marine mammals. 
 
-**Ready? [Get started](https://sfregosi.github.io/agate-public/get-started.html)**
+**Ready? [Get started](get-started.html)**
 
 ![Diagram showing the different components of __*agate*__. Tools can be broken up into two main categories: piloting tools, which are used for survey planning and execution, and processing tools which are used in post-mission analyses. The processing tools can further be broken up into flight, acoustic, and cetacean encounter processing tools. The cetacean encounter processing tools can incorporate externally identified cetacean detections (white balloon) or process on-board detections if available.](images/agate_workflow_2024-08-09.png){#fig-components width=75%}
 

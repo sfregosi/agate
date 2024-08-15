@@ -13,7 +13,7 @@ library(fontawesome)
 
 This page is meant to provide some examples of how the mission planning piloting functions maybe be used ahead of a planned mission. The below sections include examples for creating a targets file, creating a planned mission map, plotting a bathymetry profile for the planned track, and summarizing total mission distance and duration. 
 
-All code on this page combined in the [`workflow_missionTrackPlanning.m`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/workflow_missionTrackPlanning.m) in the `example_workflows` folder within the `agate-public/agate` folder. 
+All code on this page is compiled in the [`workflow_missionTrackPlanning.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionTrackPlanning.m) in the `agate\example_workflows` folder. 
 
 Details for each function used below (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
 
@@ -59,7 +59,7 @@ The path must be saved as a `.kml` containing just a single path/track. To prope
 - Select *Save place as*
 - Change the file type from `.kmz` to `.kml` and hit *Save*
 
-An example is located in [`agate/example_workflows/exampleTrack.kml`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/exampleTrack.kml)
+An example is located in [`agate\example_workflows\exampleTrack.kml`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/exampleTrack.kml)
 
 ![Example path in Google Earth  saved as a `.kml` and ready to be converted to a `targets` file.](images/screenshot_googleEarth_path.PNG){#fig-example-kml fig-align='center' width=90%}
 
@@ -78,7 +78,7 @@ Waypoint names can be generated one of three ways:
 
 **1. prefix**: specify a character string prefix in the function call and alphanumeric names will be created automatically. 
 
-**2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate/example_workflows/waypointNames.txt`](https://github.com/sfregosi/agate-public/tree/main/agate/example_workflows/waypointNames.txt)
+**2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate\example_workflows\waypointNames.txt`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/waypointNames.txt)
 
 **3. manual**: waypoint names are manually entered in the Command window within the function call
 
