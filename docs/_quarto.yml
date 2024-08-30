@@ -4,8 +4,8 @@ project:
 website: 
   page-navigation: true
   title: 'AGATE' 
-  site-url: "https://sfregosi.github.io/agate-public" 
-  repo-url: "https://github.com/sfregosi/agate-public"
+  site-url: "https://sfregosi.github.io/agate" 
+  repo-url: "https://github.com/sfregosi/agate"
   repo-actions: [issue]
   favicon: images/favicon.ico
   
@@ -21,8 +21,8 @@ website:
     align: center
     tools: 
       - icon: github
-        href: https://github.com/sfregosi/agate-public
-        text: 'agate-public'
+        href: https://github.com/sfregosi/agate
+        text: 'agate'
 
     style: 'docked'
     search: true
