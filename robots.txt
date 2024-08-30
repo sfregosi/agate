@@ -1,1 +1,1 @@
-Sitemap: https://sfregosi.github.io/agate-public/sitemap.xml
+Sitemap: https://sfregosi.github.io/agate/sitemap.xml

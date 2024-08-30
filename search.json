@@ -218,7 +218,7 @@
     "href": "index.html",
     "title": "agate: Acoustic Glider Analysis Tools and Environment",
     "section": "",
-    "text": "Last Update: 15 Aug 2024\nA collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals.\nThis package is very much under development and is hosted and version controlled on GitHub. My hope is that I will maintain a stable release and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in contributing to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!\nselene [dot] fregosi [at] noaa.gov or report an issue on GitHub",
+    "text": "Last Update: 30 Aug 2024\nA collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals.\nThis package is very much under development and is hosted and version controlled on GitHub. My hope is that I will maintain a stable release and then for those interested in the latest functionality, the GitHub repository can be cloned. For those interested in contributing to the package, I suggest creating a fork and using pull requests to contribute. Please contact me if you have any questions, feedback, or suggestions!\nselene [dot] fregosi [at] noaa.gov or report an issue on GitHub",
     "crumbs": [
       "Home"
     ]
