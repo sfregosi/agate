@@ -73,17 +73,17 @@ fprintf(1, 'Starting basestation file download...\n')
 
 % check for type of connection
 if isfield(CONFIG.bs, 'password')
-% set up shell connection
-ssh2_conn = ssh2_config(CONFIG.bs.host, CONFIG.bs.username, ...
-	CONFIG.bs.password);
-missionDir = ['/home/' CONFIG.glider '/p' CONFIG.glider(3:end)]; 
+	% set up shell connection
+	ssh2_conn = ssh2_config(CONFIG.bs.host, CONFIG.bs.username, ...
+		CONFIG.bs.password);
+	missionDir = ['/home/' CONFIG.glider '/p' CONFIG.glider(3:end)];
 elseif isfield(CONFIG.bs, 'keyFile')
-ssh2_conn = ssh2_config_publickey(CONFIG.bs.host, CONFIG.bs.username, ...
-	CONFIG.bs.keyFile,[]);
-% CHANGE TO CURRENT DIRECTORY HERE!!!
-ssh2_conn = ssh2_command(ssh2_conn, ...
-	['cd ../gliderjail/home/' CONFIG.glider 'current/']);
-missionDir = ['../gliderjail/home/' CONFIG.glider 'current/']; 
+	ssh2_conn = ssh2_config_publickey(CONFIG.bs.host, CONFIG.bs.username, ...
+		CONFIG.bs.keyFile,[]);
+	% CHANGE TO CURRENT DIRECTORY HERE!!!
+	ssh2_conn = ssh2_command(ssh2_conn, ...
+		['cd ../gliderjail/home/' CONFIG.glider 'current/']);
+	missionDir = ['../gliderjail/home/' CONFIG.glider 'current/'];
 else
 	fprintf(1, 'No valid basestation file set up. Exiting.\n')
 end
@@ -257,7 +257,7 @@ end
 % %%%%%%%%%%%%%%%%%
 function [downloadedFiles, df] = downloadFileType(fileList, df, fid, path_bsLocal, ssh2_conn)
 % check which files for that extension have already been downloaded and
-% download any that haven't. This works for .nc, .log, .eng., .asc, .dat, 
+% download any that haven't. This works for .nc, .log, .eng., .asc, .dat,
 % pmar and wispr
 %
 % fileList      [cell] with all files of that type present on basestation
