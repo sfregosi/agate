@@ -6,3 +6,14 @@
 CONFIG.bs.host = 'url.com';
 CONFIG.bs.username = 'pilot';
 CONFIG.bs.password = 'PsWrD';
+
+% Instead of logging into the basestation using the username and
+% password above, I can log in using a username and SSH encryption key
+% pair (i.e., with public and private keys). See online SSH
+% documentation about how to set such a key up, particularly the
+% command ssh-keygen. You need to specify both the public and private
+% key files here (and the people who operate the basestation need to
+% have your public key file). Also if you use this encryption key
+% method, comment out the CONFIG.bs.password line just above.
+CONFIG.bs.publicKeyFile  = 'C:/Users/myusername/.ssh/myPublicKey.pub';
+CONFIG.bs.privateKeyFile = 'C:/Users/myusername/.ssh/myPrivateKey';

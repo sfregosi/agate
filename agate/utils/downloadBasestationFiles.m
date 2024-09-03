@@ -44,6 +44,10 @@ function downloadBasestationFiles(CONFIG, path_bsLocal)
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+if (nargin < 2 && isfield(CONFIG.path, 'bsLocal'))
+  path_bsLocal = CONFIG.path.bsLocal;
+end
+
 %% set up cache file
 if ~exist(fullfile(path_bsLocal, 'downloaded_files_cache.txt'), 'file')
 	% create it and populate header lines
