@@ -83,10 +83,10 @@ end
 if isfield(CONFIG.map, 'scalePos')
 	scaleruler on
 	% show axes
-	setm(handlem('scaleruler1'), 'RulerStyle', 'patches', 'FontSize', 14, ...
+	setm(handlem('scaleruler'), 'RulerStyle', 'patches', 'FontSize', 14, ...
 		'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2));
 	if isfield(CONFIG.map, 'scaleMajor') && isfield(CONFIG.map, 'scaleMinor')
-		setm(handlem('scaleruler1'), 'MajorTick', CONFIG.map.scaleMajor, ...
+		setm(handlem('scaleruler'), 'MajorTick', CONFIG.map.scaleMajor, ...
 			'MinorTick', CONFIG.map.scaleMinor);
 	end
 end
@@ -141,7 +141,7 @@ end
 %% plot land
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
 	'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
-geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
+geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k');
 
 end
 
