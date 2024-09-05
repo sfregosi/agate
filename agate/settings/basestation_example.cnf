@@ -1,19 +1,24 @@
 % agate basestation configuration
-% used to privately store username and password info for individual basestation
+% used to privately store username and password or secure key info for 
+% individual basestation
 % Guide for creating configuration files:  
 %    https://sfregosi.github.io/agate-public/configuration.html
 
-CONFIG.bs.host = 'url.com';
+CONFIG.bs.host = 'url.com'; # e.g., 'seaglider.pub'
 CONFIG.bs.username = 'pilot';
+
+% For authentication to log in to the server and transfer files, you can
+% specify either a password OR a SSH encryption key pair (publicKeyFile and 
+% privateKeyFile. Typically the public key file ends in '.pub', though it 
+% doesn't have to. Choose either a password or key pair and use % to comment 
+% out the one not being used:
+
 CONFIG.bs.password = 'PsWrD';
 
-% Instead of logging into the basestation using the username and
-% password above, I can log in using a username and SSH encryption key
-% pair (i.e., with public and private keys). See online SSH
-% documentation about how to set such a key up, particularly the
-% command ssh-keygen. You need to specify both the public and private
-% key files here (and the people who operate the basestation need to
-% have your public key file). Also if you use this encryption key
-% method, comment out the CONFIG.bs.password line just above.
+% Or this:
+
 CONFIG.bs.publicKeyFile  = 'C:/Users/myusername/.ssh/myPublicKey.pub';
 CONFIG.bs.privateKeyFile = 'C:/Users/myusername/.ssh/myPrivateKey';
+
+% For more information on SSH ecnryption keys, and how to set such a 
+% key up, see online SSH documentation, particularly the command ssh-keygen.
