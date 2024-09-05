@@ -33,7 +33,8 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-testConfig = 'C:\Users\Selene.Fregosi\Documents\GitHub\glider-CalCurCEAS\MATLAB\agate_config_sg679_CalCurCEAS_Aug2024.cnf';
+testConfig = ['C:\Users\Selene.Fregosi\Documents\GitHub\glider-CalCurCEAS\' ...
+	'MATLAB\fregosi_config_files\agate_config_sg679_CalCurCEAS_Aug2024.cnf'];
 CONFIG = agate(testConfig);
 
 % specify the local piloting folder for this trip in CONFIG.path.mission
@@ -46,7 +47,8 @@ mkdir(path_status);
 mkdir(path_bsLocal);
 
 %% (1) download files from the basestation
-downloadBasestation3Files(CONFIG, path_bsLocal)
+% downloadBasestation3Files(CONFIG, path_bsLocal)
+downloadBasestationFiles1(CONFIG);
 
 % To plot Seaglider Piloting Tools plots at this point, run DiveData below
 % DiveData
@@ -55,7 +57,7 @@ downloadBasestation3Files(CONFIG, path_bsLocal)
 
 % create piloting parameters (pp) table from downloaded basestation files
 pp = extractPilotingParams(CONFIG, fullfile(CONFIG.path.mission, 'basestationFiles'), ...
-	fullfile(CONFIG.path.mission, 'flightStatus'), 0);
+	fullfile(CONFIG.path.mission, 'flightStatus'), 1);
 % change last argument from 0 to 1 to load existing data and append new dives/rows
 
 % save it to the default location as .mat and .xlsx
