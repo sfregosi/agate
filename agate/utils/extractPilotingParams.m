@@ -326,63 +326,63 @@ for d = loopNums
 	end
 
 	%% wispr outputs
-	if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1 % wispr pam system is active
-
-		% WISPR reported analysis and processing durations
-		% for now, only reading 'a' files from glider descent; 'b' files all blank
-		wsFiles = dir(fullfile(path_bsLocal, ['ws' num2str(d, '%04.f') 'az']));
-		bytes = [wsFiles.bytes];
-		wsFiles = wsFiles(bytes > 2,:);
-		for wf = 1:length(wsFiles)
-			ws = readws(fullfile(path_bsLocal, wsFiles(wf).name));
-		end
-		pp.wsAnDurDive_min(d) = ws.anDur_min;
-		pp.wsProcTimeDive_sec(d) = ws.procTime_sec;
-		pp.wsAnDurClimb_min(d) = NaN;
-		pp.wsProcTimeClimb_sec(d) = NaN;
-
-		% seaglider reported operating duration
-		idx = strfind(x, '$SENSOR_SECS');
-		idxComma = regexp(x(idx:end), '\,');
-		sVal = round(str2double(x(idx+idxComma(8):idx+idxComma(9)-2)));
-		pp.WS_SEC(d) = sVal;
-		pp.WS_MIN(d) = sVal/60;
-
-		% power draw
-		%         idx = strfind(x, '$SENSOR_MAMPS');
-		%         idxComma = regexp(x(idx:end), '\,');
-		%         sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
-		%         pp.WS_MAMPS(d) = sVal;
-		WS_MAMPS = 33.3; % estimate 0.5 W @ 15 v = 33.3 mAmps
-
-		% seaglider on board battery is not accounting for correct WISPR
-		% power draw and RPi/detector power draw
-
-		% kJ used ***EXPERIMENTAL***
-		% get base kJ just used by WISPR
-		kJ_base = calckJ(pp.WS_SEC(d), WS_MAMPS, 15);
-		% then get kJ used by RPi...this is very rough estimate
-		RPi_MAMPS = 400; % estimate 6 W @ 15 V = 400 mAmps
-		RPi_SECS = pp.wsProcTimeDive_sec(d)*2 + 10; % from ws****az file,
-		% x2 because only dive reported,
-		% + 10 sec for start up
-		kJ_RPi = calckJ(RPi_SECS, RPi_MAMPS, 15);
-		pp.WS_kJ(d) = kJ_base + kJ_RPi;
-
-		% calculate a WISPR ampHr to be added to the cumulative
-		% ampHrConsumed value output in the .log file below
-		Ah_base = calcAh(pp.WS_SEC(d), WS_MAMPS);
-		Ah_RPi = calcAh(RPi_SECS, RPi_MAMPS);
-
-		% seaglider on board battery is not accounting for correct WISPR
-		% power draw and RPi/detector power draw
-		% calculate a WISPR ampHr to be added to the cumulative
-		% ampHrConsumed value output in the .log file below
-		pp.WS_ampHr(d) = Ah_base + Ah_RPi;
-		% could also calculate this from total kJ
-		%         pp.WS_ampHr(d) = pp.WS_kJ(d)/3.6/15;
-
-	end
+% 	if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1 % wispr pam system is active
+% 
+% 		% WISPR reported analysis and processing durations
+% 		% for now, only reading 'a' files from glider descent; 'b' files all blank
+% 		wsFiles = dir(fullfile(path_bsLocal, ['ws' num2str(d, '%04.f') 'az']));
+% 		bytes = [wsFiles.bytes];
+% 		wsFiles = wsFiles(bytes > 2,:);
+% 		for wf = 1:length(wsFiles)
+% 			ws = readws(fullfile(path_bsLocal, wsFiles(wf).name));
+% 		end
+% 		pp.wsAnDurDive_min(d) = ws.anDur_min;
+% 		pp.wsProcTimeDive_sec(d) = ws.procTime_sec;
+% 		pp.wsAnDurClimb_min(d) = NaN;
+% 		pp.wsProcTimeClimb_sec(d) = NaN;
+% 
+% 		% seaglider reported operating duration
+% 		idx = strfind(x, '$SENSOR_SECS');
+% 		idxComma = regexp(x(idx:end), '\,');
+% 		sVal = round(str2double(x(idx+idxComma(8):idx+idxComma(9)-2)));
+% 		pp.WS_SEC(d) = sVal;
+% 		pp.WS_MIN(d) = sVal/60;
+% 
+% 		% power draw
+% 		%         idx = strfind(x, '$SENSOR_MAMPS');
+% 		%         idxComma = regexp(x(idx:end), '\,');
+% 		%         sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
+% 		%         pp.WS_MAMPS(d) = sVal;
+% 		WS_MAMPS = 33.3; % estimate 0.5 W @ 15 v = 33.3 mAmps
+% 
+% 		% seaglider on board battery is not accounting for correct WISPR
+% 		% power draw and RPi/detector power draw
+% 
+% 		% kJ used ***EXPERIMENTAL***
+% 		% get base kJ just used by WISPR
+% 		kJ_base = calckJ(pp.WS_SEC(d), WS_MAMPS, 15);
+% 		% then get kJ used by RPi...this is very rough estimate
+% 		RPi_MAMPS = 400; % estimate 6 W @ 15 V = 400 mAmps
+% 		RPi_SECS = pp.wsProcTimeDive_sec(d)*2 + 10; % from ws****az file,
+% 		% x2 because only dive reported,
+% 		% + 10 sec for start up
+% 		kJ_RPi = calckJ(RPi_SECS, RPi_MAMPS, 15);
+% 		pp.WS_kJ(d) = kJ_base + kJ_RPi;
+% 
+% 		% calculate a WISPR ampHr to be added to the cumulative
+% 		% ampHrConsumed value output in the .log file below
+% 		Ah_base = calcAh(pp.WS_SEC(d), WS_MAMPS);
+% 		Ah_RPi = calcAh(RPi_SECS, RPi_MAMPS);
+% 
+% 		% seaglider on board battery is not accounting for correct WISPR
+% 		% power draw and RPi/detector power draw
+% 		% calculate a WISPR ampHr to be added to the cumulative
+% 		% ampHrConsumed value output in the .log file below
+% 		pp.WS_ampHr(d) = Ah_base + Ah_RPi;
+% 		% could also calculate this from total kJ
+% 		%         pp.WS_ampHr(d) = pp.WS_kJ(d)/3.6/15;
+% 
+% 	end
 
 
 	%% battery usage
