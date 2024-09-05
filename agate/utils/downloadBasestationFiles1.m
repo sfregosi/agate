@@ -33,10 +33,10 @@ cd(originalDir);		% restore user's original current directory
 % Open connection using either username/password or username/encryptionkey.
 if (isfield(CONFIG.bs, 'password') && ~isempty(CONFIG.password))
   % Use password.
-  s = matlabSFTP('seaglider.pub', CONFIG.username, CONFIG.password);
+  s = matlabSFTP(CONFIG.bs.host, CONFIG.username, CONFIG.password);
 elseif(isfield(CONFIG.bs, 'publicKeyFile') && isfield(CONFIG.bs, 'privateKeyFile'))
   % Use encryption key.
-  s = matlabSFTP('seaglider.pub', CONFIG.bs.username, ...
+  s = matlabSFTP(CONFIG.bs.host, CONFIG.bs.username, ...
     "PublicKeyFile", CONFIG.bs.publicKeyFile, ...
     "PrivateKeyFile", CONFIG.bs.privateKeyFile);
 else
@@ -63,17 +63,28 @@ try			% use try/catch so we always close the sftp connection
   % Download the files.
   destDir = CONFIG.path.bsLocal;
   downloadFileType(s, [pGlider '.*\.nc$'],  '.nc',  allRemoteFiles, destDir);
+  fprintf(1, '**End of .nc files**');
   downloadFileType(s, [pGlider '.*\.log$'], '.log', allRemoteFiles, destDir);
+  fprintf(1, '**End of .log files**');
   downloadFileType(s, [pGlider '.*\.eng$'], '.eng', allRemoteFiles, destDir);
+  fprintf(1, '**End of .eng files**');
   downloadFileType(s, [pGlider '.*\.asc$'], '.asc', allRemoteFiles, destDir);
+  fprintf(1, '**End of .asc files**');
   downloadFileType(s, [pGlider '.*\.dat$'], '.dat', allRemoteFiles, destDir);
+  fprintf(1, '**End of .dat files**');
   if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1         % PMAR files?
     % This pattern matches filenames starting with pm and having >=6 characters.
     downloadFileType(s, '^pm.....*', 'pm', allRemoteFiles, destDir);
+	fprintf(1, '**End of PMAR folders**');
   end
   if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1         % WISPR files?
     % This pattern matches filenames starting with ws and having >=6 characters.
-    downloadFileType(s, '^ws.....*', 'ws', allRemoteFiles, destDir);
+    toGet = downloadFileType(s, '^ws.....*', 'ws', allRemoteFiles, destDir);
+% 	% unzip these files so they are readable % THIS DOES NOT WORK!!! 2024 
+% 	for wsf = 1:length(toGet)
+% 		processWisprDetFile(CONFIG, toGet{wsf});
+% 	end
+	disp('**End of wispr files**');
   end
   s.close();
 catch ERR
@@ -84,16 +95,21 @@ end
 end
 
 %% downloadFileType
-function downloadFileType(s, pattern, patName, allRemoteFiles, localDestDir)
-% Check which files with extension 'ext' have already been downloaded over SFTP
-% connection s and download any that haven't. This works for any extension (.nc,
-% .log, .eng., etc.). 
-%    s			open SFTP connection
-%    pattern		regular expression for matching remote file names
-%    patName		user-friendly name for pattern for showing progress
-%    allRemoteFiles	cell array of all filenames on the remote machine in the
-%			current (i.e., CONFIG.path.bsRemote) directory
-%    localDestDir	local directory where downloaded files are deposited
+function toGet = downloadFileType(s, pattern, patName, allRemoteFiles, localDestDir)
+% Check which files with extension 'ext' have already been downloaded over
+% SFTP connection s and download any that haven't. This works for any 
+% extension (.nc, .log, .eng., etc.). 
+%
+% Inputs: 
+%    s              open SFTP connection
+%    pattern        [char] regular expression for matching remote file names
+%    patName        [char] user-friendly name for pattern for showing progress
+%    allRemoteFiles cell array of all filenames on the remote machine in 
+%                   the current (i.e., CONFIG.path.bsRemote) directory
+%    localDestDir   [char] local directory where downloaded files are deposited
+%
+% Outputs:
+%    toGet          [cell array] files that were downloaded, optional output
 
 % Make a list of remote files matching pattern.
 regexp_match = regexp(allRemoteFiles, pattern);

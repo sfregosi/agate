@@ -20,7 +20,7 @@ function processWisprDetFile(CONFIG, filename)
 %   Inputs:
 %       CONFIG     agate mission configuration file with relevant mission 
 %                  and glider information. Minimum needed for this function
-%                  are CONFIG.bsLocal
+%                  are CONFIG.path.bsLocal
 %                  See exaxmple config file and config file help for more
 %                  detail on each field: 
 %                  https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf
@@ -46,18 +46,18 @@ function processWisprDetFile(CONFIG, filename)
 
 % Unzip the file. gunzip creates an unzipped version without any extension.
 [~, name, ext] = fileparts(filename);
-gunzip(fullfile(CONFIG.bsLocal, [name, ext]));	% makes unzipped file sans ext
+gunzip(fullfile(CONFIG.path.bsLocal, [name, ext]));	% makes unzipped file sans ext
 
 % Remove the stray ^M and ending "W>" characters. Done by reading the whole
 % file, removing those characters, and writing back what's left.
-fp = fopen(fullfile(CONFIG.bsLocal, name), 'r');
+fp = fopen(fullfile(CONFIG.path.bsLocal, name), 'r');
 str = fread(fp).';				% read entire file as uint8s
 fclose(fp);
 str(str == 13) = [];				% remove ^M characters
 if (length(str) >= 2 && strcmp(char(str(end-1 : end)), 'W>'))
 	str = str(1 : end-2);			% remove trailing "W>"
 end
-fp = fopen(fullfile(CONFIG.bsLocal, name), 'w');
+fp = fopen(fullfile(CONFIG.path.bsLocal, name), 'w');
 fwrite(fp, str);				% write str as uint8s
 fclose(fp);
 
