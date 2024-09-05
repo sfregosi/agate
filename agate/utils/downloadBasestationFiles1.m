@@ -63,19 +63,19 @@ try			% use try/catch so we always close the sftp connection
   % Download the files.
   destDir = CONFIG.path.bsLocal;
   downloadFileType(s, [pGlider '.*\.nc$'],  '.nc',  allRemoteFiles, destDir);
-  fprintf(1, '**End of .nc files**');
+  fprintf(1, '**End of .nc files**\n');
   downloadFileType(s, [pGlider '.*\.log$'], '.log', allRemoteFiles, destDir);
-  fprintf(1, '**End of .log files**');
+  fprintf(1, '**End of .log files**\n');
   downloadFileType(s, [pGlider '.*\.eng$'], '.eng', allRemoteFiles, destDir);
-  fprintf(1, '**End of .eng files**');
+  fprintf(1, '**End of .eng files**\n');
   downloadFileType(s, [pGlider '.*\.asc$'], '.asc', allRemoteFiles, destDir);
-  fprintf(1, '**End of .asc files**');
+  fprintf(1, '**End of .asc files**\n');
   downloadFileType(s, [pGlider '.*\.dat$'], '.dat', allRemoteFiles, destDir);
-  fprintf(1, '**End of .dat files**');
+  fprintf(1, '**End of .dat files**\n');
   if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1         % PMAR files?
     % This pattern matches filenames starting with pm and having >=6 characters.
     downloadFileType(s, '^pm.....*', 'pm', allRemoteFiles, destDir);
-	fprintf(1, '**End of PMAR folders**');
+	fprintf(1, '**End of PMAR folders**\n');
   end
   if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1         % WISPR files?
     % This pattern matches filenames starting with ws and having >=6 characters.
@@ -84,7 +84,7 @@ try			% use try/catch so we always close the sftp connection
 % 	for wsf = 1:length(toGet)
 % 		processWisprDetFile(CONFIG, toGet{wsf});
 % 	end
-	disp('**End of wispr files**');
+	disp('**End of wispr files\n**');
   end
   s.close();
 catch ERR
