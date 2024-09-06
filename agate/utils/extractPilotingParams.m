@@ -13,6 +13,9 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %       the table is to enable a pilot to look at what parameters were
 %       changed, and how those changes manifested in the gliders flight,
 %       from dive to dive.
+%   
+%       **NOTE** WISPR processing/plotting is not currently working
+%       (2024-09-06) following updates to WISPR software?
 %
 %   Inputs:
 %       CONFIG         global variable defined by agate mission
@@ -44,7 +47,7 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   06 July 2017
-%   Updated:        24 April 2023
+%   Updated:        06 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
