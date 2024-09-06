@@ -29,7 +29,7 @@
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	01 June 2023
-%	Updated:
+%	Updated:        06 September 2024
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
@@ -39,13 +39,14 @@ CONFIG = agate('agate_mission_config.cnf');
 % set up nested folders for basestation files and piloting outputs
 path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store output plots/tables
 path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files
+% this also should be set as CONFIG.path.bsLocal in the mission cnf file
 
 % make the dirs if they don't exist
 mkdir(path_status);
 mkdir(path_bsLocal);
 
 %% (1) download files from the basestation
-downloadBasestationFiles(CONFIG, path_bsLocal)
+downloadBasestationFiles(CONFIG)
 
 % To plot Seaglider Piloting Tools plots at this point, run DiveData below
 % DiveData
@@ -111,7 +112,7 @@ tm = printTravelMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, 'targets'), 1)
 
 % specify planned recovery date and time
 recovery = '2023-00-00 00:00:00';
-recTZ = 'Pacific/Los_Angeles';
+recTZ = 'America/Los_Angeles';
 tm = printRecoveryMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, 'targets'), ...
 recovery, recTZ, 1);
 
