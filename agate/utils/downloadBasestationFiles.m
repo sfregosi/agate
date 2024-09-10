@@ -1,21 +1,67 @@
-function downloadBasestationFiles1(CONFIG)
-%downloadBasestationFiles1	download new glider files from basestation
-% 
-% downloadBasestationFiles1(CONFIG)
-%   Download all .log, .nc, .asc, .eng, .dat, WISPR (ws*), and PMAR (pm*) files
-%   from a basestation described in CONFIG.bs. This is a replacement for the
-%   older downloadBasestationFiles() routine. In addition to CONFIG.bs, also
-%   uses CONFIG.path.bsLocal, which says where to deposit the downloaded files.
+function downloadBasestationFiles(CONFIG)
+%DOWNLOADBASESTATIONFILES  download basestation files locally via SFTP
+%
+%   Syntax:
+%      DOWNLOADBASESTATIONFILES(CONFIG)
+%
+%   Description:
+%       Download variety of glider piloting files from the remote
+%       basestation using SFTP. Downloads all new (not previously
+%       downloaded) .nc, .log, .eng, .asc, .dat, (glider data files) and
+%       WISPR (ws*) files. 
+%
+%       Download of PMAR (pm*) files/folders is untested. 
+%       Previous version also processed/unzipped ws* files using
+%       `processWisprDetFile` but that is currently not working so that
+%       step is commented out. 
+%       Previous version also downloaded pdos and cmdfiles (glider piloting
+%       files) but that is not included here. 
+%
+%       To redownload a file (e.g., if corrupt due to incomplete call in), 
+%       delete the file and re-run. The previous version generated a
+%       'cache' file that listed all previously downloaded files for speed.
+%       This could be implemented in the future. 
+%
+%   Inputs:
+%       CONFIG      [struct] mission/agate configuration variable.
+%                   Required fields: CONFIG.bs.cnfFile (path to basestation
+%                   configuration file containing url, username and either
+%                   password or SSH key pair), CONFIG.path.bsLocal (folder
+%                   to deposit downloaded files), and CONFIG.path.bsRemote
+%                   (folder on basestation that contains the relevant files
+%                   e.g., the 'current' folder if using
+%                   basestation3/seaglider.pub)
+%
+%   Outputs:
+%       Downloads files directly to specified CONFIG.path.bsLocal
+%
+%   Examples:
+%       downloadBasestationFiles(CONFIG)
+%
+%   See also
+%
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%       D. Mellinger <David.Mellinger@oregonstate.edu> <https://github.com/DMellinger>
+%
+%   FirstVersion:   7/22/2016.
+%                   Originally for AFFOGATO project/CatBasin deployment
+%   Updated:        10 September 2024
+%
+%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Get the right sftp() function. Since sftp can exist in multiple places, we
-% need the right one - the one MATLAB has in its 'io' toolbox. (I thought using
-% "matlab.io.sftp()" would work, but it doesn't.) 
+
+% Get the right sftp() function. Since sftp can exist in multiple places, 
+% we need the right one - the one MATLAB has in its 'io' toolbox. (I 
+% thought using "matlab.io.sftp()" would work, but it doesn't.) 
 % 
-% Find the right sftp and get a handle to it. To find it among all the places
-% where sftp() exists, find one whose path includes "toolbox/matlab" (or
-% "toolbox\matlab"). Then cd to that directory, make a function handle (which
-% will always be to a function in the current directory), and cd back. There has
-% to be a better way to do this!
+% Find the right sftp and get a handle to it. To find it among all the 
+% places where sftp() exists, find one whose path includes "toolbox/matlab"
+% (or"toolbox\matlab"). Then cd to that directory, make a function handle 
+% (which will always be to a function in the current directory), and cd 
+% back. There has to be a better way to do this!
+
 originalDir = pwd();
 try		% use try/catch to cd back to originalDir in case of error
   all_sftps = which('-all', 'sftp');	% cell array of all sftp.m locations

@@ -18,27 +18,29 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %       (2024-09-06) following updates to WISPR software?
 %
 %   Inputs:
-%       CONFIG         global variable defined by agate mission
-%                      configuration file
-%       path_bsLocal   path to local basestation files. Can be defined in
-%                      CONFIG file, or elsewhere. Suggested path is
+%       CONFIG         [struct] mission/agate configuration variable.
+%                      Required fields: CONFIG.glider, CONFIG.sgVer,
+%                      CONFIG.pm section (if running PMAR) or CONFIG.ws (if
+%                      running WISPR - NOT WORKING)
+%       path_bsLocal   [char] path to local basestation files. Can be 
+%                      defined in CONFIG file (as CONFIG.path.bs) or as
+%                      input argument. Suggested path is:
 %                      fullfile(CONFIG.path.mission, 'basestationFiles')
-%       path_status    path to 'flightStatus' output folder used during
-%                      piloting. Can be defined in CONFIG file or on its
-%                      own. Suggested path is
-%                      fullfile(CONFIG.path.mission, 'flightStatus'). This
-%                      is used to load a previously made table to speed up
-%                      processing by only running new dives
-%       preload        optional argument to preload an existing table.
-%                      Default is TRUE(1) to preload to save time (will
-%                      only process new dives. Change to FALSE (0) to
-%                      overwrite from scratch (used in development).
+%       path_status    [char] path to 'flightStatus' output folder. 
+%                      Suggested path is: 
+%                      fullfile(CONFIG.path.mission, 'flightStatus'). 
+%                      This is used to load a previously made table to 
+%                      speed up processing by only running new dives
+%       preload        [double] optional argument to preload an existing 
+%                      table. Default is 1 to preload to save time (will 
+%                      only process new dives. Change to 0 to overwrite 
+%                      and create table from scratch (used in development).
 %
 %   Outputs:
-%       pp             piloting parameters table
+%       pp             [table] piloting parameters table
 %
 %   Examples:
-%       pp = extractPilotingParams(CONFIG, path_bsLocal, path_status);
+%       pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, 0);
 %
 %   See also
 %
@@ -47,7 +49,7 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   06 July 2017
-%   Updated:        06 September 2024
+%   Updated:        10 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
