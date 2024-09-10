@@ -108,7 +108,7 @@ mkdir(path_bsLocal);
 
 ### Download all basestation files
 
-Use `downloadBasestationFiles` to automatically download various basestation files to a local machine for further examination. 
+Use `downloadBasestationFiles` to automatically download various basestation files to a local machine for further examination. This function requires both a mission configuration file and a [basestation configuration file](configuration.qmd#basestation-configuration-file) that contains the host url, username, and either a password or paths to an SSH key pair. 
 
 Below is example code to run this step. This can be saved as a script that makes it easy to re-run each time the glider surfaces, or it can be typed directly into the MATLAB Command Window. 
 
@@ -126,7 +126,7 @@ mkdir(path_status);
 mkdir(path_bsLocal);
 
 % download basestation files
-downloadBasetationFiles(CONFIG, path_bsLocal)
+downloadBasetationFiles(CONFIG)
 
 ```
 
@@ -136,8 +136,11 @@ downloadBasetationFiles(CONFIG, path_bsLocal)
 
 ```matlab
 %% extract various piloting parameters and values reported by .log file
+pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, 0);
+% the last argument (0) indicates that you don't want to preload an existing pp 
+% variable that has been saved as a .mat file. Preloading saves time, but should
+% be set to 0 the first time through
 
-pp = extractPilotingParams(CONFIG, path_bsLocal, path_status);
 % print errors for quick glance/check
 pp.ERRORS(end)
 

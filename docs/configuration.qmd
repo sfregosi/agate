@@ -54,6 +54,8 @@ CONFIG.path.analysis = 'C:\Users\User.Name\project\analysis';
 CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
 % specify path to store downloaded basestation files
 CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
+% specify path to remote files (e.g., glider's current/mission folder)
+CONFIG.path.bsRemote = '/home/jails/group/gliderjail/home/sgXXX/current';
 ```
 
 #### Optional acoustics settings
@@ -146,14 +148,19 @@ CONFIG.plots.figNumList = CONFIG.plots.figSeed + [0 1 2 3 4 5 6 7 8 9];
 
 ## Basestation configuration file
 
-The path and filename for basestation configuration file is specified in the mission configuration file. An example is located in the `agate/settings` folder: [`basestation_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/basestation_example.cnf). 
+The path and file name for basestation configuration file is specified with `CONFIG.bs.cnfFile` in the mission configuration file. An example is located in the `agate/settings` folder: [`basestation_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/basestation_example.cnf). 
 
-This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group's basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the following lines, with the inputs updated for a particular basestation:
+This is a separate configuration file because it typically does not change between missions and gliders and contains potentially sensitive information for the SSH connection to a research group's basestation. This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons. This file must contain the below lines, with the inputs updated for a particular basestation. It can work with basestation access via a username and password or a username and SSH key pair to authenticate; the one not used should just be excluded or commented out with a `%`.
 
 ```matlab
 CONFIG.bs.host = 'url.com';
 CONFIG.bs.username = 'pilot';
+
+% authenticate via password
 CONFIG.bs.password = 'PsWrD';
+% OR key pair
+CONFIG.bs.publicKeyFile  = 'C:/Users/User.Name/.ssh/myPublicKey.pub';
+CONFIG.bs.privateKeyFile = 'C:/Users/User.Name/.ssh/myPrivateKey';
 ```
 
 <sub>[Back to top](#)</sub>
