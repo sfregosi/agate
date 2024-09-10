@@ -13,7 +13,7 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %       the table is to enable a pilot to look at what parameters were
 %       changed, and how those changes manifested in the gliders flight,
 %       from dive to dive.
-%   
+%
 %       **NOTE** WISPR processing/plotting is not currently working
 %       (2024-09-06) following updates to WISPR software?
 %
@@ -22,18 +22,18 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %                      Required fields: CONFIG.glider, CONFIG.sgVer,
 %                      CONFIG.pm section (if running PMAR) or CONFIG.ws (if
 %                      running WISPR - NOT WORKING)
-%       path_bsLocal   [char] path to local basestation files. Can be 
+%       path_bsLocal   [char] path to local basestation files. Can be
 %                      defined in CONFIG file (as CONFIG.path.bs) or as
 %                      input argument. Suggested path is:
 %                      fullfile(CONFIG.path.mission, 'basestationFiles')
-%       path_status    [char] path to 'flightStatus' output folder. 
-%                      Suggested path is: 
-%                      fullfile(CONFIG.path.mission, 'flightStatus'). 
-%                      This is used to load a previously made table to 
+%       path_status    [char] path to 'flightStatus' output folder.
+%                      Suggested path is:
+%                      fullfile(CONFIG.path.mission, 'flightStatus').
+%                      This is used to load a previously made table to
 %                      speed up processing by only running new dives
-%       preload        [double] optional argument to preload an existing 
-%                      table. Default is 1 to preload to save time (will 
-%                      only process new dives. Change to 0 to overwrite 
+%       preload        [double] optional argument to preload an existing
+%                      table. Default is 1 to preload to save time (will
+%                      only process new dives. Change to 0 to overwrite
 %                      and create table from scratch (used in development).
 %
 %   Outputs:
@@ -87,14 +87,25 @@ numDives = max([logFileNums; ncFileNums]); % get max of list of dive nums
 diveList = [1:numDives]';
 
 % set up output table
-if preload % if it already exists...preload it to save time.
-	if exist(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']), 'file')
-		pptmp = load(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']));
-	elseif ~exist(fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']), 'file')
-		% prompt to select file to load
-		[fn, path] = uigetfile(fullfile(path_status, '*.mat*'), 'Select piloting params table');
-		pptmp = load(fullfile(path, fn));
+
+% try to preload an existing table to save processing time
+if preload
+	preloadFile = fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']);
+	% if file doesn't exist, prompt to choose one
+	if ~exist(preloadFile, 'file')
+		[fn, path] = uigetfile(fullfile(path_status, '*.mat*'), ...
+			'Select piloting params table');
+		if fn == 0 && path == 0
+			fprintf(1, '.mat selection canceled, skipping preload.\n')
+			preload = 0;
+		else
+			preloadFile = fullfile(path, fn);
+		end
 	end
+end
+
+if preload
+	pptmp = load(preloadFile);
 	fieldNames = fields(pptmp);
 	pp = pptmp.(fieldNames{1}); %pp(148:150,:) = [];
 	% which dives need to be newly processed?
@@ -138,20 +149,24 @@ for d = loopNums
 	idxComma = regexp(x(idxST:idxBreak), '\,');
 	sLatDM = x(idxST + idxComma(3):idxST + idxComma(4) - 2);
 	idxPer = regexp(sLatDM, '\.', 'once');
-	sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), str2double(sLatDM(idxPer-2:end))]);
+	sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), ...
+		str2double(sLatDM(idxPer-2:end))]);
 	sLonDM = x(idxST + idxComma(4):idxST + idxComma(5) - 2);
 	idxPer = regexp(x(idxST + idxComma(4):idxBreak), '\.', 'once');
-	sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), str2double(sLonDM(idxPer-2:end))]);
+	sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), ...
+		str2double(sLonDM(idxPer-2:end))]);
 	pp.startGPS{d} = [sLatDD sLonDD];
 
 	% end lat/lon
 	idxComma = regexp(x(idxET:end), '\,');
 	eLatDM = x(idxET + idxComma(3):idxET + idxComma(4) - 2);
 	idxPer = regexp(eLatDM, '\.', 'once');
-	eLatDD = degmin2decdeg([str2double(eLatDM(1:idxPer-3)), str2double(eLatDM(idxPer-2:end))]);
+	eLatDD = degmin2decdeg([str2double(eLatDM(1:idxPer-3)), ...
+		str2double(eLatDM(idxPer-2:end))]);
 	eLonDM = x(idxET + idxComma(4):idxET + idxComma(5) - 2);
 	idxPer = regexp(x(idxET + idxComma(4):end), '\.', 'once');
-	eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), str2double(eLonDM(idxPer-2:end))]);
+	eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), ...
+		str2double(eLonDM(idxPer-2:end))]);
 	pp.endGPS{d} = [eLatDD eLonDD];
 
 	% actual start and end locations
@@ -188,7 +203,8 @@ for d = loopNums
 
 	%% actual depth, duration, distance traveled summaries
 	% actual duration
-	pp.diveDur_min(d,1) = round(minutes(pp.diveEndTime(d,1) - pp.diveStartTime(d,1)));
+	pp.diveDur_min(d,1) = round(minutes(pp.diveEndTime(d,1) - ...
+		pp.diveStartTime(d,1)));
 	% actual depth
 	if ~isempty(ncFileName)
 		depth = ncread(ncFileName, 'eng_depth');
@@ -205,7 +221,8 @@ for d = loopNums
 	% target dive duration, depth, max slope and buoy
 	flightList = {'$T_DIVE', '$D_TGT', '$GLIDE_SLOPE', '$MAX_BUOY'};
 	for c = 1:length(flightList)
-		pp.(flightList{c}(2:end))(d) = str2double(parseLogToBreak(x, flightList{c}));
+		pp.(flightList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
+			flightList{c}));
 	end
 
 	%% glider calculated target speed, pitch, and glide angle
@@ -246,13 +263,15 @@ for d = loopNums
 	centersList = {'$C_VBD', '$C_PITCH', '$PITCH_GAIN', ...
 		'$C_ROLL_DIVE', '$C_ROLL_CLIMB'};
 	for c = 1:length(centersList)
-		pp.(centersList{c}(2:end))(d) = str2double(parseLogToBreak(x, centersList{c}));
+		pp.(centersList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
+			centersList{c}));
 	end
 
 	%% pressure and humidity
 	safetyList = {'$HUMID', '$INTERNAL_PRESSURE'};
 	for c = 1:length(safetyList)
-		pp.(safetyList{c}(2:end))(d) = str2double(parseLogToBreak(x, safetyList{c}));
+		pp.(safetyList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
+			safetyList{c}));
 	end
 
 	%% pmar outputs
@@ -296,7 +315,8 @@ for d = loopNums
 		paFolders = dir(fullfile(path_bsLocal, ['pm' num2str(d,'%04.f') '*']));
 
 		for pf = 1:length(paFolders)
-			xp = fileread(fullfile(path_bsLocal, paFolders(pf).name, 'pm_ch00.eng'));
+			xp = fileread(fullfile(path_bsLocal, paFolders(pf).name, ...
+				'pm_ch00.eng'));
 			val = str2double(parseLogToBreak(xp, '%datafiles:'));
 			if strcmp(paFolders(pf).name(end), 'a')
 				pp.numFilesDive(d) = val;
@@ -304,7 +324,8 @@ for d = loopNums
 				pp.numFilesClimb(d) = val;
 			end
 		end
-		pp.numFiles(d) = sum([pp.numFilesDive(d) pp.numFilesClimb(d)], 'omitnan');
+		pp.numFiles(d) = sum([pp.numFilesDive(d) pp.numFilesClimb(d)], ...
+			'omitnan');
 
 		% space used in that dive
 		% first set up this column (Want it to come before by-card space
@@ -331,63 +352,63 @@ for d = loopNums
 	end
 
 	%% wispr outputs
-% 	if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1 % wispr pam system is active
-% 
-% 		% WISPR reported analysis and processing durations
-% 		% for now, only reading 'a' files from glider descent; 'b' files all blank
-% 		wsFiles = dir(fullfile(path_bsLocal, ['ws' num2str(d, '%04.f') 'az']));
-% 		bytes = [wsFiles.bytes];
-% 		wsFiles = wsFiles(bytes > 2,:);
-% 		for wf = 1:length(wsFiles)
-% 			ws = readws(fullfile(path_bsLocal, wsFiles(wf).name));
-% 		end
-% 		pp.wsAnDurDive_min(d) = ws.anDur_min;
-% 		pp.wsProcTimeDive_sec(d) = ws.procTime_sec;
-% 		pp.wsAnDurClimb_min(d) = NaN;
-% 		pp.wsProcTimeClimb_sec(d) = NaN;
-% 
-% 		% seaglider reported operating duration
-% 		idx = strfind(x, '$SENSOR_SECS');
-% 		idxComma = regexp(x(idx:end), '\,');
-% 		sVal = round(str2double(x(idx+idxComma(8):idx+idxComma(9)-2)));
-% 		pp.WS_SEC(d) = sVal;
-% 		pp.WS_MIN(d) = sVal/60;
-% 
-% 		% power draw
-% 		%         idx = strfind(x, '$SENSOR_MAMPS');
-% 		%         idxComma = regexp(x(idx:end), '\,');
-% 		%         sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
-% 		%         pp.WS_MAMPS(d) = sVal;
-% 		WS_MAMPS = 33.3; % estimate 0.5 W @ 15 v = 33.3 mAmps
-% 
-% 		% seaglider on board battery is not accounting for correct WISPR
-% 		% power draw and RPi/detector power draw
-% 
-% 		% kJ used ***EXPERIMENTAL***
-% 		% get base kJ just used by WISPR
-% 		kJ_base = calckJ(pp.WS_SEC(d), WS_MAMPS, 15);
-% 		% then get kJ used by RPi...this is very rough estimate
-% 		RPi_MAMPS = 400; % estimate 6 W @ 15 V = 400 mAmps
-% 		RPi_SECS = pp.wsProcTimeDive_sec(d)*2 + 10; % from ws****az file,
-% 		% x2 because only dive reported,
-% 		% + 10 sec for start up
-% 		kJ_RPi = calckJ(RPi_SECS, RPi_MAMPS, 15);
-% 		pp.WS_kJ(d) = kJ_base + kJ_RPi;
-% 
-% 		% calculate a WISPR ampHr to be added to the cumulative
-% 		% ampHrConsumed value output in the .log file below
-% 		Ah_base = calcAh(pp.WS_SEC(d), WS_MAMPS);
-% 		Ah_RPi = calcAh(RPi_SECS, RPi_MAMPS);
-% 
-% 		% seaglider on board battery is not accounting for correct WISPR
-% 		% power draw and RPi/detector power draw
-% 		% calculate a WISPR ampHr to be added to the cumulative
-% 		% ampHrConsumed value output in the .log file below
-% 		pp.WS_ampHr(d) = Ah_base + Ah_RPi;
-% 		% could also calculate this from total kJ
-% 		%         pp.WS_ampHr(d) = pp.WS_kJ(d)/3.6/15;
-% 
-% 	end
+	% 	if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1 % wispr pam system is active
+	%
+	% 		% WISPR reported analysis and processing durations
+	% 		% for now, only reading 'a' files from glider descent; 'b' files all blank
+	% 		wsFiles = dir(fullfile(path_bsLocal, ['ws' num2str(d, '%04.f') 'az']));
+	% 		bytes = [wsFiles.bytes];
+	% 		wsFiles = wsFiles(bytes > 2,:);
+	% 		for wf = 1:length(wsFiles)
+	% 			ws = readws(fullfile(path_bsLocal, wsFiles(wf).name));
+	% 		end
+	% 		pp.wsAnDurDive_min(d) = ws.anDur_min;
+	% 		pp.wsProcTimeDive_sec(d) = ws.procTime_sec;
+	% 		pp.wsAnDurClimb_min(d) = NaN;
+	% 		pp.wsProcTimeClimb_sec(d) = NaN;
+	%
+	% 		% seaglider reported operating duration
+	% 		idx = strfind(x, '$SENSOR_SECS');
+	% 		idxComma = regexp(x(idx:end), '\,');
+	% 		sVal = round(str2double(x(idx+idxComma(8):idx+idxComma(9)-2)));
+	% 		pp.WS_SEC(d) = sVal;
+	% 		pp.WS_MIN(d) = sVal/60;
+	%
+	% 		% power draw
+	% 		%         idx = strfind(x, '$SENSOR_MAMPS');
+	% 		%         idxComma = regexp(x(idx:end), '\,');
+	% 		%         sVal = str2double(x(idx+idxComma(8):idx+idxComma(9)-2));
+	% 		%         pp.WS_MAMPS(d) = sVal;
+	% 		WS_MAMPS = 33.3; % estimate 0.5 W @ 15 v = 33.3 mAmps
+	%
+	% 		% seaglider on board battery is not accounting for correct WISPR
+	% 		% power draw and RPi/detector power draw
+	%
+	% 		% kJ used ***EXPERIMENTAL***
+	% 		% get base kJ just used by WISPR
+	% 		kJ_base = calckJ(pp.WS_SEC(d), WS_MAMPS, 15);
+	% 		% then get kJ used by RPi...this is very rough estimate
+	% 		RPi_MAMPS = 400; % estimate 6 W @ 15 V = 400 mAmps
+	% 		RPi_SECS = pp.wsProcTimeDive_sec(d)*2 + 10; % from ws****az file,
+	% 		% x2 because only dive reported,
+	% 		% + 10 sec for start up
+	% 		kJ_RPi = calckJ(RPi_SECS, RPi_MAMPS, 15);
+	% 		pp.WS_kJ(d) = kJ_base + kJ_RPi;
+	%
+	% 		% calculate a WISPR ampHr to be added to the cumulative
+	% 		% ampHrConsumed value output in the .log file below
+	% 		Ah_base = calcAh(pp.WS_SEC(d), WS_MAMPS);
+	% 		Ah_RPi = calcAh(RPi_SECS, RPi_MAMPS);
+	%
+	% 		% seaglider on board battery is not accounting for correct WISPR
+	% 		% power draw and RPi/detector power draw
+	% 		% calculate a WISPR ampHr to be added to the cumulative
+	% 		% ampHrConsumed value output in the .log file below
+	% 		pp.WS_ampHr(d) = Ah_base + Ah_RPi;
+	% 		% could also calculate this from total kJ
+	% 		%         pp.WS_ampHr(d) = pp.WS_kJ(d)/3.6/15;
+	%
+	% 	end
 
 
 	%% battery usage
