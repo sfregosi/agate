@@ -30,7 +30,8 @@ CONFIG.path.analysis = 'C:\Users\User.Name\project\analysis';
 CONFIG.bs.cnfFile = 'C:\Users\User.Name\Documents\gliders\basestation.cnf';
 % specify path to store downloaded basestation files
 CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
-
+% specify path to remote files (e.g., glider's current/mission folder)
+CONFIG.path.bsRemote = '/home/jails/group/gliderjail/home/sgXXX/current';
 
 % %%%% OPTIONAL - acoustics %%%%%%%%%%%%%%%%%
 % PMAR settings

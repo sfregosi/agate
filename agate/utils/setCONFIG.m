@@ -46,13 +46,14 @@ else
 	if isempty(path) % no path specified
 		% default location is within agate\settings folder, so try that
 		CONFIG.missionCnf = fullfile(CONFIG.path.settings, CONFIG.missionCnf);
-		% otherwise prompt to select one
-		if ~exist(CONFIG.missionCnf, 'file')
-			[name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], ...
-				'Select mission configuration file');
-			CONFIG.missionCnf = fullfile(path, name);
-		end
 	end
+	% and check that exists - if not, prompt to select
+	if ~exist(CONFIG.missionCnf, 'file')
+		[name, path] = uigetfile([CONFIG.path.agate, '\*.cnf'], ...
+			'Select mission configuration file');
+		CONFIG.missionCnf = fullfile(path, name);
+	end
+
 end
 % CONFIG.path.cnfFid = fopen(CONFIG.missionCnf, 'r');
 CONFIG = parseCnf(CONFIG.missionCnf, CONFIG);

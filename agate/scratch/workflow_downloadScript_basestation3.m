@@ -29,24 +29,26 @@
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	01 June 2023
-%	Updated:        06 September 2024
+%	Updated:        30 August 2024
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-CONFIG = agate('agate_mission_config.cnf');
+testConfig = ['C:\Users\Selene.Fregosi\Documents\GitHub\glider-CalCurCEAS\' ...
+	'MATLAB\fregosi_config_files\agate_config_sg679_CalCurCEAS_Aug2024.cnf'];
+CONFIG = agate(testConfig);
 
 % specify the local piloting folder for this trip in CONFIG.path.mission
 % set up nested folders for basestation files and piloting outputs
 path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store output plots/tables
 path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files
-% this also should be set as CONFIG.path.bsLocal in the mission cnf file
 
 % make the dirs if they don't exist
 mkdir(path_status);
 mkdir(path_bsLocal);
 
 %% (1) download files from the basestation
-downloadBasestationFiles(CONFIG)
+% downloadBasestation3Files(CONFIG, path_bsLocal)
+downloadBasestationFiles1(CONFIG);
 
 % To plot Seaglider Piloting Tools plots at this point, run DiveData below
 % DiveData
@@ -55,7 +57,7 @@ downloadBasestationFiles(CONFIG)
 
 % create piloting parameters (pp) table from downloaded basestation files
 pp = extractPilotingParams(CONFIG, fullfile(CONFIG.path.mission, 'basestationFiles'), ...
-	fullfile(CONFIG.path.mission, 'flightStatus'), 0);
+	fullfile(CONFIG.path.mission, 'flightStatus'), 1);
 % change last argument from 0 to 1 to load existing data and append new dives/rows
 
 % save it to the default location as .mat and .xlsx
@@ -112,7 +114,7 @@ tm = printTravelMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, 'targets'), 1)
 
 % specify planned recovery date and time
 recovery = '2023-00-00 00:00:00';
-recTZ = 'America/Los_Angeles';
+recTZ = 'Pacific/Los_Angeles';
 tm = printRecoveryMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, 'targets'), ...
 recovery, recTZ, 1);
 
