@@ -64,9 +64,9 @@ figNum = 26;
 % use targetsOut file from above as input targets file
 targetsFile = targetsOut;
 
-% create plot
-mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, figNum)
-
+% create plot - single track only
+mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, [], figNum)
+% 5th argument blank uses default color (orange)
 
 % get file name only for plot saving
 [~, targetsName, ~] = fileparts(targetsFile);
@@ -90,9 +90,11 @@ export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 
 % can specify bathymetry file
 bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
-plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, figNum)
-% OR leave empty to prompt to select file
-plotTrackBathyProfile(CONFIG, targetsFile, [], figNum)
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, ...
+	'bathyFile', bathyFile)
+% OR leave that argument out to default to CONFIG.map.bathyFile if
+% available or prompt if not available
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile)
 
 % save as .png
 exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...

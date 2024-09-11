@@ -28,9 +28,13 @@ function plotTrackBathyProfile(CONFIG, varargin)
 %       https://sfregosi.github.io/agate/#basemap-rasters
 %
 %   Inputs:
-%       CONFIG        [struct] agate configuration settings from .cnf
-%       varargins are specified using name-value pairs 
+%       CONFIG      [struct] mission/agate configuration variable.
+%                   Required fields: CONFIG.glider, CONFIG.mission, 
+%                   CONFIG.path.mission
+%
+%       all varargins are specified using name-value pairs 
 %                 e.g., 'targetsFile', targetsFile, 'yLine', 800
+%
 %       targetsFile   [char] optional argument to targets file. If no file
 %                     specified, will prompt to select one, and if no path
 %                     specified, will prompt to select path
