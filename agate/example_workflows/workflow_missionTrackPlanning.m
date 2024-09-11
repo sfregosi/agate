@@ -45,9 +45,9 @@ kmlFile = [];
 radius = 2000;
 
 % create targets file, 3 options to name waypoints
-% (1) prefix-based automated naming
-prefix = 'WP'; % Any two letters make easy to reference and read options
-targetsOut = makeTargetsFile(CONFIG, kmlFile, prefix, radius);
+% (1) alphanumeric/prefix-based automated naming
+alphaNum = 'WP'; % Any two letters make easy to reference and read options
+targetsOut = makeTargetsFile(CONFIG, kmlFile, alphaNum, radius);
 % OR
 % (2) use a text file with list of waypoint names; will prompt to select .txt
 targetsOut = makeTargetsFile(CONFIG, kmlFile, 'file', radius);

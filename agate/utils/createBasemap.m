@@ -80,6 +80,8 @@ while vIdx <= length(varargin)
 		case 'figNum'
 			figNum = varargin{vIdx+1};
 			vIdx = vIdx+2;
+		otherwise
+			error('Incorrect argument. Check inputs.');
 	end
 end
 
