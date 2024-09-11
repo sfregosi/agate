@@ -2,20 +2,17 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, col_track, fig
 %MAPPLANNEDTRACK Create static map of planned mission track
 %
 %   Syntax:
-%       MAPPLANNEDTRACK(CONFIG, targetsFile, trackName, bathyOn, figNum)
+%       MAPPLANNEDTRACK(CONFIG, targetsFile, trackName, bathyOn, col_track, figNum)
 %
 %   Description:
 %       Create a static map of the planned mission track from an input
-%       targets file. Optional argument to plot bathymetry (requires etopo
-%       raster from NCEI) and land (requires shape files from Natural Earth
+%       targets file. Optional argument to plot bathymetry (if available)
+%       and set legend name and track color.
 %
-%       Download etopo_2022_v1_60s_N90W180_surface.tif from NCEI:
-%           https://www.ncei.noaa.gov/products/etopo-global-relief-model
+%       Bathymetry files can be downloaded from NCEI. For more info on
+%       selecting a bathymetry file visit:
+%       https://sfregosi.github.io/agate/#basemap-rasters
 %
-%       Download Natural Earth Data (naturalearthdata.com), latest release
-%       on GitHub: 
-%           https://github.com/nvkelso/natural-earth-vector/releases
-% 
 %   Inputs:
 %       CONFIG        [struct] mission/agate configuration variable.
 %                     Required fields: CONFIG.glider, CONFIG.mission, 

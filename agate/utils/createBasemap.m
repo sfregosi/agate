@@ -12,6 +12,10 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
 %       states at this time). It can be saved as a .fig file that can be
 %       added to (add glider path, labels, and acoustic encounters).
 %
+%       Bathymetry files can be downloaded from NCEI. For more info on
+%       selecting a bathymetry file visit:
+%       https://sfregosi.github.io/agate/#basemap-rasters
+%
 %   Inputs:
 %       CONFIG      [struct] mission/agate configuration variable.
 %                   Required fields: CONFIG.map entries
@@ -35,7 +39,7 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   09 March 2024
-%   Updated:        06 August 2024
+%   Updated:        10 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
