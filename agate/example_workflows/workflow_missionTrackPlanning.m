@@ -25,7 +25,7 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	05 April 2023
-%	Updated:        07 August 2024
+%	Updated:        11 September 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,7 +89,7 @@ export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 %% (3) Plot bathymetry profile of targets file
 
 % can specify bathymetry file
-bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
+bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec.tiff';
 plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, ...
 	'bathyFile', bathyFile)
 % OR leave that argument out to default to CONFIG.map.bathyFile if
