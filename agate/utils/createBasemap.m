@@ -143,5 +143,34 @@ states = shaperead('usastatehi', 'UseGeoCoords', true, ...
 	'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
 geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k');
 
+
+% NATURAL EARTH DATA - MINOR ISLANDS PLOTTING %
+% % plot land
+% % try this default path
+% landFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_land_scale_rank.shp');
+% % if that's no good, prompt for new file 
+% if ~exist(landFile, 'file')
+%     [fn, path] = uigetfile([CONFIG.path.shp '*.shp'], 'Select ne_10m_land_scale_rank.shp');
+%     landFile = fullfile(path, fn);
+% end
+% land = shaperead(landFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
+%     'UseGeoCoords', true);
+
+% % and any minor islands if needed (e.g., for SBI)
+% % try this default path
+% minIslFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_minor_islands.shp');
+% % if that's no good, prompt for new file 
+% if ~exist(minIslFile, 'file')
+%     [fn, path] = uigetfile([CONFIG.path_shp '*.shp'], 'Select ne_10m_minor_islands.shp');
+%     minIslFile = fullfile(path, fn);
+% end
+% landmi = shaperead(minIslFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
+%     'UseGeoCoords', true);
+% 
+% geoshow(land, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
+% geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
+% 
+
+
 end
 
