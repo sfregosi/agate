@@ -1,0 +1,17 @@
+---
+title: "Map help"
+subtitle: 'Detailed tips for fine-tuning the look of your maps'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+More coming soon...
+
+Help with setting various `CONFIG.map` parameters. 
+
+
