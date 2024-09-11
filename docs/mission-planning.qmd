@@ -24,10 +24,10 @@ To run any of the __*agate*__ functions, the toolbox must be initialized with a 
 No configuration file yet? Go to the [Configuration Guide](configuration.html). The examples on this page include some plotting, so the ` OPTIONAL - plotting ` section must be complete. 
 
 ```matlab
-% !make sure agate is on the path!
+% make sure agate is on the path!
 
 % initialize with specified configuration file, 'agate_config.cnf'
-CONFIG = agate(agate_config.cnf);
+CONFIG = agate('agate_config.cnf');
 
 % OR
 
@@ -106,19 +106,22 @@ targetsOut = makeTargetsFile(CONFIG, kmlFile, 'manual', radius);
 
 ### Plot planned track
 
-The `mapPlannedTrack` function will create a simple map of the planned track with labeled waypoints. This function requires map extent to be defined in the configuration file. Bathymetry is optional and is toggled on or off with the `bathyOn` argument.  
+The `mapPlannedTrack` function will create a simple map of the planned track with labeled waypoints. This function requires map extent (lat/lon limits) to be defined in the configuration file. Optionally, a north arrow and scale bar location can be defined in the configuration file. For more help setting those parameters, see the [Map Help](map-help.qmd) page. Bathymetry is optional and is toggled on or off with the `bathyOn` argument.  
 
 ```default
 % set up map configuration
-bathyOn = 1;
-figNum = 26;
+bathyOn = 1; % plot bathymetry
+col_track = 'red'; % set color for trackline
 
 % use targetsOut file from above as input targets file
 targetsFile = targetsOut;
 
 % create plot
-mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, figNum)
+mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, col_track)
+% the third argument sets the name of the track for the legend
 
+% the title will default to CONFIG.glider and CONFIG.mission. To change:
+title('Example Planned Track');
 
 % get file name only for plot saving
 [~, targetsName, ~] = fileparts(targetsFile);
