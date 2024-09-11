@@ -78,7 +78,7 @@ narginchk(1, inf)
 targetsFile = [];
 bathyFile = [];
 yLine = -990;
-figNum = 211;
+figNum = [];
 
 % parse arguments
 n = 1;
@@ -172,7 +172,11 @@ for f = 1:height(targets)
 end
 
 % set up figure
-figure(figNum);
+if isempty(figNum)
+	figure;
+else
+	figure(figNum);
+end
 fig = gcf;
 fig.Position = [100   50   900    300];
 

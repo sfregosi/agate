@@ -1,8 +1,8 @@
-function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
+function [baseFig] = createBasemap(CONFIG, varargin)
 % CREATEBASEMAP	Create a basemap of the bathymetry for the mission area
 %
 %   Syntax:
-%       BASEFIG = CREATEBASEMAP(CONFIG, BATHYON, CONTOURON, FIGNUM, OUTFIG)
+%       BASEFIG = CREATEBASEMAP(CONFIG, VARARGIN)
 %
 %   Description:
 %       Function to create a basemap for a glider mission, using the lat
@@ -19,10 +19,18 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
 %   Inputs:
 %       CONFIG      [struct] mission/agate configuration variable.
 %                   Required fields: CONFIG.map entries
-%       bathyOn     [double] set to 1 to plot bathymetry or 0 to only plot
-%                   land
-%       contourOn   [double] set to 1 to plot bathymetry contours or 0 for
-%                   no contour lines
+%
+%       all varargins are specified using name-value pairs
+%                 e.g., 'bathyOn', 1, 'figNum', 12
+%
+%       bathy       optional argument for bathymetry plotting
+%	                [double] Set to 1 to plot bathymetry or 0 to only plot
+%                   land. Will look for bathy file in CONFIG.map.bathyFile
+%                   [char] Path to the bathymetry file (if you want to use
+%                   a different one than specified in CONFIG or it is not
+%                   specified in CONFIG
+%       contourOn   [double] optional argument. Set to 1 to plot bathymetry
+%                   contours or 0 for no contour lines. Default is on (1)
 %       figNum      [double] optional to specify figure number so won't
 %                   create repeated versions when updated
 %
@@ -31,7 +39,7 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
 %
 %   Examples:
 %       % Create a basemap that includes bathymetry but no contour lines
-%       baseFig = createBasemap(CONFIG, 1, 0);
+%       baseFig = createBasemap(CONFIG, 'contourOn', 0);
 %
 %   See also
 %
@@ -39,20 +47,42 @@ function [baseFig] = createBasemap(CONFIG, bathyOn, contourOn, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   09 March 2024
-%   Updated:        10 September 2024
+%   Updated:        11 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%
-% for testing
-% figNum = 82;
-%%%%%%%%%%%%%%
+% argument checks
+narginchk(1, inf)
 
-% specify a figure number
-if nargin < 4
-	figNum = [];
+% set defaults
+bathyOn = 1;
+bathyFile = [];
+contourOn = 1;
+figNum = [];
+
+% parse arguments
+vIdx = 1;
+while vIdx <= length(varargin)
+	switch varargin{vIdx}
+		case 'bathy'
+			if ischar(varargin{vIdx+1}) || isstring(varargin{vIdx+1})
+				bathyOn = 1;
+				bathyFile = varargin{vIdx+1};
+			elseif isnumeric(varargin{vIdx+1})
+				bathyOn = varargin{vIdx+1};
+				bathyFile = [];
+			end
+			vIdx = vIdx+2;
+		case 'contourOn'
+			contourOn = varargin{vIdx+1};
+			vIdx = vIdx+2;
+		case 'figNum'
+			figNum = varargin{vIdx+1};
+			vIdx = vIdx+2;
+	end
 end
+
 
 %% set up the figure
 
@@ -62,7 +92,7 @@ else
 	baseFig = figure(figNum);
 end
 
-% mapFigPosition = [100    100    800    600];
+% mapFigPosition = [100    50    800    600];
 % baseFig.Position = mapFigPosition;
 baseFig.Name = 'Base map';
 
@@ -100,13 +130,23 @@ end
 
 if contourOn == 1 || bathyOn == 1 % if either, load raster data
 
-	if isfield(CONFIG.map, 'bathyFile')
-		bathyFile = CONFIG.map.bathyFile;
-	else % prompt to choose file
+	% if not file specified, try to use CONFIG, otherwise prompt
+	if isempty(bathyFile)
+		if isfield(CONFIG.map, 'bathyFile')
+			bathyFile = CONFIG.map.bathyFile;
+		else % prompt to choose file
+			[fn, path] = uigetfile(fullfile(CONFIG.path.shp, '*.tif;*.tiff'), ...
+				'Select etopo raster file');
+			bathyFile = fullfile(path, fn);
+		end
+	end
+	% check that the specified one exists, otherwise prompt
+	if ~exist(bathyFile, 'file')
 		[fn, path] = uigetfile(fullfile(CONFIG.path.shp, '*.tif;*.tiff'), ...
 			'Select etopo raster file');
 		bathyFile = fullfile(path, fn);
 	end
+
 	[Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
 		'CoordinateSystemType', 'geographic');
 	[Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
@@ -127,10 +167,10 @@ if contourOn == 1 || bathyOn == 1 % if either, load raster data
 		brighten(.4);
 
 		% colorbar for bathymetry is too unreliable
-% 		cb = colorbar;
-% 		cb.Location = 'eastoutside';
-% 		cb.Label.String = 'depth [m]';
-% 		cbPosit = cb.Position;
+		% 		cb = colorbar;
+		% 		cb.Location = 'eastoutside';
+		% 		cb.Label.String = 'depth [m]';
+		% 		cbPosit = cb.Position;
 	end
 
 	if contourOn == 1 % plot it
@@ -152,7 +192,7 @@ geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k');
 % % plot land
 % % try this default path
 % landFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_land_scale_rank.shp');
-% % if that's no good, prompt for new file 
+% % if that's no good, prompt for new file
 % if ~exist(landFile, 'file')
 %     [fn, path] = uigetfile([CONFIG.path.shp '*.shp'], 'Select ne_10m_land_scale_rank.shp');
 %     landFile = fullfile(path, fn);
@@ -163,17 +203,17 @@ geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k');
 % % and any minor islands if needed (e.g., for SBI)
 % % try this default path
 % minIslFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_minor_islands.shp');
-% % if that's no good, prompt for new file 
+% % if that's no good, prompt for new file
 % if ~exist(minIslFile, 'file')
 %     [fn, path] = uigetfile([CONFIG.path_shp '*.shp'], 'Select ne_10m_minor_islands.shp');
 %     minIslFile = fullfile(path, fn);
 % end
 % landmi = shaperead(minIslFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
 %     'UseGeoCoords', true);
-% 
+%
 % geoshow(land, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 % geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
-% 
+%
 
 
 end
