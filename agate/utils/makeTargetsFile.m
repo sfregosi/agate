@@ -2,33 +2,34 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod, radius)
 %MAKETARGETSFILE Create properly formatted targets text file from kml
 %
 %   Syntax:
-%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, wpMethod)
+%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, wpMethod, radius)
 %
 %   Description:
 %       Create a text file properly formatted as a Seaglider targets file,
 %       from a saved path created in Google Earth and saved as a .kml. The
 %       text file contains relevant header information at the top. Waypoint
 %       names can be provided as an additional text document, can be
-%       manually input in the Command Window, or a prefix can be specified
-%       as the last argument and a sequential alphanumeric waypoint labels
-%       will be generated from the prefix
+%       manually input in the Command Window, or an alphanumeric prefix can
+%       be specified as the last argument and a sequential alphanumeric 
+%       waypoint labels will be generated from the prefix
 %
 %   Inputs:
 %       CONFIG     [struct] agate mission configuration settings, loaded 
 %                  during agate initialization. Minimum fields are 
 %                  CONFIG.glider, CONFIG.mission, CONFIG.path.mission
-%       kmlFile    [string] Fullfile path to kml path file to be read in, 
+%       kmlFile    [char] Fullfile path to kml path file to be read in, 
 %                  if empty, will prompt to select file
-%       wpMethod   [string] Method to define waypoint names, either
-%                     'file'   = load text file with names, will prompt to
-%                              select file
-%                     'manual' = manually type in all waypoints in command
-%                              window
-%                     'prefix' = will automatically generate alpha-numeric
-%                              waypoints based on string entered as wpMethod
-%                              e.g., 'LW' will generate 'LW01', 'LW02', etc
-%                              and will end with RECV
-%       radius     [vector] radius around waypoint that the glider must 
+%       wpMethod   [char] Method to define waypoint names, either
+%                     'file'     = load text file with names, will prompt
+%                                to select file
+%                     'manual'   = manually type in all waypoints in
+%                                command window
+%                     'alphaNum' = will automatically generate 
+%                                alpha-numeric waypoints based on string 
+%                                entered as wpMethod
+%                                e.g., 'LW' will generate 'LW01', 'LW02', 
+%                                etc and will end with RECV
+%       radius     [double] radius around waypoint that the glider must 
 %                  reach before moving on to next waypoint. Default is 2000
 %
 %   Outputs:
@@ -42,19 +43,20 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod, radius)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   23 April 2023
-%   Updated:        04 May 2023
+%   Updated:        11 September 2024
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin < 5
+if nargin < 4
 	radius = 2000;
 end
 
 % if no .kml specified...
 if isempty(kmlFile)
     % Select .kml file
-    [kmlFileName, kmlPath] = uigetfile([CONFIG.path.mission '\*.kml'], 'Select .kml track');
+    [kmlFileName, kmlPath] = uigetfile([CONFIG.path.mission '\*.kml'], ...
+		'Select .kml track');
     kmlFile = fullfile(kmlPath, kmlFileName);
 end
 
@@ -87,8 +89,8 @@ degMinLons = decdeg2degmin(lons);
 % define waypoint names - 3 options
 % (1) 'file', load text file with names
 % (2) 'manual', prompted to manually type in command window
-% (3) use prefix string specified in function call (e.g., 'WP') and add
-% numbers in order after (e.g., WP01, WP02, RECV)
+% (3) 'alphaNum', use alpha string specified in function call (e.g., 'WP')
+%      and add numbers in order after (e.g., WP01, WP02, RECV)
 
 switch wpMethod
     case 'file'  % (1) Select .txt file of waypoint names
@@ -100,7 +102,7 @@ switch wpMethod
         wpNames = textscan(fid, '%s');
         fclose(fid);
         wpNames = wpNames{:};
-    case 'manual' % (3) manually type in command window
+    case 'manual' % (2) manually type in command window
         wpsRaw = input(['Type in ' num2str(length(degMinLats)) ...
             ' waypoint names, separated by commas, no spaces:'], 's');
         wpNames = strsplit(wpsRaw, ',');
@@ -109,11 +111,11 @@ switch wpMethod
     otherwise
         %         case 'prefix'
         %         prefixRaw = input('Specify waypoint alpha prefix:', 's');
-        prefixRaw = wpMethod;
+        alphaRaw = wpMethod;
         wpNames = cell(length(degMinLats), 1);
         wpSeq = 1:length(degMinLats) - 1; % -1 so last is RECV
         for f = 1:length(wpSeq)
-            wpNames(f) = {sprintf('%s%02.f', prefixRaw, wpSeq(f))};
+            wpNames(f) = {sprintf('%s%02.f', alphaRaw, wpSeq(f))};
         end
         wpNames{f + 1} = 'RECV';
 end
