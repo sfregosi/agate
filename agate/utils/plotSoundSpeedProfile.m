@@ -2,7 +2,7 @@ function plotSoundSpeedProfile(CONFIG, locCalcT)
 %PLOTSOUNDSPEEDPROFILE	Plot sound speed profile
 %
 %   Syntax:
-%       PLOTSOUNDSPEEDPROFILE(locCalcT)
+%       PLOTSOUNDSPEEDPROFILE(CONFIG)
 %
 %   Description:
 %       Read in glider locCalcT data variable and create a plot of sound
