@@ -24,10 +24,10 @@ To run any of the __*agate*__ functions, the toolbox must be initialized with a 
 No configuration file yet? Go to the [Configuration Guide](configuration.html). The examples on this page include some plotting, so the ` OPTIONAL - plotting ` section must be complete. 
 
 ```matlab
-% !make sure agate is on the path!
+% make sure agate is on the path!
 
 % initialize with specified configuration file, 'agate_config.cnf'
-CONFIG = agate(agate_config.cnf);
+CONFIG = agate('agate_config.cnf');
 
 % OR
 
@@ -73,7 +73,7 @@ The `makeTargetsFile` function will read in an existing `.kml` (that contains a 
 
 Waypoint names can be generated one of three ways:
 
-**1. prefix**: specify a character string prefix in the function call and alphanumeric names will be created automatically. 
+**1. alphanumeric**: specify a character string (alpha) prefix in the function call and alphanumeric names will be created automatically. 
 
 **2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate\example_workflows\waypointNames.txt`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/waypointNames.txt)
 
@@ -90,9 +90,9 @@ kmlFile = [];
 radius = 2000;
 
 % create targets file, 3 options to name waypoints
-% (1) prefix-based automated naming
-prefix = 'WP'; % Any two letters make easy to reference and read options
-targetsOut = makeTargetsFile(CONFIG, kmlFile, prefix, radius);
+% (1) alphanumeric/prefix-based automated naming
+alphaNum = 'WP'; % Any two letters make easy to reference and read options
+targetsOut = makeTargetsFile(CONFIG, kmlFile, alphaNum, radius);
 % OR
 % (2) use a text file with list of waypoint names; will prompt to select .txt
 targetsOut = makeTargetsFile(CONFIG, kmlFile, 'file', radius);
@@ -106,19 +106,22 @@ targetsOut = makeTargetsFile(CONFIG, kmlFile, 'manual', radius);
 
 ### Plot planned track
 
-The `mapPlannedTrack` function will create a simple map of the planned track with labeled waypoints. This function requires map extent to be defined in the configuration file. Bathymetry is optional and is toggled on or off with the `bathyOn` argument.  
+The `mapPlannedTrack` function will create a simple map of the planned track with labeled waypoints. This function requires map extent (lat/lon limits) to be defined in the configuration file. Optionally, a north arrow and scale bar location can be defined in the configuration file. For more help setting those parameters, see the [Map Help](map-help.qmd) page. Bathymetry is optional and is toggled on or off with the `bathyOn` argument. This is useful for plotting a single track. If you want to plot multiple tracks in a single figure, use `createBaseMap` and add the tracks manually. See more on this on the [Map Help](map-help.qmd) page.
 
 ```default
 % set up map configuration
-bathyOn = 1;
-figNum = 26;
+bathyOn = 1; % plot bathymetry
+col_track = 'red'; % set color for trackline
 
 % use targetsOut file from above as input targets file
 targetsFile = targetsOut;
 
 % create plot
-mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, figNum)
+mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, col_track)
+% the third argument sets the name of the track for the legend
 
+% the title will default to CONFIG.glider and CONFIG.mission. To change:
+title('Example Planned Track');
 
 % get file name only for plot saving
 [~, targetsName, ~] = fileparts(targetsFile);
@@ -152,13 +155,15 @@ See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on
 
 An indicator line (dashed red line) will be plotted at 990 m as the default (max `$D_TGT` for Seagliders) but can be specified to a different value with the `yLine` argument. 
 
+NOTE: This function sets the arguments using *name-value* pairs because most of them are optional. So each is defined by the name of the argument in single quotes (e.g., `'bathyFile'`) followed by a comma and then the value for the argument (e.g., `'C:\bathyFile.tiff'`). Use `doc plotTrackBathyProfile` to see all possible arguments. 
+
 ```matlab
 % can specify bathymetry file
 bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
-plotTrackBathyProfile(CONFIG, targetsFile, bathyFile)
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, 'bathyFile', bathyFile)
 % OR 
-% leave empty to prompt to select file
-plotTrackBathyProfile(CONFIG, targetsFile)
+% leave empty to prompt to select files
+plotTrackBathyProfile(CONFIG)
 
 % save as .png
 exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...

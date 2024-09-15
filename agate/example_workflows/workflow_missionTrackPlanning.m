@@ -25,7 +25,7 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	05 April 2023
-%	Updated:        07 August 2024
+%	Updated:        11 September 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,9 +45,9 @@ kmlFile = [];
 radius = 2000;
 
 % create targets file, 3 options to name waypoints
-% (1) prefix-based automated naming
-prefix = 'WP'; % Any two letters make easy to reference and read options
-targetsOut = makeTargetsFile(CONFIG, kmlFile, prefix, radius);
+% (1) alphanumeric/prefix-based automated naming
+alphaNum = 'WP'; % Any two letters make easy to reference and read options
+targetsOut = makeTargetsFile(CONFIG, kmlFile, alphaNum, radius);
 % OR
 % (2) use a text file with list of waypoint names; will prompt to select .txt
 targetsOut = makeTargetsFile(CONFIG, kmlFile, 'file', radius);
@@ -64,9 +64,9 @@ figNum = 26;
 % use targetsOut file from above as input targets file
 targetsFile = targetsOut;
 
-% create plot
-mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, figNum)
-
+% create plot - single track only
+mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, [], figNum)
+% 5th argument blank uses default color (orange)
 
 % get file name only for plot saving
 [~, targetsName, ~] = fileparts(targetsFile);
@@ -89,10 +89,12 @@ export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 %% (3) Plot bathymetry profile of targets file
 
 % can specify bathymetry file
-bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
-plotTrackBathyProfile(CONFIG, targetsFile, bathyFile, figNum)
-% OR leave empty to prompt to select file
-plotTrackBathyProfile(CONFIG, targetsFile, [], figNum)
+bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec.tiff';
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, ...
+	'bathyFile', bathyFile)
+% OR leave that argument out to default to CONFIG.map.bathyFile if
+% available or prompt if not available
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile)
 
 % save as .png
 exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...

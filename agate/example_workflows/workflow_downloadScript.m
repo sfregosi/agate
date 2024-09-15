@@ -8,8 +8,10 @@
 %		checking on the glider status
 %
 %       It has the following sections:
-%       (1) any new basestation files to the local computer, including .nc,
-%       .log, .dat, cmdfiles, pdos any acoustic .eng or detection files
+%       (1) any new basestation files to the local computer. This currently
+%       includes .nc, .log, .dat, .eng files and WISPR (ws*) files. PMAR
+%       files (pm*) are untested and cmdfiles/pdoscmds.bat files are not
+%       updated since the switch to basestation3.
 %       (2) extracts useful data from local basestation .nc and .log files
 %       and compiles into a summary table, variable 'pp', and saves to a
 %       .xlsx and .mat
@@ -18,6 +20,9 @@
 %       duration
 %
 %       It requires an agate configuration file during agate initialization
+%       that includes the basestation configuration section, the acoustic
+%       configuration section (if running an acoustic system), and the
+%       plotting configuration section.
 %
 %	Notes
 %
@@ -29,7 +34,7 @@
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
 %	FirstVersion: 	01 June 2023
-%	Updated:        06 September 2024
+%	Updated:        10 September 2024
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
@@ -39,7 +44,7 @@ CONFIG = agate('agate_mission_config.cnf');
 % set up nested folders for basestation files and piloting outputs
 path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store output plots/tables
 path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files
-% this also should be set as CONFIG.path.bsLocal in the mission cnf file
+% this also can be set as CONFIG.path.bsLocal in the mission cnf file
 
 % make the dirs if they don't exist
 mkdir(path_status);
@@ -54,8 +59,7 @@ downloadBasestationFiles(CONFIG)
 %% (2) extract piloting parameters
 
 % create piloting parameters (pp) table from downloaded basestation files
-pp = extractPilotingParams(CONFIG, fullfile(CONFIG.path.mission, 'basestationFiles'), ...
-	fullfile(CONFIG.path.mission, 'flightStatus'), 0);
+pp = extractPilotingParams(CONFIG, CONFIG.path.bsLocal, path_status, 0);
 % change last argument from 0 to 1 to load existing data and append new dives/rows
 
 % save it to the default location as .mat and .xlsx
@@ -108,11 +112,12 @@ plotErmaDetections(CONFIG, path_bsLocal, pp.diveNum(end))
 printErrors(CONFIG, size(pp,1), pp)
 
 % print avg speed and rough estimate of total mission duration
-tm = printTravelMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, 'targets'), 1);
+tm = printTravelMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, ...
+	'targets'), 1);
 
 % specify planned recovery date and time
 recovery = '2023-00-00 00:00:00';
 recTZ = 'America/Los_Angeles';
-tm = printRecoveryMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, 'targets'), ...
-recovery, recTZ, 1);
+tm = printRecoveryMetrics(CONFIG, pp, fullfile(CONFIG.path.mission, ...
+	'targets'), recovery, recTZ, 1);
 

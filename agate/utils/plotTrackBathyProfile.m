@@ -1,8 +1,8 @@
-function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
-% PLOTTRACKBATHYPROFILE	Create bathymetric profile for planned targets
+function plotTrackBathyProfile(CONFIG, varargin)
+%PLOTTRACKBATHYPROFILE	Create bathymetric profile for planned targets
 %
 %   Syntax:
-%       OUTPUT = PLOTTRACKBATHYPROFILE(CONFIG, TARGETSFILE, YLINE, FIGNUM)
+%       PLOTTRACKBATHYPROFILE(CONFIG, VARARGIN)
 %
 %   Description:
 %       Create a plot of the bathymetric profile along a targets file to
@@ -23,22 +23,42 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 %       more accurate but should only be off a few km at the scale of
 %       typical glider missions.
 %
+%       Bathymetry files can be downloaded from NCEI. For more info on
+%       selecting a bathymetry file visit:
+%       https://sfregosi.github.io/agate/#basemap-rasters
+%
 %   Inputs:
-%       CONFIG        [struct] agate configuration settings from .cnf
-%       targetsFile   [string] optional argument to targets file. If no file
+%       CONFIG      [struct] mission/agate configuration variable.
+%                   Required fields: CONFIG.glider, CONFIG.mission, 
+%                   CONFIG.path.mission
+%
+%       all varargins are specified using name-value pairs 
+%                 e.g., 'targetsFile', targetsFile, 'yLine', 800
+%
+%       targetsFile   [char] optional argument to targets file. If no file
 %                     specified, will prompt to select one, and if no path
 %                     specified, will prompt to select path
 %                     [table] alternatively can just reference a targets
 %                     table that has already been read in to the workspace
+%       bathyFile     [char] optional argument to define or prompt to
+%                     select a bathymetry file either because one is not
+%                     defined in CONFIG or a different one is desired
 %       yLine         [vector] optional argument to set depth to place
 %                     horizontal indicator line; default is 990 m
-%       figNum        optional argument defining figure number so it
-%                     doesn't keep making new figs but refreshes existing
+%       figNum        [double] optional argument defining figure number to
+%                     avoid making repeated figs
 %
 %   Outputs:
 %       none, creates figure
 %
 %   Examples:
+%       % use already defined targetsFile, bathy defined in CONFIG
+%       plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile);
+%       % prompt to select targets, specify bathymetry file outside CONFIG
+%       plotTrackBathyProfile(CONFIG, 'bathyFile', 'C:\bathy.tiff')
+%       % set depth indicator line at 800 m, use already loaded targets
+%       plotTrackBathyProfile(CONFIG, 'yLine', 800, 'targetsFile', targets)
+%
 %
 %   See also
 %
@@ -46,38 +66,56 @@ function plotTrackBathyProfile(CONFIG, targetsFile, yLine, figNum)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   10 May 2023
-%   Updated:        07 August 2024
+%   Updated:        11 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % argument checks
-if nargin < 4
-	figNum = 211;
-end
+narginchk(1, inf)
 
-if nargin < 3
-	figNum = 211;
-	yLine = -990;
+% set defaults
+targetsFile = [];
+bathyFile = [];
+yLine = -990;
+figNum = [];
+
+% parse arguments
+n = 1;
+while n <= length(varargin)
+	switch varargin{n}
+		case 'targetsFile'
+			targetsFile = varargin{n+1};
+			n = n+2;
+		case 'bathyFile'
+			bathyFile = varargin{n+1};
+			n = n+2;
+		case 'yLine'
+			yLine = varargin{n+1};
+			n = n+2;
+		case 'figNum'
+			figNum = varargin{n+1};
+			n = n+2;
+	end
 end
 
 % select targetsFile if none specified
-if nargin < 2
-	figNum = 211;
-	[fileName, filePath] = uigetfile([CONFIG.path.mission, '*.*'], ...
+if isempty(targetsFile)
+	[fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
 		'Select targets file');
-	targetsFile = fullfile(filePath, fileName);
-	fprintf('targets file selected: %s\n', fileName);
+	targetsFile = fullfile(path, fn);
+	fprintf('targets file selected: %s\n', fn);
 end
 
 % check that targetsFile exists if specified, otherwise prompt to select
 if ischar(targetsFile)
 	if ~exist(targetsFile, 'file')
-		fprintf(1, 'Specified targetsFile does not exist. Select targets file to continue.\n');
-		[fileName, filePath] = uigetfile([CONFIG.path.mission, '*.*'], ...
+		fprintf(1, ['Specified targetsFile does not exist. Select' ...
+			' targets file to continue.\n']);
+		[fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
 			'Select targets file');
-		targetsFile = fullfile(filePath, fileName);
-		fprintf('targets file selected: %s\n', fileName);
+		targetsFile = fullfile(path, fn);
+		fprintf('targets file selected: %s\n', fn);
 	end
 	% read in targets file
 	[targets, ~] = readTargetsFile(CONFIG, targetsFile);
@@ -85,10 +123,26 @@ elseif istable(targetsFile)
 	targets = targetsFile;
 end
 
-% check for bathy file or select if not specified/doesn't exist
-if isfield(CONFIG.map, 'bathyFile')
-	bathyFile = CONFIG.map.bathyFile;
-elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file') % prompt to choose file
+% check for bathy file if none specified - first check config, then prompt
+if isempty(bathyFile)
+	if isfield(CONFIG.map, 'bathyFile')
+		bathyFile = CONFIG.map.bathyFile;
+	elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file')
+		if isfield(CONFIG.path, 'shp')
+			shpDir = CONFIG.path.shp;
+		else
+			shpDir = 'C:\';
+		end
+		[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+			'Select bathymetry raster file');
+		bathyFile = fullfile(path, fn);
+	end
+end
+
+% check that bathyFile eists if specified, otherwise prompt to select
+if ~exist(bathyFile, 'file')
+	fprintf(1, ['Specified bathyFile does not exist. Select' ...
+		' bathymetry raster file to continue.\n']);
 	if isfield(CONFIG.path, 'shp')
 		shpDir = CONFIG.path.shp;
 	else
@@ -97,6 +151,7 @@ elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file') % prompt t
 	[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
 		'Select bathymetry raster file');
 	bathyFile = fullfile(path, fn);
+	fprintf('bathymetry raster file selected: %s\n', fn);
 end
 
 % read in bathymetry data
@@ -117,7 +172,11 @@ for f = 1:height(targets)
 end
 
 % set up figure
-figure(figNum);
+if isempty(figNum)
+	figure;
+else
+	figure(figNum);
+end
 fig = gcf;
 fig.Position = [100   50   900    300];
 
@@ -181,7 +240,7 @@ title(sprintf('%s %s %s', CONFIG.glider, CONFIG.mission, ...
 % 		ti.depth(f) = Z(idxLat, idxLon);
 % 	end
 % end
-% 
+%
 % % repeat for just the waypoints
 % targets.depth = nan(height(targets), 1);
 % for f = 1:height(targets)

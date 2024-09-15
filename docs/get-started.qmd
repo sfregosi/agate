@@ -100,33 +100,42 @@ mkdir(path_bsLocal);
 - Open MATLAB
 - Add the `agate` folder to the path (with subfolders), if not already done
 - Type `CONFIG = agate(<agate_config.cnf>);` in the command window and hit enter
-  - Replace `<agate_config.cnf>` with the name of your configuration file (*e.g.*, `agate_config_sg639_MHI_Apr2022.cnf`)
-  - If the configuration file is located within the `agate/settings` folder, just the name is sufficient. If it is located elsewhere, specify the fullfile path (*e.g.*, `C:/Users/User.Name/Desktop/agate_config_sgXXX.cnf`)
+  - Replace `<agate_config.cnf>` with the name of your configuration file (*e.g.*, `'agate_config_sg639_MHI_Apr2022.cnf'`)
+  - If the configuration file is located within the `agate/settings` folder, just the name is sufficient. If it is located elsewhere, specify the fullfile path (*e.g.*, `'C:/Users/User.Name/Desktop/agate_config_sgXXX.cnf'`)
 - Alternatively, simply type `CONFIG = agate;` and you will be prompted to select a configuration file
+
+```matlab
+% make sure the agate folder has been added to the path!
+
+% initialize by specifying the configuration file
+CONFIG = agate('agate_config.cnf');
+
+% OR intialize and select the configuration file
+CONFIG = agate;
+```
 
 <sub>[Back to top](#)</sub>
 
 ### Download all basestation files
 
-Use `downloadBasestationFiles` to automatically download various basestation files to a local machine for further examination. 
+Use `downloadBasestationFiles` to automatically download various basestation files to a local machine for further examination. This function requires both a mission configuration file and a [basestation configuration file](configuration.qmd#basestation-configuration-file) that contains the host url, username, and either a password or paths to an SSH key pair. 
 
 Below is example code to run this step. This can be saved as a script that makes it easy to re-run each time the glider surfaces, or it can be typed directly into the MATLAB Command Window. 
 
 
 ```matlab
-% ensure agate folder is added to the matlab path before proceeding
-% initialize agate; will prompt for configuration file
-CONFIG = agate;
+% initialize agate as above
 
-% specify the local piloting folder for this trip
+% specify the local basestation and status/output folder for this mission
 path_status = fullfile(CONFIG.path.mission, 'flightStatus'); % where to store status outputs 
-path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files
+path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy of basestation files - this can be defined in the configuation file as CONFIG.path.bsLocal
+
 % make the dirs if they don't exist
 mkdir(path_status);
-mkdir(path_bsLocal);
+mkdir(path_bsLocal); % OR mkdir(CONFIG.path.bsLocal);
 
 % download basestation files
-downloadBasetationFiles(CONFIG, path_bsLocal)
+downloadBasetationFiles(CONFIG)
 
 ```
 
@@ -136,8 +145,12 @@ downloadBasetationFiles(CONFIG, path_bsLocal)
 
 ```matlab
 %% extract various piloting parameters and values reported by .log file
+pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, 0);
+% the last argument (0) indicates that you don't want to preload an existing pp 
+% variable that has been saved as a .mat file. Preloading saves time, but should
+% be set to 0 the first time through. Change to 1 after an existing `pp` 
+% variable has been saved
 
-pp = extractPilotingParams(CONFIG, path_bsLocal, path_status);
 % print errors for quick glance/check
 pp.ERRORS(end)
 

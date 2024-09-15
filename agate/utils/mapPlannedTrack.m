@@ -1,54 +1,54 @@
-function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
+function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, col_track, figNum)
 %MAPPLANNEDTRACK Create static map of planned mission track
 %
 %   Syntax:
-%       MAPPLANNEDTRACK(CONFIG, targetsFile, trackName, bathyOn, figNum)
+%       MAPPLANNEDTRACK(CONFIG, targetsFile, trackName, bathyOn, col_track, figNum)
 %
 %   Description:
 %       Create a static map of the planned mission track from an input
-%       targets file. Optional argument to plot bathymetry (requires etopo
-%       raster from NCEI) and land (requires shape files from Natural Earth
+%       targets file. Optional argument to plot bathymetry (if available)
+%       and set legend name and track color.
 %
-%       Download etopo_2022_v1_60s_N90W180_surface.tif from NCEI:
-%           https://www.ncei.noaa.gov/products/etopo-global-relief-model
+%       Bathymetry files can be downloaded from NCEI. For more info on
+%       selecting a bathymetry file visit:
+%       https://sfregosi.github.io/agate/#basemap-rasters
 %
-%       Download Natural Earth Data (naturalearthdata.com), latest release
-%       on GitHub: 
-%           https://github.com/nvkelso/natural-earth-vector/releases
-% 
 %   Inputs:
-%       CONFIG          global CONFIG from agate_config.cnf
-%       targetsFile     fullpath to targets file
-%       trackName       optional argument for the legend entry. If empty
-%                       will just say 'glider', e.g., 'sg639'
-%       bathyOn         optional arg to plot bathymetry data 1 = plot, 0 = no
-%                       requires a `path_shp` in the `PREFS` variable that 
-%                       points to a downloaded etopo_2022_v1_60s_N90W180_surface.tif
-%                       get from NCEI: 
-%       figNum          optional argument defining figure number so it
-%                       doesn't keep making new figs but refreshes existing
+%       CONFIG        [struct] mission/agate configuration variable.
+%                     Required fields: CONFIG.glider, CONFIG.mission, 
+%                     CONFIG.path.mission, CONFIG.map plotting section 
+%       targetsFile   [char] fullpath to targets file
+%       trackName     [char] optional argument for the legend entry. If 
+%                     empty will just say 'glider', e.g., 'sg639'
+%       bathyOn       [double] optional arg to plot bathymetry. Default
+%                     is 0 (off), set to 1 to plot. Bathymetry file can
+%                     be defined as CONFIG.map.bathyFile or will be
+%                     prompted to select a file 
+%       col_track	  [char or RGB mat] color for the track e.g.,
+%                     [1 0.4 0] for orange or 'black'. Default is orange
+%       figNum        [double] optional argument defining figure number 
+%                     so it doesn't keep making new figs but refreshes 
+%                     existing figure
 %
 %   Outputs:
-%       none            creates figure
+%       none          creates figure
 %
 %   Examples:
 %       # use specified targets file, plot bathymetry
-%       mapPlannedTrack(CONFIG, targetsFile, 'sg679', 1)
+%       mapPlannedTrack(CONFIG, targetsFile, 'sg679', 1, 'black')
 %       % to be prompted to select the targets file, plot bathymetry
-%       mapPlannedTrack(CONFIG, [], 'sg679', 1)
-%       % to use default track name 'glider', and do not plot bathymetry
-%       mapPlannedTrack(CONFIG, targetsFile, [], 0) 
+%       mapPlannedTrack(CONFIG, [], 'sg679', 1, 'black')
+%       % to use default track name 'glider', and do not plot bathymetry,
+%       use default color orange
+%       mapPlannedTrack(CONFIG, targetsFile, [], 0, []) 
 %
 %   See also   MAKETARGETSFILE
-%
-%   TO DOs:
-%       - [ ] make possible to plot multiple gliders for one mission
 % 
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   22 March 2023
-%   Updated:        07 August 2024
+%   Updated:        10 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,10 +56,6 @@ function mapPlannedTrack(CONFIG, targetsFile, trackName, bathyOn, figNum)
 % argument checks
 if nargin < 6
     figNum = 210;
-end
-
-if isempty(bathyOn)
-    bathyOn = 0;
 end
 
 if isempty(targetsFile)
@@ -72,91 +68,17 @@ if isempty(trackName)
     trackName = 'glider';
 end
 
-% set up figure
-figure(figNum);
-mapFig = gcf;
-mapFigPosition = [100   50   900    700];
-mapFig.Position = mapFigPosition;
-
-% clear figure (in case previously plotted)
-clf
-cla reset; clear g
-
-% build axes
-ax = axesm('mercator', 'MapLatLim', CONFIG.map.latLim, ...
-    'MapLonLim', CONFIG.map.lonLim, 'Frame', 'on'); %#ok<NASGU>
-
-gridm('PLineLocation', 1, 'MLineLocation', 1);
-plabel('PLabelLocation', 1, 'PLabelRound', -1, 'FontSize', 14);
-mlabel('MLabelLocation', 1, 'MLabelRound', -1, ...
-    'MLabelParallel', 'south', 'FontSize', 14);
-tightmap
-
-% add north arrow and scale bar
-CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
-    CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
-scaleruler on
-% showaxes
-setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
-    'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
-    'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
-    'FontSize', 14);
-
-%  plot bathymetry - slow step - optional
-if bathyOn
-    % try this default path
-    bathyFile = fullfile(CONFIG.path.shp, 'etopo', 'ETOPO2022_v1_60s_N90W180_surface.tif');
-    % if that's no good, prompt to select correct file
-    if ~exist(bathyFile, 'file')
-        [fn, path] = uigetfile([CONFIG.path.shp '*.tif;*.tiff'], 'Select etopo .tif file');
-        bathyFile = fullfile(path, fn);
-    end
-    [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
-        'CoordinateSystemType', 'geographic');
-    [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
-
-    % Z(Z >= 10) = NaN;
-    Z(Z >= 10) = 100;
-    geoshow(Z, refvec, 'DisplayType', 'surface', ...
-        'ZData', zeros(size(Z)), 'CData', Z);
-    cmap = cmocean('ice');
-    cmap = cmap(150:256,:);
-    colormap(cmap)
-    % matlab renamed caxis to clim in R2022a...so try both
-    try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<SEPEX>
-    brighten(.4);
-
-    [~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
-    [~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.6 0.6 0.6], 'LineWidth', 0.8);
-    [~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
-    [~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
+if isempty(bathyOn)
+    bathyOn = 0;
 end
 
-% plot land
-% try this default path
-landFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_land_scale_rank.shp');
-% if that's no good, prompt for new file 
-if ~exist(landFile, 'file')
-    [fn, path] = uigetfile([CONFIG.path.shp '*.shp'], 'Select ne_10m_land_scale_rank.shp');
-    landFile = fullfile(path, fn);
+if isempty(col_track)
+	col_track = [1 0.4 0];
 end
-land = shaperead(landFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
-    'UseGeoCoords', true);
 
-% and any minor islands if needed (e.g., for SBI)
-% try this default path
-minIslFile = fullfile(CONFIG.path.shp, 'NaturalEarthData', 'ne_10m_minor_islands.shp');
-% if that's no good, prompt for new file 
-if ~exist(minIslFile, 'file')
-    [fn, path] = uigetfile([CONFIG.path_shp '*.shp'], 'Select ne_10m_minor_islands.shp');
-    minIslFile = fullfile(path, fn);
-end
-landmi = shaperead(minIslFile, 'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim'], ...
-    'UseGeoCoords', true);
-
-geoshow(land, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
-geoshow(landmi, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
-
+% create basemap
+% by default, don't include contours. Include bathymetry if specified.
+[baseFig] = createBasemap(CONFIG, bathyOn, 0, figNum);
 
 % plot glider track from targets file
 [targets, ~] = readTargetsFile(CONFIG, targetsFile); 
@@ -165,7 +87,7 @@ plotm(targets.lat, targets.lon, 'Marker', 'o', 'MarkerSize', 4, 'MarkerEdgeColor
     'MarkerFaceColor', [0 0 0], 'Color', [0 0 0], 'HandleVisibility', 'off')
 textm(targets.lat, targets.lon, targets.name, 'FontSize', 10)
 
-h(1) = linem(targets.lat, targets.lon, 'LineWidth', 2, 'Color', [1 0.4 0],...
+h(1) = linem(targets.lat, targets.lon, 'LineWidth', 2, 'Color', col_track,...
     'DisplayName', trackName);
 
 legend(h, {trackName}, 'Location', 'southeast', 'FontSize', 14)
