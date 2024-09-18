@@ -157,12 +157,11 @@ if contourOn == 1 || bathyOn == 1 % if either, load raster data
 
 	if bathyOn == 1 % plot it
 
-		Z(Z >= 10) = 100;
 		geoshow(Z, refvec, 'DisplayType', 'surface', ...
 			'ZData', zeros(size(Z)), 'CData', Z);
 
 		cmap = cmocean('ice');
-		cmap = cmap(150:256,:);
+		cmap = cmap(120:210,:);
 		colormap(cmap)
 		% matlab renamed caxis to clim in R2022a...so try both
 		try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<CAXIS,SEPEX>
