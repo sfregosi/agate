@@ -111,14 +111,16 @@ The `mapPlannedTrack` function will create a simple map of the planned track wit
 ```default
 % set up map configuration
 bathyOn = 1; % plot bathymetry
-col_track = 'red'; % set color for trackline
 
 % use targetsOut file from above as input targets file
 targetsFile = targetsOut;
 
 % create plot
-mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, col_track)
-% the third argument sets the name of the track for the legend
+mapPlannedTrack(CONFIG, targetsFile, 'targetName', CONFIG.glider, ...
+   'bathy', bathyOn, 'col_track', 'red')
+% this function uses name-value pairs for optional arguments. 
+% CONFIG and targetsFile are not optional, but targetsFile may be set to 
+% empty [] to trigger a prompt to select the targets file
 
 % the title will default to CONFIG.glider and CONFIG.mission. To change:
 title('Example Planned Track');

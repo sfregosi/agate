@@ -21,11 +21,12 @@ function [baseFig] = createBasemap(CONFIG, varargin)
 %                   Required fields: CONFIG.map entries
 %
 %       all varargins are specified using name-value pairs
-%                 e.g., 'bathyOn', 1, 'figNum', 12
+%                 e.g., 'bathy', 1, 'figNum', 12
 %
 %       bathy       optional argument for bathymetry plotting
 %	                [double] Set to 1 to plot bathymetry or 0 to only plot
-%                   land. Will look for bathy file in CONFIG.map.bathyFile
+%                   land. Default is 1. Will look for bathy file in 
+%                   CONFIG.map.bathyFile
 %                   [char] Path to the bathymetry file (if you want to use
 %                   a different one than specified in CONFIG or it is not
 %                   specified in CONFIG
@@ -47,7 +48,7 @@ function [baseFig] = createBasemap(CONFIG, varargin)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   09 March 2024
-%   Updated:        11 September 2024
+%   Updated:        19 September 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,7 +56,7 @@ function [baseFig] = createBasemap(CONFIG, varargin)
 % argument checks
 narginchk(1, inf)
 
-% set defaults
+% set defaults/empties
 bathyOn = 1;
 bathyFile = [];
 contourOn = 1;
