@@ -25,7 +25,7 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %	FirstVersion: 	05 April 2023
-%	Updated:        11 September 2024
+%	Updated:        19 September 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -65,8 +65,9 @@ figNum = 26;
 targetsFile = targetsOut;
 
 % create plot - single track only
-mapPlannedTrack(CONFIG, targetsFile, CONFIG.glider, bathyOn, [], figNum)
-% 5th argument blank uses default color (orange)
+mapPlannedTrack(CONFIG, targetsFile, 'bathy', bathyOn, ...
+	'trackName', CONFIG.glider, 'figNum', figNum)
+% uses default color (orange). Change with 'col_track' argument
 
 % get file name only for plot saving
 [~, targetsName, ~] = fileparts(targetsFile);
