@@ -80,6 +80,8 @@ save(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 For detail on all available plotting functions, see the [Plots](plotting-functions.html){target='_blank'} page. A highlight of those most useful for piloting are below. 
 
+These plots will be assigned figure numbers as specified in `CONFIG.plots.figNumList` in the mission configuration file; that is required for the below steps but is commented out by default in the example mission configuration file. By assigning specific figure numbers, when plots are regenerated after subsequent dives, it will overwrite the previous figure rather than create a new one, preventing an overcluttered desktop. 
+
 The below steps require a `pp` variable. If it was created already, this first step is not needed.
 
 ```matlab
@@ -97,7 +99,9 @@ The below example code saves the map both as a `.fig` file and a `.png`. The `.f
 High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters.  
 
 ```matlab
-% print map **SLOWISH** - figNumList(1)
+% print map **SLOWISH**
+% make sure CONFIG.plots.figNumList is set in the configuration .cnf file. 
+% this will plot in fig number specified by figNumList(1)
 targetsFile = fullfile(CONFIG.path.mission, 'targets');
 plotGliderPath_etopo(CONFIG, pp, targetsFile, CONFIG.map.bathyFile);
 

@@ -62,7 +62,7 @@ An example is located in [`agate\example_workflows\exampleTrack.kml`](https://gi
 
 ### Create targets file from .kml
 
-The `makeTargetsFile` function will read in an existing `.kml` (that contains a single path) and use it to create a properly formatted Seaglider `targets` file. The generated targets file will be named `targets_` plus the name of the `.kml` file (*e.g.*, `targets_exampleTrack`). It will contain header information with the glider and mission information defined in `CONFIG`, the date it was created, and the specified radius. 
+The `makeTargetsFile` function will read in an existing `.kml` (that contains a single path) and use it to create a properly formatted Seaglider `targets` file. The generated targets file will be named `targets_` plus the name of the `.kml` file (*e.g.*, `targets_exampleTrack`). Note, this file will have no extension, but can be viewed in any text editor. It will contain header information with the glider and mission information defined in `CONFIG`, the date it was created, and the specified radius. 
 
 ```default
 / Targets file for mission sgXXX_Location_Mon20XX
@@ -116,7 +116,7 @@ bathyOn = 1; % plot bathymetry
 targetsFile = targetsOut;
 
 % create plot
-mapPlannedTrack(CONFIG, targetsFile, 'targetName', CONFIG.glider, ...
+mapPlannedTrack(CONFIG, targetsFile, 'trackName', CONFIG.glider, ...
    'bathy', bathyOn, 'col_track', 'red')
 % this function uses name-value pairs for optional arguments. 
 % CONFIG and targetsFile are not optional, but targetsFile may be set to 
@@ -138,6 +138,7 @@ savefig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
 
 % save as .pdf or .eps - requires the export_fig toolbox available at
 %  https://github.com/altmany/export_fig
+% **THIS HAS NOT BEEN RECENTLY TESTED** 
 export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
     '_plannedTrack_' targetsName, '.eps']), '-eps', '-painters');
 export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
@@ -162,12 +163,14 @@ NOTE: This function sets the arguments using *name-value* pairs because most of 
 ```matlab
 % can specify bathymetry file
 bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
+targetsFile = fullfile(CONFIG.path.mission, 'targets_exampleTrack');
 plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, 'bathyFile', bathyFile)
 % OR 
 % leave empty to prompt to select files
 plotTrackBathyProfile(CONFIG)
 
 % save as .png
+[~, targetsName, ~] = fileparts(targetsFile); % get name for saving
 exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
 	CONFIG.mission, '_targetsBathymetryProfile_' targetsName, '.png']), ...
     'Resolution', 300)

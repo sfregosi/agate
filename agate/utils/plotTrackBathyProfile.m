@@ -108,6 +108,10 @@ if isempty(targetsFile)
 end
 
 % check that targetsFile exists if specified, otherwise prompt to select
+if isstring(targetsFile)
+	targetsFile = convertStringsToChars(targetsFile);
+end
+
 if ischar(targetsFile)
 	if ~exist(targetsFile, 'file')
 		fprintf(1, ['Specified targetsFile does not exist. Select' ...
