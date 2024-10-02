@@ -22,7 +22,7 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %                   default is to print
 %
 %   Outputs:
-%       tm   [struct] of calculated/estimated travel metrics, includes 
+%       tm   [struct] of calculated/estimated travel metrics, includes
 %               distTot         total distance over ground in km
 %               distCov         total distance along trackline in km
 %               distRem         trackline distance remaining in km
@@ -42,13 +42,23 @@ function tm = printTravelMetrics(CONFIG, pp, targetsFile, printOn)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
 %   FirstVersion:   25 April 2023
-%   Updated:        07 August 2024
+%   Updated:        02 October 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 4
 	printOn = 1;
+end
+
+% check that targetsFile specified is valid
+if ~exist(targetsFile, 'file')
+	fprintf(1, ['Specified targetsFile does not exist. Select' ...
+		' targets file to continue.\n']);
+	[fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
+		'Select targets file');
+	targetsFile = fullfile(path, fn);
+	fprintf('targets file selected: %s\n', fn);
 end
 
 tm = struct;
@@ -62,8 +72,8 @@ tm.missionElapsed = days(pp.diveEndTime(end) - pp.diveStartTime(1));
 % loop through all targets (expect RECV) to get distances between each
 [targets, ~] = readTargetsFile(CONFIG, targetsFile);
 for f = 1:height(targets) - 1
-    [targets.distToNext_km(f), ~] = lldistkm([targets.lat(f+1) targets.lon(f+1)], ...
-        [targets.lat(f) targets.lon(f)]);
+	[targets.distToNext_km(f), ~] = lldistkm([targets.lat(f+1) targets.lon(f+1)], ...
+		[targets.lat(f) targets.lon(f)]);
 end
 % get current waypoint to calculate distance covered and remaining
 currTgt = pp.tgtName{end};
@@ -73,7 +83,7 @@ ctIdx = find(strcmp(targets.name, currTgt));
 dist_covEst = sum(targets.distToNext_km(1:ctIdx-1));
 tm.distCov = dist_covEst - pp.distTGT_km(end);
 % sum dist between all remaining waypoints + the remaining dist to current
-% targe tto get total trackline remaining
+% target to get total trackline remaining
 dist_remEst = sum(targets.distToNext_km(ctIdx:end));
 tm.distRem = dist_remEst + pp.distTGT_km(end);
 
@@ -88,7 +98,7 @@ tm.avgSpdRec = sum(pp.dog_km(end-4:end))/...
 tm.missionRem = tm.distRem/tm.avgTrkSpd;
 tm.missionRemRec = tm.distRem/tm.avgSpdRec;
 
-% eta to recovery 
+% eta to recovery
 tm.eta = dateshift(datetime(pp.diveEndTime(end), 'Format', 'uuuu-MMM-dd HH:mm ZZZZ', ...
 	'TimeZone', '+0000') + days(tm.missionRem), 'start', 'hour', 'nearest');
 tm.etaRec = dateshift(datetime(pp.diveEndTime(end), 'Format', 'uuuu-MMM-dd HH ZZZZ', ...
@@ -96,13 +106,13 @@ tm.etaRec = dateshift(datetime(pp.diveEndTime(end), 'Format', 'uuuu-MMM-dd HH ZZ
 
 
 if printOn == 1
-    % print messagess
-    fprintf(1, ['%s travel summary through dive %i:\n' ...
+	% print messagess
+	fprintf(1, ['%s travel summary through dive %i:\n' ...
 		'\tTotal distance over ground: %.1f km (~%.f km of trackline) ' ...
-        'in %.1f days.\n' ...
-        '\tAvg speed over ground: %.f km/day (last 5 dives only = %.f km/day)\n' ...
+		'in %.1f days.\n' ...
+		'\tAvg speed over ground: %.f km/day (last 5 dives only = %.f km/day)\n' ...
 		'\tAvg speed over trackline: ~%.f km/day.\n' ...
-        '\tEstimated mission duration: %.f days (target = %.f days)\n'], ...
+		'\tEstimated mission duration: %.f days (target = %.f days)\n'], ...
 		CONFIG.glider, pp.diveNum(end), tm.distTot, tm.distCov, ...
 		tm.missionElapsed, tm.avgSpd, tm.avgSpdRec, tm.avgTrkSpd, ...
 		tm.missionRem + tm.missionElapsed, CONFIG.tmd);
