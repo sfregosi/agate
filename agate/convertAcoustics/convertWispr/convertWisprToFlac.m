@@ -167,10 +167,10 @@ for di = 1 : length(inDir) % inDir is a cell array
     datDirs = unique({datFiles_all(:).folder}');
     dj = 1;
     while (dj <= length(datDirs))
-        [~, inName] = fileparts(datDirs{dj});            % name of possible subdirectory
-        go = go || strcmpi(inName, restartDir);         % gotten to restart point yet?
-        if (~go || ~isfolder(datDirs{dj}) || length(inName) < 6 || ~contains(inName,dig6))
-            datDirs{dj} = [];     % skip this directory
+        [~, dirName] = fileparts(datDirs{dj});            % name of possible subdirectory
+        go = go || strcmpi(dirName, restartDir);         % gotten to restart point yet?
+        if (~go || ~isfolder(datDirs{dj}) || length(dirName) < 6 || ~contains(dirName,dig6))
+            datDirs(dj) = [];     % skip this directory
         else
             dj = dj + 1;          % keep this directory
         end
