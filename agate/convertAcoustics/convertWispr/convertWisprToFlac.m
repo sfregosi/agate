@@ -10,30 +10,31 @@ function convertWisprToFlac(CONFIG, varargin)
 %       a Seaglider(tm), convert the .dat soundfiles to FLAC (.flac) files.
 %       Also create a fileheaders.txt file in each of these directories
 %       with a copy of the header portion of each .dat file, which is text.
+%       A log file (text file) is generated to document each conversion and
+%       identify any files with errors/issues.
 %
-%       Certain settings can be defined in the agate mission configuration
-%       file or defaults will be used.
+%       The input and output directories can be defined in the agate
+%       mission configuration file or manually selected (if not specified
+%       or specified values are not valid).
+%
 %       WISPR settings information can be found in the header of a raw .dat
 %       file. File duration (in seconds) can be found as
 %       file_duration = (file_size*512)/sample_size/sampling_rate
 %
-% % % Optionally, filter and
-% % % downsample the files to a lower sample rate as they're being converted
-% % % (downsampling requires the signal processing toolbox).
-% % %
-% % %
-% % % convertPmarFun.m is a functionized version of the convertPmar.m script.
-% % % it allows for a CONFIG input argument that is created from the
-% % % pmarConvertConfig_template.m, which is meant to keep configuration for
-% % % each mission organized in its own file
-%
 %   Inputs:
 %       CONFIG        [struct] mission/agate configuration variable.
 %                     Required fields: CONFIG.ws.inDir, CONFIG.ws.outDir,
-%                     CONFIG.ws.......
 %
 %       all varargins are specified using name-value pairs
 %                 e.g., 'showProgress', true
+%       showProgres   [true or false] set to true to print progress in the
+%                     Command Window
+%       restartDir    [string] specifies a subfolder (named by day
+%                     typically) to restart processing. E.g., '20241030'
+%       inExt         [string] to specify input file extension. Default is
+%                     '.dat'
+%       outExt        [string] to specify output file extension/format
+%                     (e.g., '.flac' or '.wav'). Default is '.flac'
 %
 %
 %   Outputs:
@@ -47,9 +48,9 @@ function convertWisprToFlac(CONFIG, varargin)
 %       Dave Mellinger Oregon State University
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:        04 December 2024
+%   Updated:        11 December 2024
 %
-%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -259,7 +260,7 @@ for di = 1 : length(inDir) % inDir is a cell array
                         % update log
                         fprintf(logFp(dk), '%s\n', outName);
                     elseif isempty(data)
-                        fprintf(1, 'File %s is empty. File skipped.\n', inName);
+                        fprintf(1, '\n   File is empty. File skipped.\n');
                     end
 
                 end
@@ -271,13 +272,11 @@ for di = 1 : length(inDir) % inDir is a cell array
     end
 end
 
-
+% report skipped files
 fprintf(1, '%i files were skipped. Check log for more information\n', skippedCount);
 % finalize the log
 fprintf(logFp(dk), '\n%i files were skipped\n', skippedCount);
     fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0));
-
-
 
 % close header and log files
 fclose(hdrFp);
