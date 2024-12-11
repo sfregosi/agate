@@ -143,6 +143,15 @@ for dk = 1 : length(outDir)
     hdrFp(dk) = fopen(fullfile(outDir{dk}, 'fileheaders.txt'), 'a+'); % append
 end
 
+% open conversionLog.txt
+logFp = nan(1, length(outDir));
+for dk = 1 : length(outDir)
+    if (~exist(outDir{dk}, 'dir'))
+        mkdir(outDir{dk});
+    end
+    logFp(dk) = fopen(fullfile(outDir{dk}, 'conversionLog.txt'), 'a+'); % append
+end
+
 % 'go' says whether we've gotten to restartDir yet. If restartDir is empty, it
 % means start from the beginning, so 'go' is true from the start.
 go = isempty(restartDir);               % have we gotten to restartDir yet?
@@ -156,13 +165,21 @@ extLen = length(inExt);
 
 %% Process files.
 
+% track skipped files
+skippedCount = 0;
+
 % March through all of inDir.
 for di = 1 : length(inDir) % inDir is a cell array
-    fprintf(1, 'Source: %s\n', inDir{di});
-    fprintf(1, 'Destination:  %s\n', outDir{:});
+    % fprintf(1, 'Source: %s\n', inDir{di});
+    % fprintf(1, 'Destination:  %s\n', outDir{:});
+    fprintf(1, 'Source: %s\nDestination: %s\n\n', inDir{di}, outDir{:});
+    fprintf(logFp(dk), 'Source: %s\nDestination: %s\n', inDir{di}, outDir{:});
+    fprintf(logFp(dk), 'Start time: %s\n\n', datestr(now, 0));
 
     % Get all possible .dat files and directories
     datFiles_all = dir(fullfile(inDir{di}, '**\*.dat')); % recurse through subdirs
+    fprintf(logFp(dk), '%i possible .dat files\n\n', length(datFiles_all));
+
     % extract just folders (so can restart if interupted)
     datDirs = unique({datFiles_all(:).folder}');
     dj = 1;
@@ -183,20 +200,23 @@ for di = 1 : length(inDir) % inDir is a cell array
         datFiles = dir(fullfile(datDirs{dj}, 'WISPR*.dat'));
         for fi = 1 : length(datFiles)
 
+            % get file name and parts
+            inName = datFiles(fi).name;
+            inFile = fullfile(datFiles(fi).folder, datFiles(fi).name);
+            [~, inDirLast] = fileparts(datFiles(fi).folder);
+            % print sourcefile info into log file
+            fprintf(logFp(dk), '%s/%s  ==>  ', inDirLast, inName);
+
             % Check that datFiles(fi) looks like a soundfile name and has
             % 512-byte header plus >100 bytes of data.
-            inName = datFiles(fi).name;
             if (~datFiles(fi).isdir && length(inName) >= 6 && ...
-                    contains(inName, dig6) && datFiles(fi).bytes > 512+100)
+                    contains(inName, dig6) && datFiles(fi).bytes > 512)
 
                 % if looks ok, read it in
-                inFile = fullfile(datFiles(fi).folder, datFiles(fi).name);
-                [~, inDirLast] = fileparts(datFiles(fi).folder);
-
                 % read in using read_wispr_file from S. Fregosi fork of
                 % wispr3 code originally by C. Jones
                 % https://github.com/sfregosi/wispr3
-                [hdr, raw, time, timestamp, hdrStrs] = read_wispr_file(inFile, 1, 0);
+                [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file(inFile, 1, 0);
 
                 % Produce an output file in each output directory.
                 for dk = 1:length(outDir)
@@ -236,18 +256,34 @@ for di = 1 : length(inDir) % inDir is a cell array
                         % audiowrite(outFile, data / 2^(nOutputBits-1), hdr.sampling_rate, 'BitsPerSample', nOutputBits);
                         audiowrite(outFile, data, hdr.sampling_rate, ...
                             'BitsPerSample', nOutputBits);
-
+                        % update log
+                        fprintf(logFp(dk), '%s\n', outName);
                     elseif isempty(data)
-                        fprintf(1, 'File %s is empty. Skipping...\n', inName);
+                        fprintf(1, 'File %s is empty. File skipped.\n', inName);
                     end
 
                 end
+            else % invalid filename/size
+                fprintf(logFp(dk), '\n   Invalid file name or size. File skipped.\n');
+                skippedCount = skippedCount + 1;
             end
         end
     end
 end
+
+
+fprintf(1, '%i files were skipped. Check log for more information\n', skippedCount);
+% finalize the log
+fprintf(logFp(dk), '\n%i files were skipped\n', skippedCount);
+    fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0));
+
+
+
+% close header and log files
 fclose(hdrFp);
+fclose(logFp);
 
 end
+
 
 
