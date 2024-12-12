@@ -1,23 +1,56 @@
 function convertPmar(CONFIG)
-%convertPmarFun    Convert and downsample PMAR soundfiles to WAVE (.wav) format
+%CONVERTPMAR    Convert and downsample PMAR soundfiles to WAVE (.wav) format
 %
-% Given one or more directories, each full of subdirectories with .dat
-% soundfiles recorded by the PMAR-XL acoustic recording system on a
-% Seaglider(tm), convert the soundfiles to WAVE (.wav) files. The resulting .wav
-% files have the start date/time of each PMAR file in the .wav file name. Also
-% create a fileheaders.txt file in each of these directories with a copy of the
-% header portion of each .dat file, which is text. Optionally, filter and
-% downsample the files to a lower sample rate as they're being converted
-% (downsampling requires the signal processing toolbox).
+%   Syntax:
+%       CONVERTPMAR(CONFIG)
 %
-% convertPMARFun.m is a functionized version of the convertPmar.m script.
-% it allows for a CONFIG input argument that is created from the
-% pmarConvertConfig_template.m, which is meant to keep configuration for
-% each mission organized in its own file
-
-% Dave Mellinger
-% Oregon State Univ.
-% last modified 2024 08 07 S. Fregosi selene.fregosi@gmail.com
+%   Description:
+%       Utility to convert raw PMAR-XL DAT (.dat) files to wAVE (.wav)
+%       files. This is a function-ized version of the convertPmar script
+%       and associated function pmarIn written by Dave Mellinger, Oregon 
+%       State University and avaiable in the MATLAB File Exchange at:
+%       https://www.mathworks.com/matlabcentral/fileexchange/107245-convert-seaglider-pmar-xl-sound-files-to-wav-format
+% 
+%       The script and function have been modified and combined to work
+%       within the agate toolbox. The input CONFIG files are populated from
+%       a PMAR-specific configuration (.cnf) file. An example can be found
+%       in the agate/settings folder. 
+%
+%       Given one or more directories, each full of subdirectories with
+%       .dat sound files recorded by the PMAR-XL acoustic recording system 
+%       on a Seaglider(tm), convert the soundfiles to WAVE (.wav) files. 
+%       The resulting .wav files have the start date/time of each PMAR file
+%       in the .wav file name. Also create a fileheaders.txt file in each 
+%       of these directories with a copy of the header portion of each .dat
+%       file, which is text. Optionally, filter and downsample the files to
+%       a lower sample rate as they're being converted (downsampling 
+%       requires the signal processing toolbox).
+%
+%   Inputs:
+%       CONFIG   [struct] mission/agate configuration variable generated
+%                when agate is initialized
+%                Required fields: CONFIG.pm.convert, CONFIG.pm.convCnfFile
+%                that populates additional required fields CONFIG.pm.inDir,
+%                CONFIG.pm.outDir, CONFIG.pm.outTemplate,
+%                CONFIG.pm.showProgress, CONFIG.pm.restartDir,
+%                CONFIG.pm.decim, CONFIG.pm.relativeCutoffFreq, and
+%                CONFIG.pm.forceSRate
+%
+%	Outputs:
+%       None. Generates sound files
+%
+%   Examples:
+%
+%   See also 
+%
+%   Authors:
+%       Dave Mellinger, Oregon State University
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   Updated:   2024 December 11
+%
+%   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%% Configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
