@@ -25,7 +25,7 @@ function convertWispr(CONFIG, varargin)
 %
 %   Inputs:
 %       CONFIG        [struct] mission/agate configuration variable.
-%                     Required fields: CONFIG.ws.inDir, CONFIG.ws.outDir,
+%                     Required fields: CONFIG.ws.inDir, CONFIG.ws.outDir
 %
 %       all varargins are specified using name-value pairs
 %                 e.g., 'showProgress', true
