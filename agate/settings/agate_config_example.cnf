@@ -53,6 +53,8 @@ CONFIG.pm.dateStart = 19; % what character of file name starts the date format
 % WISPR settings
 % only needed after mission is complete (no piloting functionality for WISPR)
 CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
+CONFIG.ws.inDir = 'D:\sgXXX_Location_Mon20XX_raw_acoustic_data';   % path to raw WISPR.dat files
+CONFIG.ws.outDir = 'E:\sgXXX_Location_Mon20XX\flac';   % path to save converted files
 CONFIG.ws.fileLength = 60; % in seconds
 CONFIG.ws.sampleRate = 180000; % sample rate
 CONFIG.ws.dateFormat = 'yyMMdd_HHmmss';
