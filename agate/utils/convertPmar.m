@@ -5,7 +5,7 @@ function convertPmar(CONFIG)
 %       CONVERTPMAR(CONFIG)
 %
 %   Description:
-%       Utility to convert raw PMAR-XL DAT (.dat) files to wAVE (.wav)
+%       Utility to convert raw PMAR-XL DAT (.dat) files to WAV (.wav)
 %       files. This is a function-ized version of the convertPmar script
 %       and associated function pmarIn written by Dave Mellinger, Oregon 
 %       State University and avaiable in the MATLAB File Exchange at:
