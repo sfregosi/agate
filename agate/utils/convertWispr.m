@@ -2,7 +2,7 @@ function convertWispr(CONFIG, varargin)
 %CONVERTWISPR    Convert WISPR .dat soundfiles to FLAC (.flac) or WAV (.wav) format
 %
 %   Syntax:
-%       CONVERTWISPRTOFLAC(CONFIG)
+%       CONVERTWISPR(CONFIG)
 %
 %   Description:
 %       Given one or more directories, each full of subdirectories with
@@ -44,13 +44,13 @@ function convertWispr(CONFIG, varargin)
 %
 %   Examples:
 %
-%   See also CONVERTPMARFUN
+%   See also CONVERTPMAR
 %
 %   Authors:
 %       Dave Mellinger Oregon State University
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:        11 December 2024
+%   Updated:        13 December 2024
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -212,10 +212,10 @@ for di = 1 : length(inDir) % inDir is a cell array
                     contains(inName, dig6) && datFiles(fi).bytes > 512)
 
                 % if looks ok, read it in
-                % read in using read_wispr_file from S. Fregosi fork of
-                % wispr3 code originally by C. Jones
-                % https://github.com/sfregosi/wispr3
-                [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file(inFile, 1, 0);
+                % read in using read_wispr_file_agate (modified copy of 
+                % read_wispr_file originally by C. Jones
+                % https://github.com/sfregosi/wispr3)
+                [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
 
                 % Produce an output file in each output directory.
                 for dk = 1:length(outDir)
