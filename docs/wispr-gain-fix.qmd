@@ -1,0 +1,80 @@
+---
+title: "WISPR gain fix"
+subtitle: 'Guide for fixing a variable gain issue with WISPR2'
+---
+
+## Fix WISPR gain bug
+
+A bug was discovered in WISPR in spring 2023 (should be fixed now??) that leads to sound recordings that look like they have variable gain settings applied on different files. One file would be half as loud as the next (6 dB gain change). For more info on the source/issue with this bug, contact Chris Jones. An imperfect, but workable fix was developed with C. Jones and is included here just in case someone else would find it useful or if the issue arises again in the future. Because this is hopefully one-off issue, the below instructions are an outline/draft of documentation and the included code is not generalized (*e.g.*, hard coded paths, etc.) and is meant to guide a similar effort. Please reach out if you encounter the same problem or need further assistance. 
+
+This process assumes you have initially converted the `.dat` files to `.wavs`, and in looking at those .wavs, noticed an issue. Those 'bad' `.wavs` will be used to make decisions about file gain adjustments so those need to be retained. Then, this process will *reconvert* the `.dat` files into `.wavs`, making adjustments to the expected gain if needed, as assessed following a set of rules or according to manual user input. 
+
+The general workflow was to work on one dive's worth of files at a time. That dive's 'bad' `.wav` files would be opened in Raven so the spectrograms could be visually compared. Jumps in gain are vary obvious as stark changes in noise level from one file to the next. Quieter files are gain settings of '1' and are not changed. The louder files are assumed to have a gain setting of '2' and are reduced to align more with the quieter files. 
+
+A MATLAB script is run for that dive's worth of files, where `.dat` files are read in and the noise levels in a specified band are compared. If they are within a similar level, then the gain is assumed to *not* change and the files are written to `.wav` as is. If the second file is louder, then it's gain is adjusted down and this adjusted file is written to `.wav` format. There are special catches in the script for instances where the noise level between the two files is not a clear 1:1 or 1:2 ratio. In those cases, the script prompts the user to manually assess and specify an adjustment. The user can use the script-generated plots and the spectrograms of the 'bad' files to make this decision. 
+
+All code needed to apply the fix is located in the `agate\scratch\fixWispr` folder. 
+
+### Included files
+
+`fix_gain.m`: This is the primary script to apply the fix. The user must update a few paths and settings and then run this script on a folder of acoustic files. More on running it below 
+
+`my_psd.m`: Function to calculate power spectral densities. Results are similar to `pwelch` but provides outputs normalized by frequency bin size
+
+`plotRMSSpec.m`: Function to plot RMS level for two files being compared
+
+`read_wispr_file.m`: Function to read a raw WISPR `.dat` file, extracting all included header info
+
+### Running `fix_gain`
+
+#### Set up data to be processed
+
+The `fix_gain` script is meant to be run over a folder of files. Depending on deployment length, it may be beneficial to work in smaller batches of files. For example, for a 5 week glider mission, we had 40k files which was unreasonable to work with all at once. Plus, when the glider was at the surface there were short gaps in time and so comparing noise levels of files across that time gap may not be appropriate. We found that working on a folder of just the files for a single dive at a time worked well. You could use a different approach but it would require reworking the paths in this script. 
+
+Create a 'working' folder where you will incrementally move the `.dat` files for just a single dive, process those, then move them out of that folder and replace with the files for the next dive. 
+
+Load the dive's worth of 'bad' `.wavs` into Raven (use the Page option to load large amounts of data without crashing Raven) to view the spectrograms in cases where manual assessment is needed. 
+
+#### Set paths and other settings
+
+Within the script, several lines of code will need to be changed for your local paths and settings preferences. 
+
+- **Line 48**: Specify path to __*agate*__ folder so all required functions are added to the path
+- **Line 54**: Set `verbose` to either `'true'` or `'false'`
+  - `verbose = 'true'`: All prompts and all plots will be generated. The user will need to manually click through every file comparison. This is very useful when first fixing this problem to get a feel for how the files compare, but is time consuming. It is also useful in time periods with a lot of animal noise that could lead to incorrect assumptions of gain changes. 
+  - `verbose = 'false'`: Plots and prompts only appear if a non-standard gain adjustment is detected (not 1 or 2). This enables the script to run mostly hands off except in cases that aren't clear
+- **Line 57**: Set `fldrStr` to the folder where the dive full of files to be processed will be temporarily moved for processing
+- **Line 58**: Set `dive` to the dive number to be processed. This is just used in naming the output log files
+- **Line 59**: Set `phase` to both, ascent, or descent, depending on how many files are being processed. Working on phases individually means more manual moving of files but allows a bit more checking in on the process as it works in smaller chunks
+- **Line 60**: Set `path_dat` to the folder containing the .dat files to be processed, the temporary 'working folder'
+- **Line 61**: Set `path_out` to the overall output folder where the log files and processed .wav files should be saved
+- **Line 62**: Set `path_wav` for the subfolder (within `path_out`) to save this dive's processed files. I had this also print to a 'working' folder and then after each dive was processed and those files were checked (viewed in Raven), then they were manually moved out of the working folder into a 'complete' folder
+- **Line 71**: Set `adc_vref`. Default for WISPR is 5
+- **Line 72**: Set `nbufs` to specify number of buffers to compare (from end of first file to start of second file). For our recording settings, a buffer was 5632 samples, sample rate was 180 kHz, so 96 buffers is just over 3 seconds
+- **Line 73**: Set `max_thresh` to remove spikes in waveform that could skew the RMS calculations. This is adaptive, so if it is set at 1 and that removes too many datapoints, the process will try to incrementally increase it. This is necessary for periods of glider pumping which are all very loud
+Lines 78:79, 81: Set spectrum parameters to provide reasonable resolution for a given sampling rate. Larger `fft_size` will give finer resolution but may lead to 'spiky' spectra that aren't good for comparison
+- **Lines 84:85**: Set frequency range (`f1` lower limit, `f2` upper limit) to compare. Ideal is to select a frequency range a lot of animal or anthropogenic (intermittent/variable) sounds would not be present
+
+The remaining lines set up the log file, so don't need to be changed unless the user wants additional information printed out
+
+#### Run the script
+
+Hit the green Run button and interact with the script in the Command Window. 
+
+At the start of a folder, the gain settings for the first two files must always be manually entered, to set the baseline. Use Raven to compare these two files to each other and later files to assess if they are a '1' or '2' (or a combination of those) and manually enter the correct settings. 
+
+At each prompt, the number should be typed in the command window followed by hitting Enter. The suggested value is in square brackets, but can be confusing/unreliable for the first two files so isn't necessarily correct. To just accept the suggested value, just hit Enter without typing in new number. 
+
+The only valid inputs should be '1' or '2'. Values that are not one of these will prompt for user assessment. 
+
+In periods with a lot of dolphins, the script may get confused (noise levels in subsequent 3 seconds can be very different!) so those may require lots of manual assessment. 
+
+If a wrong key is accidentally pressed or a mistake is made, the best approach is to Quit at the next available prompt. Navigate to the log files and rename them with 'part1' or something similar. Move the `.dat` files that were correctly processed out of the working folder, and then re-run the reduced working folder. This will create new log files at this new starting location, and will overwrite any incorrectly adjusted `.wavs`. A record of what was adjusted for the earlier files will be saved in the original logs with the appended names. 
+
+
+
+
+<sub>[Back to top](#)</sub>
+
+
+
