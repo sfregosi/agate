@@ -42,8 +42,8 @@ convertWispr(CONFIG, 'showProgress', true, 'outExt', '.flac');
 % false to skip printing. 
 % This will convert files to .flac. Set 'outExt' to '.wav' to conver to WAV
 
-% If the process is interupted at any point, it is possible to restart at a
-% specified subdirectory. WISPR typically saves raw .dat files in folders
+% If the process is interrupted at any point, it is possible to restart at
+% a specified subdirectory. WISPR typically saves raw .dat files in folders
 % by date, so enter the name of the dated subdirectory as a string to
 % restart there
 convertWispr(CONFIG, 'showProgress', true, 'outExt', '.flac', ...
