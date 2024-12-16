@@ -89,7 +89,7 @@ version = [];
 % first line with wispr ver is a comment so doesn't get evaluated but still
 % want to parse that info
 ln1 = fgets(fp);
-[wisprVersion,nScan] = sscanf(ln1, '%% WISPR %s');		%#ok<ASGLU>
+[wisprVersion, nScan] = sscanf(ln1, '%% WISPR %s');		%#ok<ASGLU>
 hdrStrs = {strip(ln1)};
 if (nScan ~= 1)
     fprintf(1, 'Something weird with WISPR ver read. Exiting\n');

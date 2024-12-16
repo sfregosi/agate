@@ -8,8 +8,8 @@ function convertWispr(CONFIG, varargin)
 %       Given one or more directories, each full of subdirectories with
 %       .dat soundfiles recorded by the WISPR acoustic recording system on
 %       a Seaglider(tm), convert the .dat soundfiles to FLAC (.flac) or WAV
-%       (.wav) files. Default is FLAC. 
-% 
+%       (.wav) files. Default is FLAC.
+%
 %       Also create a fileheaders.txt file in each of these directories
 %       with a copy of the header portion of each .dat file, which is text.
 %       A log file (text file) is generated to document each conversion and
@@ -177,7 +177,7 @@ for di = 1 : length(inDir) % inDir is a cell array
 
     % Get all possible .dat files and directories
     datFiles_all = dir(fullfile(inDir{di}, '**\*.dat')); % recurse through subdirs
-    fprintf(logFp(dk), '%i possible .dat files\n\n', length(datFiles_all));
+    fprintf(logFp(dk), '%i possible .dat files\n', length(datFiles_all));
 
     % extract just folders (so can restart if interupted)
     datDirs = unique({datFiles_all(:).folder}');
@@ -191,6 +191,14 @@ for di = 1 : length(inDir) % inDir is a cell array
             dj = dj + 1;          % keep this directory
         end
     end
+
+    % print just the number of remaining files to process to the log
+    datFilesCount = 0;
+    for df = 1:length(datDirs)
+        datFiles_proc = dir(fullfile(datDirs{df}, '**\*.dat')); % recurse through subdirs
+        datFilesCount = datFilesCount + length(datFiles_proc);
+    end
+    fprintf(logFp(dk), '%i .dat files to be processed\n\n', datFilesCount);
 
     % Process each data directory in turn.
     for dj = 1:length(datDirs)
@@ -212,7 +220,7 @@ for di = 1 : length(inDir) % inDir is a cell array
                     contains(inName, dig6) && datFiles(fi).bytes > 512)
 
                 % if looks ok, read it in
-                % read in using read_wispr_file_agate (modified copy of 
+                % read in using read_wispr_file_agate (modified copy of
                 % read_wispr_file originally by C. Jones
                 % https://github.com/sfregosi/wispr3)
                 [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
@@ -228,11 +236,14 @@ for di = 1 : length(inDir) % inDir is a cell array
                         inDirLast, datFiles(fi).name);
                     fprintf(hdrFp(dk), '%%dst_filename: %s\n', outName);
                     fprintf(hdrFp(dk), '%s\n', hdrStrs{:});
-                    % add the first timestamp as a datetime string
-                    start_time_stamp = datetime(timestamp(1), ...
-                        'ConvertFrom','epochtime', 'Epoch', '1-Jan-1970', ...
-                        'Format', 'uuuu-MM-dd HH:mm:ss.SSS');
-                    fprintf(hdrFp(dk), 'start_timestamp = ''%s'';\n', start_time_stamp);
+                    % if WISPR 3.0 add first timestamp as a datetime string
+                    if strcmp(hdr.wisprVersion, '3.0')
+                        start_time_stamp = datetime(timestamp(1), ...
+                            'ConvertFrom','epochtime', 'Epoch', '1-Jan-1970', ...
+                            'Format', 'uuuu-MM-dd HH:mm:ss.SSS');
+                        fprintf(hdrFp(dk), 'start_timestamp = ''%s'';\n', ...
+                            start_time_stamp);
+                    end
                     fprintf(hdrFp(dk), '\n');
 
                     % if turned on, update progress in console
@@ -274,7 +285,7 @@ end
 fprintf(1, '%i files were skipped. Check log for more information\n', skippedCount);
 % finalize the log
 fprintf(logFp(dk), '\n%i files were skipped\n', skippedCount);
-    fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0));
+fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0));
 
 % close header and log files
 fclose(hdrFp);
