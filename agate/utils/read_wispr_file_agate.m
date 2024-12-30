@@ -1,5 +1,5 @@
 function [hdr, data, time, stamp, hdrStrs] = read_wispr_file_agate(name, first, last)
-%READ_WISPR_FILE_AGATE   read in a raw WISPR .dat file
+%READ_WISPR_FILE_AGATE   read wispr data from raw .dat file
 %
 %   Syntax:
 %      [HDR, DATA, TIME, STAMP, HDRSTRS] = READ_WISPR_FILE_AGATE(NAME, FIRST, LAST)
@@ -44,8 +44,10 @@ function [hdr, data, time, stamp, hdrStrs] = read_wispr_file_agate(name, first, 
 %
 %   Outputs:
 %       hdr     [struct] header information
-%       data    [double] sound data
-%       time    [double] count of time from 0
+%       data    [double] sound data, matrix of size 
+%               [samples_per_buffer, (last-first)]
+%       time    [double] count of time from 0, matrix of size 
+%               [samples_per_buffer, (last-first)]
 %       stamp   [double] time in linux epoch time
 %       hdrStrs [cell array] header lines as a string
 %
@@ -98,7 +100,6 @@ end
 
 % use eval on the remaining lines
 for n = 1:18
-    %str = fgets(fp, 64); % read 64 chars max in each line
     str = fgets(fp); % read full line
     % read ascii lines until a null is found, so header buffer must be null terminated
     if( str(1) == 0 )
@@ -187,7 +188,7 @@ fseek(fp, 512 + (hdr.buffer_size * (first-1)), -1);
 % start time
 t0 = (second + usec * 0.000001) + (first - 1)*duration;
 
-% number of buffer to concatenate and plot
+% number of buffer to read and concatenate
 num_bufs = last - first + 1;
 
 for n = 1:num_bufs
@@ -198,32 +199,28 @@ for n = 1:num_bufs
         break;
     end
 
-    t0 = t0 + duration;
-
     % read buffer timestamp, which is time the buffer finished,
     % so remove the buffer duration
     if( timestamp == 8 )
-        s = fread(fp, 1, 'uint32' );
+        s = fread(fp, 1, 'uint32' );  % epoch second
         us = fread(fp, 1, 'uint32' );
         stamp(n) = (s + 0.000001 * us) - duration;
     elseif( timestamp == 6 )
-        s = fread(fp, 1, 'uint16' );
+        s = fread(fp, 1, 'uint16' ); % seconds from start of file
         us = fread(fp, 1, 'uint32' );
         stamp(n) = ((second + s) + 0.000001 * us) - duration;
-        %fprintf('timestamp %d bytes, padding %d bytes, ', timestamp, padding_per_buffer);
-        %fprintf('sec = %lu, usec = %d\n', sec, usec);
     else
-        stamp(n) = t0;
+        stamp(n) = t0 + (n-1)*duration;
     end
 
     % read padding, if any
     junk = fread(fp, padding_per_buffer, 'char');
 
-    % add raw data buffer as a column
+    % add raw data buffer as a column to data matrix
     data(:,n) = double(raw)*q;
 
+    % add a time column to the time matrix
     time(:,n) = stamp(n) + dt*(0:(samples_per_buffer-1));
-    %    time(:,n) = t0 + dt*(0:(samples_per_buffer-1))';
 
 end
 
