@@ -86,17 +86,19 @@ CONFIG.pm.dateStart = 19; % what character of file name starts the date format
 % example file name: sg639_MHI_Apr2023_230411-185050.484.wav
 ```
 
-WISPR settings are only required for processing and analysis after a mission is complete; there is no piloting interaction with the WISPR system at this time.  
+WISPR settings are only required for processing and analysis after a mission is complete; there is no __*agate*__-based piloting interaction with the WISPR system at this time. The settings define input and output paths and extensions for file conversion and the format of the timestamp in filenames for needed for summarizing recording effort in time and space. 
 
 ```matlab
 % WISPR settings
 % only needed after mission is complete (no piloting functionality for WISPR)
 CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
+CONFIG.ws.inDir = 'D:\sgXXX_Location_Mon20XX_raw_acoustic_data';   % path to raw .dat files
+CONFIG.ws.outDir = 'E:\sgXXX_Location_Mon20XX\flac';   % path to save converted files
+CONFIG.ws.outExt = '.flac';   % determines output format
 CONFIG.ws.fileLength = 60; % in seconds
-CONFIG.ws.sampleRate = 180000; % sample rate
-CONFIG.ws.dateFormat = 'yyMMdd_HHmmss';
-CONFIG.ws.dateStart = 7; % what character of file name starts the date format
-% example file name: WISPR_230504_202206.wav
+CONFIG.ws.dateFormat = 'yyMMdd_HHmmss'; % format of timestamp in filename
+CONFIG.ws.dateStart = 7; % character of filename where date starts
+% example file name: WISPR_230504_202206.flac
 ```
 
 #### Optional plotting settings

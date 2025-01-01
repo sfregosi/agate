@@ -33,6 +33,7 @@ CONFIG.path.bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles\');
 % specify path to remote files (e.g., glider's current/mission folder)
 CONFIG.path.bsRemote = '/home/jails/group/gliderjail/home/sgXXX/current';
 
+
 % %%%% OPTIONAL - acoustics %%%%%%%%%%%%%%%%%
 % PMAR settings
 CONFIG.pm.loggers = 0; % 1 for active, 0 for inactive
@@ -53,13 +54,14 @@ CONFIG.pm.dateStart = 19; % what character of file name starts the date format
 % WISPR settings
 % only needed after mission is complete (no piloting functionality for WISPR)
 CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
-CONFIG.ws.inDir = 'D:\sgXXX_Location_Mon20XX_raw_acoustic_data';   % path to raw WISPR.dat files
+CONFIG.ws.inDir = 'D:\sgXXX_Location_Mon20XX_raw_acoustic_data';   % path to raw .dat files
 CONFIG.ws.outDir = 'E:\sgXXX_Location_Mon20XX\flac';   % path to save converted files
+CONFIG.ws.outExt = '.flac';   % determines output format
 CONFIG.ws.fileLength = 60; % in seconds
-CONFIG.ws.sampleRate = 180000; % sample rate
-CONFIG.ws.dateFormat = 'yyMMdd_HHmmss';
-CONFIG.ws.dateStart = 7; % what character of file name starts the date format
-% example file name: WISPR_230504_202206.wav
+CONFIG.ws.dateFormat = 'yyMMdd_HHmmss'; % format of timestamp in filename
+CONFIG.ws.dateStart = 7; % character of filename where date starts
+% example file name: WISPR_230504_202206.flac
+
 
 % %%%% OPTIONAL - plotting %%%%%%%%%%%%%%%%%%
 % maps
