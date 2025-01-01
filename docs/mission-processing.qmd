@@ -1,0 +1,280 @@
+---
+title: "Post-mission processing"
+subtitle: 'Suggested workflows for processing glider positional, environmental, and acoustic data'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
+
+This page is meant to provide some examples of how to run the post-mission processing tools after a mission is complete. These include functions to extract glider surface and dead-reckoned positional data, environmental data, and acoustic recording status into simplified tables for further analysis and some simple summary tables and figures. 
+
+This page covers three example workflows found in the `agate\example_workflows` folder.
+- [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m): Extracts glider surface and dead-reckoned sampling locations, environmental data, piloting status, and acoustic recording status into tables for future analysis. Saves as `.mat` and `.csv`. Also creates NCEI-ready location and CTD data tables. [Jump to section](#process-positional-data)
+- [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m): [Jump to section](#generate-mission-summary)
+- [`workflow_plotMultipleGliders.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_plotMultipleGliders.m): [Jump to section](#plot-multiple-glider-tracks)
+
+
+All code on this page is compiled in the [`workflow_missionTrackPlanning.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionTrackPlanning.m) in the `agate\example_workflows` folder. 
+
+Details for each function used below (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
+
+### Initialization
+
+To run any of the __*agate*__ functions, the toolbox must be initialized with a configuration file. 
+
+No configuration file yet? Go to the [Configuration Guide](configuration.html). The examples on this page include working with acoustic data and plotting so the ` OPTIONAL - acoustics ` and `OPTIONAL - plotting` sections must be complete. 
+
+```matlab
+% make sure agate is on the path!
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
+
+% initialize with specified configuration file, 'agate_config.cnf'
+CONFIG = agate('agate_config.cnf');
+
+% OR
+
+% initialize with prompt to select configuration file
+CONFIG = agate;
+```
+
+<sub>[Back to top](#)</sub>
+
+### Process positional data
+
+The code in this section follows along with the [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m). 
+
+<sub>[Back to top](#)</sub>
+
+#### Extract key positional data 
+
+Use the `extractPositionalData` function to read through all `.log` and `.nc` files from the basestation and pull out useful location, depth, environmental, and glider speed and orientation data. Two tables are created: (1) a surface GPS location table with known dive start and end locations and times, and (2) a dead-reckoned/calculated location table with estimated locations when the glider is underwater plus measured environmental data. Underwater location and orientation (latitude, longitude, displacement, speed, glide angle) are calculated on board the glider using two models - the hydrodynamic model and the glide-slope model. Both are extracted from the `.nc` files; hydrodynamic values have basic column headers like `latitude`, `longitude`, and glide-slope model values have `_gsm` appended to the header name (`latitude_gsm`, `longitude_gsm`, etc.). Some environmental and speed values will appear as `NA` when the glider considers them invalid via an internal QA/QC process. 
+
+```matlab
+%% (1) Extract positional data
+% This step can take some time to process through all .nc files
+
+[gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 1);
+% 0 in plotOn argument will not plot 'check' figures, but change to 1 to
+% plot basic figures for output checking
+
+% save as .mat and .csv
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_gpsSurfaceTable.mat']), 'gpsSurfT');
+writetable(gpsSurfT,fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_gpsSurfaceTable.csv']))
+
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_locCalcT.mat']),'locCalcT');
+writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_locCalcT.csv']));
+```
+
+<sub>[Back to top](#)</sub>
+
+#### Simplify the positional and environmental data for NCEI
+
+Acoustic data being sent to NCEI for public archiving needs location, depth, and environmental metadata in the data package. This step creates simplified versions of the tables created above in `.csv` format to be easily packaged with the acoustic files. It creates three tables: (1) a GPS surface location table with start and end time and location for each dive, (2) a calculated location (or dead-reckoned location) table with the dead-reckoned latitude and longitude and measured depth at each glider sample (approx every 10 - 120 seconds depending on the `science` file loaded on the Seaglider), and (3) a CTD table with the location and depth information in the calculated location table plus temperature, salinity, density, and sound speed at each sample. Note the calculated locations are those calculated using the Seaglider's hydrodynamic model (as opposed to the glide-slope model) and the CTD table may contain `NA` values where the data sample was not considered valid. 
+
+```matlab
+%% (2) Simplify positional data for packaging for NCEI
+
+% surface location table
+% load gpsSurfT if not already loaded
+if ~exist('gpsSurfT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_gpsSurfaceTable.mat']));
+end
+
+% clean up columns/names
+keepCols = {'dive', 'startDateTime', 'startLatitude', 'startLongitude', ...
+	'endDateTime', 'endLatitude', 'endLongitude'};
+gpsSurfSimp = gpsSurfT(:,keepCols);
+newNames = {'DiveNumber', 'StartDateTime_UTC', 'StartLatitude', 'StartLongitude', ...
+	'EndDateTime_UTC', 'EndLatitude', 'EndLongitude'};
+gpsSurfSimp.Properties.VariableNames = newNames;
+
+% write to csv
+writetable(gpsSurfSimp, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_GPSSurfaceTableSimple.csv']))
+
+% claculated location table
+% load locCalcT if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_locCalcT.mat']))
+end
+
+% clean up columns/names
+keepCols = {'dateTime', 'latitude', 'longitude', 'depth', 'dive'};
+locCalcSimp = locCalcT(:,keepCols);
+newNames = {'DateTime_UTC', 'Latitude', 'Longitude', 'Depth_m', 'DiveNumber'};
+locCalcSimp.Properties.VariableNames = newNames;
+
+% write to csv
+writetable(locCalcSimp, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_CalculatedLocationTableSimple.csv']))
+
+% environmental data
+% load locCalcT if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_locCalcT.mat']))
+end
+
+% clean up columns/names
+keepCols = {'dive', 'dateTime', 'latitude', 'longitude', 'depth', ...
+	'temperature', 'salinity', 'soundVelocity', 'density'};
+locCalcEnv = locCalcT(:,keepCols);
+newNames = {'DiveNumber', 'DateTime_UTC', 'Latitude', 'Longitude', 'Depth_m', ...
+	'Temperature_C', 'Salinity_PSU', 'SoundSpeed_m_s', 'Density_kg_m3', };
+locCalcEnv.Properties.VariableNames = newNames;
+
+% write to csv
+writetable(locCalcEnv, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_CTD.csv']))
+
+```
+
+#### Create sound speed profile plot
+
+The `plotSoundSpeedProfile` function can create standardized sound speed profiles for each mission.
+
+```matlab
+%% (3) Plot sound speed profile
+
+% load locCalcT if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+end
+
+plotSoundSpeedProfile(CONFIG, locCalcT);
+
+% save as .png and .pdf
+exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_SSP.png']))
+exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr, '_SSP.pdf']))
+```
+
+#### Summarize acoustic recording status for locations/positions
+
+To quantify acoustic recording effort in both space and time, the `extractPAMSatus` function uses the timestamp/timing info of each sound file to assess the total recording duration per dive and mark if the PAM system was on (1) or off (0) for each calculated location/glider data sample. This function can be slow as it runs through every sound file using `audioinfo` to check the file size and calculate it's duration. 
+
+```matlab
+%% (4) Extract acoustic system status for each dive and sample time
+
+% load locCalcT and gpsSurfT if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_locCalcT.mat']))
+end
+if ~exist('gpsSurfT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_gpsSurfaceTable.mat']));
+end
+
+% loop through sound files to gets 'status' for existing positional tables
+[gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(CONFIG, ...
+	gpsSurfT, locCalcT);
+
+fprintf('Total PAM duration: %.2f hours\n', hours(sum(pamFiles.dur, 'omitnan')));
+
+% save updated positional tables and pam tables
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr, '_pamFiles.mat']), 'pamFiles');
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr, '_pamByDive.mat']), 'pamByDive');
+
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr '_locCalcT_pam.mat']), 'locCalcT');
+writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr '_locCalcT_pam.csv']));
+
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr '_gpsSurfaceTable_pam.mat']), 'gpsSurfT');
+writetable(gpsSurfT, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr '_gpsSurfaceTable_pam.csv']));
+```
+
+<sub>[Back to top](#)</sub>
+
+#### Get location data for each sound file
+
+Conversely, it can be useful to have a location, depth, and other metrics for each individual sound file if the presence of calls or noise levels are being assessed on a file-by-file bin/granularity. The `extractPAMFilePosits` function loops through each file and looks for a calculated location/data sample within a defined `timeBuffer` window of the *start* of each sound file. The buffer should be set to balance the file duration and the maximum time between samples (as defined in the Seagliders `science` file). For example, for 10-minute PMAR files with 120-second glider sampling interval, a buffer of 180 seconds is likely good. For a 1-minute WISPR file with 120-second glider sampling interval, a buffer of 80 seconds is likely appropriate. 
+
+```matlab
+%% (5) Extract positional data for each sound file
+
+% load locCalcT and pamFiles if not already loaded
+if ~exist('locCalcT', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_locCalcT.mat']))
+end
+if ~exist('pamFiles', 'var')
+	load(fullfile(CONFIG.path.mission, 'profiles', ...
+		[CONFIG.gmStr, '_pamFiles.mat']))
+end
+
+% set a time buffer around which locations are acceptable
+timeBuffer = 180; % seconds
+% get position at start of each sound file
+pamFilePosits = extractPAMFilePosits(pamFiles, locCalcT, timeBuffer);
+
+% save as .mat and .cs 
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr '_pamFilePosits.mat']), 'pamFilePosits');
+writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
+	[CONFIG.gmStr '_pamFilePosits.csv']));
+```
+<sub>[Back to top](#)</sub>
+
+#### Summarize acoustic effort
+
+The `calcPAMEffort` function summarizes mission acoustic effort at several scales: by minute, minutes per hour, minutes per day, and hours per day.
+
+```matlab
+%% (6) Summarize acoustic effort
+
+if ~exist('gpsSurfT', 'var')
+    load(fullfile(CONFIG.path.mission, 'profiles', ...
+        [CONFIG.gmStr, '_gpsSurfaceTable.mat']))
+end
+if ~exist('pamFiles', 'var')
+    load(fullfile(CONFIG.path.mission, 'profiles', ...
+        [CONFIG.gmStr, '_pamFiles.mat']))
+end
+if ~exist('pamByDive', 'var')
+    load(fullfile(CONFIG.path.mission, 'profiles', ...
+        [CONFIG.gmStr, '_pamByDive.mat']))
+end
+
+% create byMin, minPerHour, minPerDay matrices
+[pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = calcPAMEffort(...
+    CONFIG, gpsSurfT, pamFiles, pamByDive);
+
+% save it
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr, '_pamEffort.mat']), ...
+    'pamByMin', 'pamMinPerHour', 'pamMinPerDay', 'pamHrPerDay');
+```
+
+<sub>[Back to top](#)</sub>
+
+### Generate mission summary
+
+<sub>[Back to top](#)</sub>
+
+### Plot multiple glider tracks
+
+<sub>[Back to top](#)</sub>
+
+
+
+
+
