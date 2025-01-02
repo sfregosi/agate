@@ -236,7 +236,7 @@ writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
 
 #### Summarize acoustic effort
 
-The `calcPAMEffort` function summarizes mission acoustic effort at several scales: by minute, minutes per hour, minutes per day, and hours per day.
+The `calcPAMEffort` function summarizes mission acoustic effort at several scales: by minute, minutes per hour, minutes per day, and hours per day. This prints a few summary statistics to the Command Window. 
 
 ```matlab
 %% (6) Summarize acoustic effort
