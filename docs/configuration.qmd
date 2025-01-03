@@ -7,11 +7,11 @@ subtitle: 'Guide for creating and modifying necessary configuration files'
 library(fontawesome)
 ```
 
-Running __*agate*__ requires a few configuration files. Each of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB's Editor window. The **mission configuration file** is required for all processes, but the others are optional depending on the goals of a specific task. 
+Running __*agate*__ requires configuration files. Each of these are plain text files that end with .cnf and can be edited in any text editor or in MATLAB's Editor window. 
 
-1. An overview [mission configuration file](#mission-configuration-file) for a specific glider/mission
-2. A [basestation configuration file](#basestation-configuration-file) with SSH login info - only required if using __*agate*__ to interact directly with the basestation
-3. A conversion configuration (for either [PMAR](#pmar-conversion-configuration-file) or [WISPR](#wispr-conversion-configuration-file)) used when converting raw (.dat) acoustic files to .wav or .flac
+1. An overview [**mission configuration file**](#mission-configuration-file) is required for all __*agate*__ processes. A different mission configuration file is created for each glider and mission and it contains settings for glider metadata, paths, acoustic system settings, and plotting options.
+2. A [**basestation configuration file**](#basestation-configuration-file) with SSH login info - only required if using __*agate*__ to interact directly with the basestation. This is a separate configuration file because it does not change between missions and should be stored in a secure directory on your local computer and not shared with others. 
+
 
 ## Mission configuration file
 
@@ -167,37 +167,37 @@ CONFIG.bs.privateKeyFile = 'C:/Users/User.Name/.ssh/myPrivateKey';
 
 <sub>[Back to top](#)</sub>
 
-## Acoustic conversion configuration files
+<!-- ## Acoustic conversion configuration files -->
 
-A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial `agate` call and the mission configuration. 
-
-
-### PMAR conversion configuration file
-
-An example configuration file is located in the `agate/settings` folder: [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/pmarConvert_example.cnf)
-
-Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `pm` structure. All the changeable parameters are listed/grouped at the top, but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings. 
+<!-- A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial `agate` call and the mission configuration.  -->
 
 
-- `CONFIG.pm.inDir`: path to raw PMAR `.dat` files. These can be within subdirectories by dive (the default write method of PMAR)
-- `CONFIG.pm.outDir`: path to folder to save converted `.wav` files
-- `CONFIG.outTemplate`: filename template for the converted files. It must have a `%s` that becomes a date/time stamp, and an appropriate file extension (`.wav` or `.flac`)
-- `CONFIG.pm.showProgress`: set to `true` to display progress in the Command Window
-- `CONFIG.pm.restartDir`: location to start processing. Set to `''` (empty) to start at the beginning and process all directories. Otherwise, specify a single dive/phase directory (e.g., 'pm0006a') to start at that point in the mission. This is used if there are errors so you don't have to start over at the beginning
-- `CONFIG.pm.decim`: set a decimation factor (integer), or set to `0` for no decimation
-- `CONFIG.pm.relativeCutoffFreq`: if decimating, need to set a value from 0 to 1 to specifiy a filter cut off (relative to Nyquist). This is only used if `CONFIG.pm.decim > 2`
-- `CONFIG.pm.forceSRate`: set to force the output sample rate to the specified sample rate. This is necessary for PMAR because the sample rate can vary slightly from file to file (by a decimal Hz) which can lead to later analysis issues (e.g., making LTSAs) 
+<!-- ### PMAR conversion configuration file -->
+
+<!-- An example configuration file is located in the `agate/settings` folder: [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/pmarConvert_example.cnf) -->
+
+<!-- Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `pm` structure. All the changeable parameters are listed/grouped at the top, but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.  -->
 
 
-<sub>[Back to top](#)</sub>
+<!-- - `CONFIG.pm.inDir`: path to raw PMAR `.dat` files. These can be within subdirectories by dive (the default write method of PMAR) -->
+<!-- - `CONFIG.pm.outDir`: path to folder to save converted `.wav` files -->
+<!-- - `CONFIG.outTemplate`: filename template for the converted files. It must have a `%s` that becomes a date/time stamp, and an appropriate file extension (`.wav` or `.flac`) -->
+<!-- - `CONFIG.pm.showProgress`: set to `true` to display progress in the Command Window -->
+<!-- - `CONFIG.pm.restartDir`: location to start processing. Set to `''` (empty) to start at the beginning and process all directories. Otherwise, specify a single dive/phase directory (e.g., 'pm0006a') to start at that point in the mission. This is used if there are errors so you don't have to start over at the beginning -->
+<!-- - `CONFIG.pm.decim`: set a decimation factor (integer), or set to `0` for no decimation -->
+<!-- - `CONFIG.pm.relativeCutoffFreq`: if decimating, need to set a value from 0 to 1 to specifiy a filter cut off (relative to Nyquist). This is only used if `CONFIG.pm.decim > 2` -->
+<!-- - `CONFIG.pm.forceSRate`: set to force the output sample rate to the specified sample rate. This is necessary for PMAR because the sample rate can vary slightly from file to file (by a decimal Hz) which can lead to later analysis issues (e.g., making LTSAs)  -->
 
-### WISPR conversion configuration file
 
-**UNDER CONSTRUCTION**
+<!-- <sub>[Back to top](#)</sub> -->
 
-An example configuration file is located in the `agate/settings` folder: [`wisprConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/wisprConvert_example.cnf)
+<!-- ### WISPR conversion configuration file -->
 
-Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `ws` structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings. 
+<!-- **UNDER CONSTRUCTION** -->
+
+<!-- An example configuration file is located in the `agate/settings` folder: [`wisprConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/wisprConvert_example.cnf) -->
+
+<!-- Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `ws` structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.  -->
 
 
 <sub>[Back to top](#)</sub>
