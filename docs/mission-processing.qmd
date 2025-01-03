@@ -13,13 +13,11 @@ library(fontawesome)
 
 This page is meant to provide some examples of how to run the post-mission processing tools after a mission is complete. These include functions to extract glider surface and dead-reckoned positional data, environmental data, and acoustic recording status into simplified tables for further analysis and some simple summary tables and figures. 
 
-This page covers three example workflows found in the `agate\example_workflows` folder.
-- [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m): Extracts glider surface and dead-reckoned sampling locations, environmental data, piloting status, and acoustic recording status into tables for future analysis. Saves as `.mat` and `.csv`. Also creates NCEI-ready location and CTD data tables. [Jump to section](#process-positional-data)
-- [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m): [Jump to section](#generate-mission-summary)
+This page covers four example workflows found in the `agate\example_workflows` folder.
+- [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m): Extracts glider surface and dead-reckoned sampling locations, environmental data and piloting/orientation data into tables for future analysis. Saves as `.mat` and `.csv`. Also creates NCEI-ready location and CTD data tables. [Jump to section](#process-positional-data)
+- [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m): Assesses acoustic effort in space and time adding a *pam* column to the location tables,  extracting location and depth for each sound file, and quanitfying effort at a few time scales. [Jump to section](#calculate-acoustic-effort)
+- [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m): Create a summary table with timing, distance, and acoustic effort for multiple gliders [Jump to section](#generate-mission-summaries) 
 - [`workflow_plotMultipleGliders.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_plotMultipleGliders.m): [Jump to section](#plot-multiple-glider-tracks)
-
-
-All code on this page is compiled in the [`workflow_missionTrackPlanning.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionTrackPlanning.m) in the `agate\example_workflows` folder. 
 
 Details for each function used below (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
 
@@ -27,7 +25,7 @@ Details for each function used below (inputs, outputs, etc) are available within
 
 To run any of the __*agate*__ functions, the toolbox must be initialized with a configuration file. 
 
-No configuration file yet? Go to the [Configuration Guide](configuration.html). The examples on this page include working with acoustic data and plotting so the ` OPTIONAL - acoustics ` and `OPTIONAL - plotting` sections must be complete. 
+No configuration file yet? Go to the [Configuration Guide](configuration.qmd). The examples on this page include working with acoustic data and plotting so the ` OPTIONAL - acoustics ` and `OPTIONAL - plotting` sections must be complete. 
 
 ```matlab
 % make sure agate is on the path!
@@ -162,12 +160,16 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.gmStr, '_SSP.pdf']))
 ```
 
+### Calculate acoustic effort
+
+The code in this section follows along with the [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m). 
+
 #### Summarize acoustic recording status for locations/positions
 
-To quantify acoustic recording effort in both space and time, the `extractPAMSatus` function uses the timestamp/timing info of each sound file to assess the total recording duration per dive and mark if the PAM system was on (1) or off (0) for each calculated location/glider data sample. This function can be slow as it runs through every sound file using `audioinfo` to check the file size and calculate it's duration. 
+Use the `extractPAMSatus` function to use the timestamp/timing info of each sound file to calculate the total recording duration per dive and mark if the PAM system was on (1) or off (0) for each calculated location/glider data sample. This function can be slow as it runs through every sound file using `audioinfo` to check the file size and calculate it's duration. It requires an existing `locCalcT` and `gpsSurfT` made above and updates them with a *pam* column. 
 
 ```matlab
-%% (4) Extract acoustic system status for each dive and sample time
+%% (1) Extract acoustic system status for each dive and sample time
 
 % load locCalcT and gpsSurfT if not already loaded
 if ~exist('locCalcT', 'var')
@@ -209,7 +211,7 @@ writetable(gpsSurfT, fullfile(CONFIG.path.mission, 'profiles', ...
 Conversely, it can be useful to have a location, depth, and other metrics for each individual sound file if the presence of calls or noise levels are being assessed on a file-by-file bin/granularity. The `extractPAMFilePosits` function loops through each file and looks for a calculated location/data sample within a defined `timeBuffer` window of the *start* of each sound file. The buffer should be set to balance the file duration and the maximum time between samples (as defined in the Seagliders `science` file). For example, for 10-minute PMAR files with 120-second glider sampling interval, a buffer of 180 seconds is likely good. For a 1-minute WISPR file with 120-second glider sampling interval, a buffer of 80 seconds is likely appropriate. 
 
 ```matlab
-%% (5) Extract positional data for each sound file
+%% (2) Extract positional data for each sound file
 
 % load locCalcT and pamFiles if not already loaded
 if ~exist('locCalcT', 'var')
@@ -236,10 +238,10 @@ writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
 
 #### Summarize acoustic effort
 
-The `calcPAMEffort` function summarizes mission acoustic effort at several scales: by minute, minutes per hour, minutes per day, and hours per day. This prints a few summary statistics to the Command Window. 
+Use the `calcPAMEffort` function to summarize mission acoustic effort at several scales: by minute, minutes per hour, minutes per day, and hours per day. This prints a few summary statistics to the Command Window and creates tables with minute and hour-sized bins. 
 
 ```matlab
-%% (6) Summarize acoustic effort
+%% (3) Summarize acoustic effort
 
 if ~exist('gpsSurfT', 'var')
     load(fullfile(CONFIG.path.mission, 'profiles', ...
@@ -266,7 +268,99 @@ save(fullfile(CONFIG.path.mission, 'profiles', ...
 
 <sub>[Back to top](#)</sub>
 
-### Generate mission summary
+### Generate mission summaries
+
+The code in this section follows along with the [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m).
+
+This workflow does not actually require __*agate*__ but the example code could be modified to use a mission configuration file/__*agate*__ to set the mission/profiles path. Each loop through a mission would just need to load that mission's configuration file before populating the table. Alternatively, the paths can just be set manually:
+
+```matlab
+% path to location where each glider's mission folder lives e.g., if 
+% gpsSurfT is in C:\Users\User.Name\Desktop\sgXXX_Mon20XX\profiles, use:
+% (loop assumes gpsSurfT is within a profiles folder in a mission folder)
+path_missions = fullfile('C:\Users\User.Name\Desktop\');
+
+% path to save .csvs
+path_out = fullfile('C:\Users\User.Name\Desktop\', 'project_outputs');
+```
+
+Then define which missions to include in the summary table. 
+
+```matlab
+% mission strings to include
+missionStrs = {'sgXXX_Loc_Mon20XX';
+    'sgXXX_Loc_Mon20XX';
+    'sgXXX_Loc_Mon20XX'};
+```
+
+Create an empty table and loop through each mission, loading its `gpsSurfT` and calculating some basic summary statistics. Then save as a `.csv`.
+
+```matlab
+out_vars = [{'glider', 'string'}; ...
+    {'startDateTime', 'datetime'}; ...
+    {'endDateTime', 'datetime'}; ...
+    {'numDives', 'double'}; ...
+    {'durDays', 'double'}; ...
+    {'dist_km', 'double'}];
+
+out = table('size', [length(missionStrs), size(out_vars,1)], ...
+    'VariableNames', out_vars(:,1), 'VariableTypes', out_vars(:,2));
+
+for m = 1:length(missionStrs)
+    missionStr = missionStrs{m};
+    % pull year from string
+    yrStr = missionStr(end-3:end);
+
+    % define path to 'profiles' folder with processed tables
+    path_profiles = fullfile(path_missions, missionStr, 'profiles');
+
+    % load gpsSurfT 
+    % (created with agate, using workflow_processPositionalData)
+    load(fullfile(path_profiles, [missionStr '_gpsSurfaceTable.mat']))
+
+    % calculate mission summary stats
+    out.glider{m} = missionStr(1:5);
+    out.startDateTime(m) = gpsSurfT.startDateTime(1);
+    out.endDateTime(m) = gpsSurfT.endDateTime(end);
+    out.numDives(m) = max(gpsSurfT.dive);
+    out.durDays(m) = round(days(out.endDateTime(m)-out.startDateTime(m)));
+    out.dist_km(m) = round(sum(gpsSurfT.distance_km, 'omitnan'), 1);
+end
+
+writetable(out, fullfile(path_out, 'missionSummaryTable.csv'));
+```
+
+If desired, acoustic effort can also be included as total hours recorded and the percent of the total mission with recordings (excluding gaps in recordings when the glider was at the surface or if there was a duty cycle). 
+
+```matlab
+out_vars = [{'recDur_hr', 'double'}; ...
+    % 	{'possHrs', 'double'}; ...
+    {'recPercent', 'string'}; ...
+    % {'recDays', 'string'} ...
+    ];
+
+% append to existing table
+out_pam = table('size', [length(missionStrs), size(out_vars,1)], ...
+    'VariableNames', out_vars(:,1), 'VariableTypes', out_vars(:,2));
+out = [out out_pam];
+
+for m = 1:length(missionStrs)
+    missionStr = missionStrs{m};
+
+    % define path to 'profiles' folder with processed tables
+    path_profiles = fullfile(path_missions, missionStr, 'profiles');
+    % load pam effort tables
+    load(fullfile(path_profiles, [missionStr '_pamEffort.mat']));
+
+    % pam summary stats
+    out.recDur_hr(m) = round(sum(pamMinPerHour.pam, 'omitnan')/60, 1);
+    out.recPercent{m} = sprintf('%i%%', ...
+        round(out.recDur_hr(m)/ ...
+        (hours(out.endDateTime(m) - out.startDateTime(m)))*100));
+end
+
+writetable(out, fullfile(path_out, 'missionSummaryTable_PAM.csv'));
+```
 
 <sub>[Back to top](#)</sub>
 
