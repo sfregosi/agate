@@ -2,7 +2,7 @@ function mapPlannedTrack(CONFIG, targetsFile, varargin)
 %MAPPLANNEDTRACK Create static map of planned mission track
 %
 %   Syntax:
-%       MAPPLANNEDTRACK(CONFIG, VARARGIN)
+%       MAPPLANNEDTRACK(CONFIG, TARGETSFILE, VARARGIN)
 %
 %   Description:
 %       Create a static map of the planned mission track from an input
@@ -62,7 +62,7 @@ function mapPlannedTrack(CONFIG, targetsFile, varargin)
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % argument checks
-narginchk(1, inf)
+narginchk(2, inf)
 
 % set defaults/empties
 trackName = 'glider';
@@ -91,7 +91,6 @@ while vIdx <= length(varargin)
 			error('Incorrect argument. Check inputs.');
 	end
 end
-
 
 if isempty(targetsFile)
     [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...

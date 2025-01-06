@@ -28,5 +28,26 @@
   },
   "convert-acoustics.qmd": {
     "convert-acoustics.html": "faf06cd1"
+  },
+  "wispr-gain-fix.qmd": {
+    "wispr-gain-fix.html": "84a54813"
+  },
+  "contribute.qmd": {
+    "contribute.html": "85f8aca9"
+  },
+  "plotting.qmd": {
+    "plotting.html": "151babb1"
+  },
+  "piloting.qmd": {
+    "piloting.html": "848308b6"
+  },
+  "mission-planning.qmd": {
+    "mission-planning.html": "d42e5c90"
+  },
+  "map-help.qmd": {
+    "map-help.html": "e0d6ffd5"
+  },
+  "mission-processing.qmd": {
+    "mission-processing.html": "36c4d9f1"
   }
 }

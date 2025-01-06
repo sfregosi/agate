@@ -26,13 +26,10 @@ function plotSoundSpeedProfile(CONFIG, locCalcT)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   12 November 2020 (last known date)
-%   Updated:
+%   Updated:   31 December 2024
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-global CONFIG
 
 figure;
 plot(locCalcT.soundVelocity, -locCalcT.depth, 'Color', [0.8 0.8 0.8 0.3], ...

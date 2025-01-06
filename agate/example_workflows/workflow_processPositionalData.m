@@ -33,14 +33,23 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	21 April 2023
-%	Updated:        08 August 2024
+%	Updated:        31 December 2024
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
-CONFIG = agate('agate_mission_config.cnf'); % or just agate and select file
+
+% make sure agate is on the path!
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
+
+% initialize with specified configuration file, 'agate_config.cnf'
+CONFIG = agate('agate_config.cnf');
+
+% OR
+
+% initialize with prompt to select configuration file
+CONFIG = agate;
 
 %% (1) Extract positional data
 % This step can take some time to process through all .nc files
@@ -51,14 +60,14 @@ CONFIG = agate('agate_mission_config.cnf'); % or just agate and select file
 
 % save as .mat and .csv
 save(fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']), 'gpsSurfT');
+	[CONFIG.gmStr, '_gpsSurfaceTable.mat']), 'gpsSurfT');
 writetable(gpsSurfT,fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.csv']))
+	[CONFIG.gmStr, '_gpsSurfaceTable.csv']))
 
 save(fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']),'locCalcT');
+	[CONFIG.gmStr, '_locCalcT.mat']),'locCalcT');
 writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.csv']));
+	[CONFIG.gmStr, '_locCalcT.csv']));
 
 %% (2) Simplify positional data for packaging for NCEI
 
@@ -66,7 +75,7 @@ writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
 % load gpsSurfT if not already loaded
 if ~exist('gpsSurfT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']));
+		[CONFIG.gmStr, '_gpsSurfaceTable.mat']));
 end
 
 % clean up columns/names
@@ -79,13 +88,13 @@ gpsSurfSimp.Properties.VariableNames = newNames;
 
 % write to csv
 writetable(gpsSurfSimp, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_GPSSurfaceTableSimple.csv']))
+	[CONFIG.gmStr, '_GPSSurfaceTableSimple.csv']))
 
 % claculated location table
 % load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+		[CONFIG.gmStr, '_locCalcT.mat']))
 end
 
 % clean up columns/names
@@ -96,13 +105,13 @@ locCalcSimp.Properties.VariableNames = newNames;
 
 % write to csv
 writetable(locCalcSimp, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_CalculatedLocationTableSimple.csv']))
+	[CONFIG.gmStr, '_CalculatedLocationTableSimple.csv']))
 
 % environmental data
 % load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+		[CONFIG.gmStr, '_locCalcT.mat']))
 end
 
 % clean up columns/names
@@ -115,7 +124,7 @@ locCalcEnv.Properties.VariableNames = newNames;
 
 % write to csv
 writetable(locCalcEnv, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_CTD.csv']))
+	[CONFIG.gmStr, '_CTD.csv']))
 
 %% (3) Plot sound speed profile
 
@@ -129,9 +138,9 @@ plotSoundSpeedProfile(CONFIG, locCalcT);
 
 % save as .png and .pdf
 exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_SSP.png']))
+	[CONFIG.gmStr, '_SSP.png']))
 exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider, '_', CONFIG.mission, '_SSP.pdf']))
+	[CONFIG.gmStr, '_SSP.pdf']))
 
 
 %% (4) Extract acoustic system status for each dive and sample time
@@ -139,11 +148,11 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 % load locCalcT and gpsSurfT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+		[CONFIG.gmStr, '_locCalcT.mat']))
 end
 if ~exist('gpsSurfT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']));
+		[CONFIG.gmStr, '_gpsSurfaceTable.mat']));
 end
 
 % loop through sound files to gets 'status' for existing positional tables
@@ -153,20 +162,20 @@ end
 fprintf('Total PAM duration: %.2f hours\n', hours(sum(pamFiles.dur, 'omitnan')));
 
 % save updated positional tables and pam tables
-save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider, '_', ...
-	CONFIG.mission, '_pamFiles.mat']), 'pamFiles');
-save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider, '_', ...
-	CONFIG.mission, '_pamByDive.mat']), 'pamByDive');
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr, '_pamFiles.mat']), 'pamFiles');
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr, '_pamByDive.mat']), 'pamByDive');
 
-save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
-	CONFIG.mission '_locCalcT_pam.mat']), 'locCalcT');
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr '_locCalcT_pam.mat']), 'locCalcT');
 writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider '_' CONFIG.mission '_locCalcT_pam.csv']));
+	[CONFIG.gmStr '_locCalcT_pam.csv']));
 
-save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
-	CONFIG.mission '_gpsSurfaceTable_pam.mat']), 'gpsSurfT');
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr '_gpsSurfaceTable_pam.mat']), 'gpsSurfT');
 writetable(gpsSurfT, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider '_' CONFIG.mission '_gpsSurfaceTable_pam.csv']));
+	[CONFIG.gmStr '_gpsSurfaceTable_pam.csv']));
 
 
 %% (5) Extract positional data for each sound file
@@ -174,11 +183,11 @@ writetable(gpsSurfT, fullfile(CONFIG.path.mission, 'profiles', ...
 % load locCalcT and pamFiles if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+		[CONFIG.gmStr, '_locCalcT.mat']))
 end
 if ~exist('pamFiles', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_pamFiles.mat']))
+		[CONFIG.gmStr, '_pamFiles.mat']))
 end
 
 % set a time buffer around which locations are acceptable
@@ -187,10 +196,10 @@ timeBuffer = 180;
 pamFilePosits = extractPAMFilePosits(pamFiles, locCalcT, timeBuffer);
 
 % save as .mat and .cs 
-save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
-	CONFIG.mission '_pamFilePosits.mat']), 'pamFilePosits');
+save(fullfile(CONFIG.path.mission, 'profiles', ...
+    [CONFIG.gmStr '_pamFilePosits.mat']), 'pamFilePosits');
 writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.glider '_' CONFIG.mission '_pamFilePosits.csv']));
+	[CONFIG.gmStr '_pamFilePosits.csv']));
 
 
 %% (6) Summarize acoustic effort

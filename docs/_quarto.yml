@@ -36,12 +36,14 @@ website:
         text: Get started
       - href: configuration.qmd
         text: Configuration guide
-      - href: plotting-functions.qmd
-        text: Plots
+      - href: plotting.qmd
+        text: Plotting
       - href: mission-planning.qmd
         text: Mission planning
-      - href: piloting-functions.qmd
+      - href: piloting.qmd
         text: Piloting
+      - href: mission-processing.qmd
+        text: Post-mission processing
       - href: convert-acoustics.qmd
         text: Convert acoustic files
       # - href: content/code.qmd
