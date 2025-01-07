@@ -36,8 +36,6 @@ website:
         text: Get started
       - href: configuration.qmd
         text: Configuration guide
-      - href: plotting.qmd
-        text: Plotting
       - href: mission-planning.qmd
         text: Mission planning
       - href: piloting.qmd
@@ -46,8 +44,8 @@ website:
         text: Post-mission processing
       - href: convert-acoustics.qmd
         text: Convert acoustic files
-      # - href: content/code.qmd
-      #   text: Code in your files
+      - href: plotting.qmd
+        text: Plotting functions
       - href: contribute.qmd
         text: Contribute
       - href: acknowledgements.qmd

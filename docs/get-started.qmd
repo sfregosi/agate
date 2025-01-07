@@ -7,9 +7,9 @@ subtitle: 'Installation and quick start guide'
 library(fontawesome)
 ```
 
-This page is meant to help you get started with __*agate*__ by getting it properly 'installed' on your MATLAB path, setting up the necessary configuration files and folder structure, and a quick start guide for some basic commands. 
+This page is meant to help with __*agate*__ 'installation' on your MATLAB path and setting up the necessary configuration files and folder structure plus serve as a quick start guide for some basic commands. 
 
-It page is not a detailed list of all available functions and their specific documentation (that might be coming later!). Those details are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc <function>` or `help <function>` in the MATLAB Command window,  replacing `<function>` with the actual name of the function. 
+This page is not a detailed list of all available functions and their specific documentation (that might be coming later!). Those details are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc <function>` or `help <function>` in the MATLAB Command window,  replacing `<function>` with the actual name of the function. 
 
 ## Installation
 
