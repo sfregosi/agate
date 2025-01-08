@@ -47,7 +47,7 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %      % Use specified kmlFile, manually name waypoints, radius of 1000 m
 %      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual,
 %           'radius', 1000);
-% 
+%
 %   See also MAPPLANNEDTRACK
 %
 %   Authors:
@@ -146,7 +146,16 @@ switch method
         for f = 1:length(wpSeq)
             wpNames(f) = {sprintf('%s%02.f', alphaRaw, wpSeq(f))};
         end
-        wpNames{f + 1} = 'RECV';
+        % check for length...typically 4 - 6 characters
+        if length(alphaRaw) == 1
+            wpNames{f + 1} = 'REC';
+        elseif length(alphaRaw) == 2
+            wpNames{f + 1} = 'RECV';
+        elseif length(alphaRaw) == 3
+            wpNames{f + 1} = 'RECOV';
+        elseif length(alphaRaw) >= 4
+            wpNames{f+1} = 'RECOVERY';a
+        end
 end
 
 % now write it into a targets file
@@ -163,8 +172,8 @@ fprintf(fid, '%s %s_%s\n', '/ Targets file for mission', CONFIG.glider, ...
     CONFIG.mission);
 fprintf(fid, '%s %s %s\n', '/ Created on', string(datetime('now', ...
     'TimeZone', 'UTC', 'Format', 'yyyy-MM-dd HH:mm')), 'UTC');
-fprintf(fid, '%s %s%s\n', '/ Deployment will take place at', wpNames{1}, ...
-    ', recovery at RECV');
+fprintf(fid, '%s %s%s %s\n', '/ Deployment will take place at', wpNames{1}, ...
+    ', recovery at', wpNames{end});
 fprintf(fid, '%s\n', '/ template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=XXXX goto=WPzz');
 
 for f = 1:length(wpNames)-1
