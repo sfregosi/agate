@@ -28,7 +28,7 @@ We are happy to help get folks set up with this process, so please reach out wit
 
 ### Coding conventions
 
-Start reading the existing code to get a hang of our currenct conventions. 
+Start reading the existing code to get a hang of our current conventions. 
 
 - Use `camelCase` for naming functions
 - Use `camelCase` or underscores `_` when naming variables 

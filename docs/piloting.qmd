@@ -78,7 +78,7 @@ save(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 ### Mid-mission plots
 
-For detail on all available plotting functions, see the [Plots](plotting-functions.html){target='_blank'} page. A highlight of those most useful for piloting are below. 
+For detail on all available plotting functions, see the [Plots](plotting.html){target='_blank'} page. A highlight of those most useful for piloting are below. 
 
 These plots will be assigned figure numbers as specified in `CONFIG.plots.figNumList` in the mission configuration file; that is required for the below steps but is commented out by default in the example mission configuration file. By assigning specific figure numbers, when plots are regenerated after subsequent dives, it will overwrite the previous figure rather than create a new one, preventing an overcluttered desktop. 
 

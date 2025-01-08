@@ -115,7 +115,7 @@ plotVoltagePackUse_norm(CONFIG, pp)
 
 ### Map
 
-The map will include the waypoints and track from the `targets` file and will plot the surface positions of each dive (yellow dots), with red lines connecting surface positions, currents plotted as blue vector arrows, and the next target waypoint with a green circle.
+The map will include the waypoints and track from the [`targets` file](mission-planning.qmd#create-targets-file-from-kml) and will plot the surface positions of each dive (yellow dots), with red lines connecting surface positions, currents plotted as blue vector arrows, and the next target waypoint with a green circle.
 
 Map extent (latitude and longitude limits), the location of the north arrow, and the location and scale of the scale bar are all set within the [mission configuration file](configuration.html#optional-plotting-settings), with example values below. `CONFIG.latLim` and `CONFIG.map.lonLim` are required to make the map; the north arrow and scale bar are optional and if those settings do not exist in `CONFIG` they will not be included in the plot. 
 
@@ -124,7 +124,7 @@ In this example, bathymetry is plotted, specified by `CONFIG.map.bathyFile`. Tha
 High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
 
 ```matlab
-targetsFile = fullfile(CONFIG639.path.mission, 'targets');
+targetsFile = fullfile(CONFIG.path.mission, 'targets');
 
 % map set up configurations - all should be specified in configuration file 
 CONFIG.map.latLim = [19.0 22.75];

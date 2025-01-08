@@ -100,7 +100,7 @@ gpsSurfSimp.Properties.VariableNames = newNames;
 writetable(gpsSurfSimp, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.gmStr, '_GPSSurfaceTableSimple.csv']))
 
-% claculated location table
+% calculated location table
 % load locCalcT if not already loaded
 if ~exist('locCalcT', 'var')
 	load(fullfile(CONFIG.path.mission, 'profiles', ...
