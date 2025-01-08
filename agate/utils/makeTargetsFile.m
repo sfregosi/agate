@@ -1,8 +1,8 @@
-function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod, radius)
+function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %MAKETARGETSFILE Create properly formatted targets text file from kml
 %
 %   Syntax:
-%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, wpMethod, radius)
+%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, method, radius)
 %
 %   Description:
 %       Create a text file properly formatted as a Seaglider targets file,
@@ -10,57 +10,86 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, wpMethod, radius)
 %       text file contains relevant header information at the top. Waypoint
 %       names can be provided as an additional text document, can be
 %       manually input in the Command Window, or an alphanumeric prefix can
-%       be specified as the last argument and a sequential alphanumeric 
+%       be specified as the last argument and a sequential alphanumeric
 %       waypoint labels will be generated from the prefix
 %
 %   Inputs:
-%       CONFIG     [struct] agate mission configuration settings, loaded 
-%                  during agate initialization. Minimum fields are 
+%       CONFIG     [struct] agate mission configuration settings, loaded
+%                  during agate initialization. Minimum fields are
 %                  CONFIG.glider, CONFIG.mission, CONFIG.path.mission
-%       kmlFile    [char] Fullfile path to kml path file to be read in, 
+%       kmlFile    [char] Fullfile path to kml path file to be read in,
 %                  if empty, will prompt to select file
-%       wpMethod   [char] Method to define waypoint names, either
+%
+%       all varargins are specified using name-value pairs
+%                 e.g., 'bathy', 1, 'figNum', 12
+%
+%       method     [char] Method to define waypoint names, either
 %                     'file'     = load text file with names, will prompt
 %                                to select file
 %                     'manual'   = manually type in all waypoints in
 %                                command window
-%                     'alphaNum' = will automatically generate 
-%                                alpha-numeric waypoints based on string 
-%                                entered as wpMethod
-%                                e.g., 'LW' will generate 'LW01', 'LW02', 
+%                     'alphaNum' = will automatically generate
+%                                alpha-numeric waypoints based on string
+%                                entered as method
+%                                e.g., 'LW' will generate 'LW01', 'LW02',
 %                                etc and will end with RECV
-%       radius     [double] radius around waypoint that the glider must 
+%       radius     [double] radius around waypoint that the glider must
 %                  reach before moving on to next waypoint. Default is 2000
 %
 %   Outputs:
 %       targetsOut Fullpath filename of newly created targets file
 %
 %   Examples:
-%
+%      % use specified kmlFile and start all waypoints with WP
+%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', 'WP');
+%      % Prompt to select a kml file and a waypoint names file
+%      targetsOut = makeTargetsFile(CONFIG, [], 'method', 'file');
+%      % Use specified kmlFile, manually name waypoints, radius of 1000 m
+%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual,
+%           'radius', 1000);
+% 
 %   See also MAPPLANNEDTRACK
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   23 April 2023
-%   Updated:        11 September 2024
+%   Updated:   8 January 2025
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin < 4
-	radius = 2000;
+% argument checks
+narginchk(2, inf)
+
+% set defaults/empties
+method = 'WP';
+radius = 2000;
+
+% parse arguments
+vIdx = 1;
+while vIdx <= length(varargin)
+    switch varargin{vIdx}
+        case 'radius'
+            radius = varargin{vIdx+1};
+            vIdx = vIdx + 2;
+        case 'method'
+            method = varargin{vIdx+1};
+            vIdx = vIdx + 2;
+        otherwise
+            error ('Incorrect argument. Check inputs.')
+    end
 end
 
-% if no .kml specified...
-if isempty(kmlFile)
+% if no .kml specified or path/name is invalid
+if isempty(kmlFile) || ~exist(kmlFile, 'file')
     % Select .kml file
-    [kmlFileName, kmlPath] = uigetfile([CONFIG.path.mission '\*.kml'], ...
-		'Select .kml track');
-    kmlFile = fullfile(kmlPath, kmlFileName);
+    [name, path] = uigetfile([CONFIG.path.mission '\*.kml'], ...
+        'Select .kml track');
+    kmlFile = fullfile(path, name);
+    fprintf('kml file selected: %s\n', kmlFile);
 end
 
-% pull out just name for naming output targets file
+% and pull out name to name output targets file
 [kmlPath, kmlName, ~] = fileparts(kmlFile);
 
 fid = fopen(kmlFile);
@@ -92,7 +121,7 @@ degMinLons = decdeg2degmin(lons);
 % (3) 'alphaNum', use alpha string specified in function call (e.g., 'WP')
 %      and add numbers in order after (e.g., WP01, WP02, RECV)
 
-switch wpMethod
+switch method
     case 'file'  % (1) Select .txt file of waypoint names
         [wpFileName, wpPath] = uigetfile([CONFIG.path.mission '\*.txt'], ...
             'Select waypoint names text file');
@@ -111,7 +140,7 @@ switch wpMethod
     otherwise
         %         case 'prefix'
         %         prefixRaw = input('Specify waypoint alpha prefix:', 's');
-        alphaRaw = wpMethod;
+        alphaRaw = method;
         wpNames = cell(length(degMinLats), 1);
         wpSeq = 1:length(degMinLats) - 1; % -1 so last is RECV
         for f = 1:length(wpSeq)
@@ -141,12 +170,12 @@ fprintf(fid, '%s\n', '/ template WPxx lat=DDMM.MMMM lon=DDDMM.MMMM radius=XXXX g
 for f = 1:length(wpNames)-1
     fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=%4.f goto=%s\n', ...
         wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), ...
-		degMinLons(f,2), radius, wpNames{f+1});
+        degMinLons(f,2), radius, wpNames{f+1});
 end
 f = length(wpNames);
 fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=%4.f goto=%s', ...
     wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), ...
-	degMinLons(f,2), radius, wpNames{f});
+    degMinLons(f,2), radius, wpNames{f});
 fclose(fid);
 
 end

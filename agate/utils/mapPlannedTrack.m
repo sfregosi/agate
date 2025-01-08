@@ -41,7 +41,7 @@ function mapPlannedTrack(CONFIG, targetsFile, varargin)
 %       none          creates figure
 %
 %   Examples:
-%       # use specified targets file, plot bathymetry, specify name/color
+%       % use specified targets file, plot bathymetry, specify name/color
 %       mapPlannedTrack(CONFIG, targetsFile, 'trackName', 'sg679', ...
 %            'bathy', 1, 'col_track', 'black')
 %       % to be prompted to select the targets file, plot bathy
@@ -92,7 +92,7 @@ while vIdx <= length(varargin)
 	end
 end
 
-if isempty(targetsFile)
+if isempty(targetsFile) || ~exist(targetsFile, 'file')
     [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...
         'Select targets file');
     targetsFile = fullfile(path, fn);
