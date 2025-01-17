@@ -1,8 +1,8 @@
-function plotBattUseFreeSpace(CONFIG, pp, A0_24V)
+function plotBattUseFreeSpace(CONFIG, pp, AH0_24V)
 %PLOTBATTUSEFREESPACE Plot battery usage and acoustic storage remaining
 %
 %   Syntax:
-%       PLOTBATTUSEFREESPACE(CONFIG, pp, A0_24V)
+%       PLOTBATTUSEFREESPACE(CONFIG, pp, AH0_24V)
 %
 %   Description:
 %       Plot of battery usage (as a percent, left yaxis) and free space
@@ -12,57 +12,72 @@ function plotBattUseFreeSpace(CONFIG, pp, A0_24V)
 %       margins of error (e.g., 7% capacity left on SD card)
 %
 %   Inputs:
-%       CONFIG   Mission/agate global configuration variable
-%       pp       Piloting parameters table created with
-%                extractPilotingParams.m
-%       A0_24V   Value of the $A0_24V parameter with total available amp
-%                hours for this glider (e.g., 310 for 15V system)
+%       CONFIG  agate mission configuration file with relevant mission and
+%               glider information. Minimum CONFIG fields are 'glider'.
+%       pp      Piloting parameters table created with extractPilotingParams
+%       AH0_24V  Value of the $AH0_24V parameter with total available amp
+%               hours for this glider (e.g., 310 for 15V system)
 %
 %   Outputs:
 %       no output, creates figure
 %
 %   Examples:
-%       plotBattUseFreeSpace(CONFIG, pp639, 310)
+%       plotBattUseFreeSpace(CONFIG, pp, 310)
 %
 %	See also EXTRACTPILOTINGPARAMS
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   unknown
-%   Updated:        2 May 2023
+%   Updated:   16 January 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-figNum = CONFIG.plots.figNumList(3);
+% set figNum
+figNum = []; % leave blank if not specified
+% or pull from config if it is
+if isfield(CONFIG, 'plots')
+    if isfield(CONFIG.plots, 'figNumList')
+        figNum = CONFIG.plots.figNumList(3);
+    end
+end
+
 % set position
-figPosition = [0    40    600   400];
+figPosition = [0    40    600    400];
 % overwrite if in config
-if isfield(CONFIG.plots, 'positions')
+if isfield(CONFIG, 'plots') && ...
+        isfield(CONFIG.plots, 'positions') && isfield(CONFIG.plots, 'figNumList')
     % is a position defined for this figure
     fnIdx = find(figNum == CONFIG.plots.figNumList);
-    if length(CONFIG.plots.positions) >= fnIdx && ...
-            ~isempty(CONFIG.plots.positions{fnIdx})
+    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
         figPosition = CONFIG.plots.positions{fnIdx};
     end
 end
 
 % should this plot have a second axis (aka is there a PAM system?)
-if (isfield(CONFIG, 'pm') || isfield (CONFIG, 'ws')) && ...
-        (CONFIG.pm.loggers == 1 || CONFIG.ws.loggers == 1)
+if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
     y2 = 1;
     titleStr = [CONFIG.glider ' Battery Usage and Free Space'];
-	figName = 'Battery & Free Space';
+    figName = 'Battery & Free Space';
+% elseif isfield (CONFIG, 'ws')) && CONFIG.ws.loggers == 1
+%     y2 = 1;
+%     titleStr = [CONFIG.glider ' Battery Usage and Free Space'];
+%     figName = 'Battery & Free Space';
 else
     y2 = 0;
     titleStr = [CONFIG.glider ' Battery Usage'];
-	figName = 'Battery';
+    figName = 'Battery';
 end
 
+
 % set up figure and x axis
-figure(figNum); 
+if isempty(figNum)
+    figure;
+else
+    figure(figNum);
+end
 clf;
 set(gcf, 'Name', figName);
 co = colororder;
@@ -71,7 +86,7 @@ timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
 if y2 == 1 % secondary y axis necessary
     yyaxis left
 end
-plot(timeDays, (A0_24V - pp.ampHrConsumed)/A0_24V*100, 'LineWidth', 2)
+plot(timeDays, (AH0_24V - pp.ampHrConsumed)/AH0_24V*100, 'LineWidth', 2)
 ylim([0 100]); ylabel('remaining battery [%]');
 xlim([0 CONFIG.tmd + CONFIG.tmd*.1]); xlabel('days in mission');
 
@@ -95,21 +110,25 @@ if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
     hold off;
 end
 
-% if WISPR is being used plot adjusted battery consumption (it is not
-% accounted for internally by seaglider) on secondary y axis
-if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
-    titleStr = [CONFIG.glider ' Battery Usage Reported and Adjusted'];
-    yyaxis right
-    plot(timeDays, (A0_24V - (pp.ampHrConsumed + pp.WS_ampHr))/A0_24V*100, ...
-        'LineWidth', 2)
-    ylim([0 100]); ylabel('WISPR adjusted battery [%]');
-
-    % Link the 'Limits' property so they zoom together
-    ax = gca();
-    r1 = ax.YAxis(1);
-    r2 = ax.YAxis(2);
-    linkprop([r1 r2],'Limits');
-end
+% *** This was removed in 2025 ***
+% *** Updated Rev E Seaglider's track power consumption much better and
+% WISPR2.0 and 3.0 interface differently with Seaglider so this is not
+% reliable **
+% % if WISPR is being used plot adjusted battery consumption (it is not
+% % accounted for internally by seaglider) on secondary y axis
+% if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+%     titleStr = [CONFIG.glider ' Battery Usage Reported and Adjusted'];
+%     yyaxis right
+%     plot(timeDays, (AH0_24V - (pp.ampHrConsumed + pp.WS_ampHr))/AH0_24V*100, ...
+%         'LineWidth', 2)
+%     ylim([0 100]); ylabel('WISPR adjusted battery [%]');
+%
+%     % Link the 'Limits' property so they zoom together
+%     ax = gca();
+%     r1 = ax.YAxis(1);
+%     r2 = ax.YAxis(2);
+%     linkprop([r1 r2],'Limits');
+% end
 
 % final formatting
 grid on; title(titleStr);
