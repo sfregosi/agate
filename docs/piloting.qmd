@@ -100,10 +100,11 @@ High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www
 
 ```matlab
 % print map **SLOWISH**
-% make sure CONFIG.plots.figNumList is set in the configuration .cnf file. 
-% this will plot in fig number specified by figNumList(1)
+% set the targets file location (this is the default)
 targetsFile = fullfile(CONFIG.path.mission, 'targets');
-plotGliderPath_etopo(CONFIG, pp, targetsFile, CONFIG.map.bathyFile);
+% create the mission map
+% the function will try to pull bathymetry data from the CONFIG.map.bathy setting or will prompt to select one
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile);
 
 % save it as a .fig (for zooming)
 savefig(fullfile(path_status, [CONFIG.glider '_map.fig']))
@@ -124,7 +125,8 @@ plotHumidityPressure(CONFIG, pp)
 print(fullfile(path_status, [CONFIG.glider  '_humidityPressure.png']), '-dpng')
 
 % battery usage/free space - figNumList(3)
-plotBattUseFreeSpace(CONFIG, pp, 310)
+AH0_24V = 310; % set total available amp hrs
+plotBattUseFreeSpace(CONFIG, pp, AH0_24V)
 print(fullfile(path_status, [CONFIG.glider '_battUseFreeSpace.png']), '-dpng')
 
 % voltage pack use (power draw by device) - figNumList(4)

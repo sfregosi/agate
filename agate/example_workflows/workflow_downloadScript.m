@@ -70,8 +70,8 @@ writetable(pp, fullfile(path_status, ['diveTracking_' CONFIG.glider '.xlsx']));
 %% (3) generate and save plots
 
 % print map **SLOWISH** - figNumList(1)
-targetsFile = fullfile(CONFIG.path.mission, 'targets');
-plotGliderPath_etopo(CONFIG, pp, targetsFile, CONFIG.map.bathyFile);
+targetsFile = fullfile(CONFIG.path.mission, 'targets'); 
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile);
 
 % save it as a .fig (for zooming)
 savefig(fullfile(path_status, [CONFIG.glider '_map.fig']))

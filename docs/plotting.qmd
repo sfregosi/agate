@@ -157,14 +157,11 @@ CONFIG.map.scalePos = [-0.04 0.34];
 CONFIG.map.scaleMajor = [0:50:100];
 CONFIG.map.scaleMinor = [0:12.5:25];
 
-% plot with bathymetry - file specified 
-plotGliderPath_etopo(CONFIG, pp, targetsFile, CONFIG.map.bathyFile);
-
-% plot with bathymetry - prompt for bathy file
-plotGliderPath_etopo(CONFIG, pp, targetsFile, 1);
+% plot with bathymetry - use file specified in CONFIG or if that does not exist, prompt to select
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile');
 
 % plot without bathymetry
-plotGliderPath_etopo(CONFIG, pp, targetsFile);
+plotGliderPath_etopo(CONFIG, pp, 'targetsFile', targetsFile, 'bathy', 0);
 ```
 
 ![Example piloting map with planned track and waypoints in black, realized track in red with surface positions in yellow, and depth averaged currents as blue vector arrows. The current target waypoint is circled in green. ](images/examplePlots/sg639_map.png){#map fig-align='center' width=80%}
