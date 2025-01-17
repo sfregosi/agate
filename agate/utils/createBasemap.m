@@ -47,8 +47,7 @@ function [baseFig] = createBasemap(CONFIG, varargin)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   09 March 2024
-%   Updated:        19 September 2024
+%   Updated:   17 January 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,17 +116,16 @@ if isfield(CONFIG.map, 'naLat') && isfield(CONFIG.map, 'naLon')
 	CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
 		CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [0 0 0]);
 end
-if isfield(CONFIG.map, 'scalePos')
-	scaleruler on
-	% show axes
-	setm(handlem('scaleruler'), 'RulerStyle', 'patches', 'FontSize', 14, ...
-		'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2));
-	if isfield(CONFIG.map, 'scaleMajor') && isfield(CONFIG.map, 'scaleMinor')
-		setm(handlem('scaleruler'), 'MajorTick', CONFIG.map.scaleMajor, ...
-			'MinorTick', CONFIG.map.scaleMinor);
-	end
+% add scale bar - if location and scale are specified
+if isfield(CONFIG.map, 'scalePos') && isfield(CONFIG.map, 'scaleMajor') && ...
+        isfield(CONFIG.map, 'scaleMinor')
+    scaleruler on
+    % showaxes
+    setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
+        'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
+        'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
+        'FontSize', 14);
 end
-
 
 %%  plot bathymetry and/or contours - slow step
 

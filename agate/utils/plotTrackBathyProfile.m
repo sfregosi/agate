@@ -65,8 +65,7 @@ function plotTrackBathyProfile(CONFIG, varargin)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   10 May 2023
-%   Updated:        11 September 2024
+%   Updated:   17 January 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,21 +80,21 @@ yLine = -990;
 figNum = [];
 
 % parse arguments
-n = 1;
-while n <= length(varargin)
-	switch varargin{n}
+vIdx = 1;
+while vIdx <= length(varargin)
+	switch varargin{vIdx}
 		case 'targetsFile'
-			targetsFile = varargin{n+1};
-			n = n+2;
+			targetsFile = varargin{vIdx+1};
+			vIdx = vIdx+2;
 		case 'bathyFile'
-			bathyFile = varargin{n+1};
-			n = n+2;
+			bathyFile = varargin{vIdx+1};
+			vIdx = vIdx+2;
 		case 'yLine'
-			yLine = varargin{n+1};
-			n = n+2;
+			yLine = varargin{vIdx+1};
+			vIdx = vIdx+2;
 		case 'figNum'
-			figNum = varargin{n+1};
-			n = n+2;
+			figNum = varargin{vIdx+1};
+			vIdx = vIdx+2;
 	end
 end
 
