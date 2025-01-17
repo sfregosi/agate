@@ -1,8 +1,8 @@
-function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
+function plotGliderPath_etopo(CONFIG, pp, varargin)
 %PLOTGLIDERPATH_ETOPO	Plot glider path on bathymetric map
 %
 %   Syntax:
-%       PLOTGLIDERPATH_ETOPO(CONFIG, pp, targetsFile, bathyFile)
+%       PLOTGLIDERPATH_ETOPO(CONFIG, PP, VARARGIN)
 %
 %   Description:
 %       Map of glider planned track (from the targets file) and actual
@@ -12,67 +12,133 @@ function plotGliderPath_etopo(CONFIG, pp, targetsFile, bathyFile)
 %       that dive.
 %
 %   Inputs:
-%       CONFIG      Mission/agate global configuration variable
-%       pp          Piloting parameters table created with
-%                   extractPilotingParams.m
-%       targetsFile Fullfile reference to the text file targetsFile. Can be
-%                   left empty ([]) to prompt to select targets
-%       bathyFile   Optional argument to plot bathymetry (slow step),
-%                   either specify the fullfile (CONFIG.map.bathyFile) or
-%                   set to 0 to not plot bathymetry
+%       CONFIG      [struct] mission/agate configuration variable.
+%                   Required fields: CONFIG.map entries
+%       pp          [table] piloting parameters table created with
+%                   extractPilotingParams
+%
+%       all varargins are specified using name-value pairs
+%                 e.g., 'targetsFile', 'C:\target', 'bathy', 1
+%
+%       targetsFile [char] optional argument to targets file. If no file
+%                   specified, will prompt to select one, and if no path
+%                   specified, will prompt to select path
+%                   [table] alternatively can just reference a targets
+%                   table that has already been read in to the workspace
+%       bathy       optional argument for bathymetry plotting
+%	                [double] Set to 1 to plot bathymetry or 0 to only plot
+%                   land. Default is 1. Will look for bathy file in
+%                   CONFIG.map.bathyFile or prompt if none found
+%                   [char] Path to the bathymetry file (if you want to use
+%                   a different one than specified in CONFIG or it is not
+%                   specified in CONFIG)
 %
 %   Outputs:
 %       no output, creates figure
 %
 %   Examples:
-%       plotGliderPath_etopo(CONFIG, pp639, targetsFile, CONFIG.map.bathyFile)
+%       tf = 'C:\targets'; % path to targets file
+%       plotGliderPath_etopo(CONFIG, pp6, 'targetsFile', tf, 'bathyOn', 1)
 %
 %   See also EXTRACTPILOTINGPARAMS
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   13 April 2023
-%   Updated:        16 April 2023
+%   Updated:   17 January 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin < 4
-    bathyOn = 0; % if no file specified, don't plot bathymetry
-elseif ~isempty(bathyFile)
-    bathyOn = 1;
+% argument checks
+narginchk(2, inf)
+
+% set defaults
+targetsFile = [];
+bathyOn = 1;
+bathyFile = [];
+
+% parse arguments
+vIdx = 1;
+while vIdx <= length(varargin)
+    switch varargin{vIdx}
+        case 'targetsFile'
+            targetsFile = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'bathy'
+            if ischar(varargin{vIdx+1}) || isstring(varargin{vIdx+1})
+                bathyOn = 1;
+                bathyFile = varargin{vIdx+1};
+            elseif isnumeric(varargin{vIdx+1})
+                bathyOn = varargin{vIdx+1};
+                bathyFile = [];
+            end
+            vIdx = vIdx+2;
+    end
 end
 
-if nargin >= 3 && isempty(targetsFile)
-    [fn, path] = uigetfile(fullfile(CONFIG.path.mission, '*.*'), ...
+% select targetsFile if none specified
+if isempty(targetsFile)
+    [fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
         'Select targets file');
     targetsFile = fullfile(path, fn);
+    fprintf('targets file selected: %s\n', fn);
 end
 
-% set fig number so you can place it in one spot on your desktop and not
-% have to keep resizing, moving, etc.
-figNum = CONFIG.plots.figNumList(1);
-if isfield(CONFIG.plots, 'positions')
+% check that targetsFile exists if specified, otherwise prompt to select
+if isstring(targetsFile)
+    targetsFile = convertStringsToChars(targetsFile);
+end
+
+if ischar(targetsFile)
+    if ~exist(targetsFile, 'file')
+        fprintf(1, ['Specified targetsFile does not exist. Select' ...
+            ' targets file to continue.\n']);
+        [fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
+            'Select targets file');
+        targetsFile = fullfile(path, fn);
+        fprintf('targets file selected: %s\n', fn);
+    end
+    % read in targets file
+    [targets, ~] = readTargetsFile(CONFIG, targetsFile);
+elseif istable(targetsFile)
+    targets = targetsFile;
+end
+
+
+% set figNum
+figNum = []; % leave blank if not specified
+% or pull from config if it is
+if isfield(CONFIG, 'plots')
+    if isfield(CONFIG.plots, 'figNumList')
+        figNum = CONFIG.plots.figNumList(1);
+    end
+end
+
+% set position
+mapFigPosition = [100    100    800    600];
+% overwrite if in config
+if isfield(CONFIG, 'plots') && ...
+        isfield(CONFIG.plots, 'positions') && isfield(CONFIG.plots, 'figNumList')
     % is a position defined for this figure
     fnIdx = find(figNum == CONFIG.plots.figNumList);
-    if ~isempty(CONFIG.plots.positions(fnIdx))
+    if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
         mapFigPosition = CONFIG.plots.positions{fnIdx};
     end
-else
-    mapFigPosition = [100    100    800    600];
 end
-
 
 states = shaperead('usastatehi', 'UseGeoCoords', true, ...
     'BoundingBox', [CONFIG.map.lonLim' CONFIG.map.latLim']);
 
-[targets, ~] = readTargetsFile(CONFIG, targetsFile);
-
-currColor = '#29c481';
+currColor = '#29c481'; % color for current vectors
 
 %% set up figure
-figure(figNum);
+if isempty(figNum)
+    figure;
+else
+    figure(figNum);
+end
+
 mapFig = gcf;
 mapFig.Name = 'Map';
 mapFig.Position = mapFigPosition;
@@ -91,54 +157,113 @@ tightmap
 
 % add north arrow - if location specified
 if isfield(CONFIG.map, 'naLat') && isfield(CONFIG.map, 'naLon')
-CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
-    CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
+    CONFIG.map.na = northarrow('latitude', CONFIG.map.naLat, 'longitude', ...
+        CONFIG.map.naLon, 'FaceColor', [1 1 1], 'EdgeColor', [1 1 1]);
 end
 
 % add scale bar - if location and scale are specified
 if isfield(CONFIG.map, 'scalePos') && isfield(CONFIG.map, 'scaleMajor') && ...
-		isfield(CONFIG.map, 'scaleMinor')
-scaleruler on
-% showaxes
-setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
-    'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
-    'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
-    'FontSize', 14);
+        isfield(CONFIG.map, 'scaleMinor')
+    scaleruler on
+    % showaxes
+    setm(handlem('scaleruler1'), 'RulerStyle', 'patches', ...
+        'XLoc', CONFIG.map.scalePos(1), 'YLoc', CONFIG.map.scalePos(2), ...
+        'MajorTick', CONFIG.map.scaleMajor, 'MinorTick', CONFIG.map.scaleMinor, ...
+        'FontSize', 14);
 end
 
 %%  plot bathymetry - slow step
-%  plot bathymetry - slow step - optional
-if bathyOn
-    % try the specified file
-    %     bathyFile = fullfile(CONFIG.path.shp, 'etopo2022', ...
-    %         'ETOPO_2022_v1_60s_N90W180_surface.tif');
-    % if that's no good, prompt to select correct file
-    if ~exist(bathyFile, 'file')
-        [fn, path] = uigetfile(fullfile(CONFIG.path.shp, '*.tif;*.tiff'), ...
-            'Select etopo raster file');
+
+
+% check for bathy file if none specified - first check config, then prompt
+if isempty(bathyFile)
+    if isfield(CONFIG.map, 'bathyFile')
+        bathyFile = CONFIG.map.bathyFile;
+    elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file')
+        if isfield(CONFIG.path, 'shp')
+            shpDir = CONFIG.path.shp;
+        else
+            shpDir = 'C:\';
+        end
+        [fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+            'Select bathymetry raster file');
         bathyFile = fullfile(path, fn);
     end
+end
+
+% check that bathyFile eists if specified, otherwise prompt to select
+if ~exist(bathyFile, 'file')
+    fprintf(1, ['Specified bathyFile does not exist. Select' ...
+        ' bathymetry raster file to continue.\n']);
+    if isfield(CONFIG.path, 'shp')
+        shpDir = CONFIG.path.shp;
+    else
+        shpDir = 'C:\';
+    end
+    [fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+        'Select bathymetry raster file');
+    bathyFile = fullfile(path, fn);
+    fprintf('bathymetry raster file selected: %s\n', fn);
+end
+
+
+
+%  plot bathymetry - slow step - optional
+if bathyOn
+
+    % check for bathy file if none specified - first check config, then prompt
+    if isempty(bathyFile)
+    	if isfield(CONFIG.map, 'bathyFile')
+    		bathyFile = CONFIG.map.bathyFile;
+    	elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file')
+    		if isfield(CONFIG.path, 'shp')
+    			shpDir = CONFIG.path.shp;
+    		else
+    			shpDir = 'C:\';
+    		end
+    		[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+    			'Select bathymetry raster file');
+    		bathyFile = fullfile(path, fn);
+    	end
+    end
+
+    % check that bathyFile eists if specified, otherwise prompt to select
+    if ~exist(bathyFile, 'file')
+    	fprintf(1, ['Specified bathyFile does not exist. Select' ...
+    		' bathymetry raster file to continue.\n']);
+    	if isfield(CONFIG.path, 'shp')
+    		shpDir = CONFIG.path.shp;
+    	else
+    		shpDir = 'C:\';
+    	end
+    	[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+    		'Select bathymetry raster file');
+    	bathyFile = fullfile(path, fn);
+    	fprintf('bathymetry raster file selected: %s\n', fn);
+    end
+
     [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
         'CoordinateSystemType', 'geographic');
     [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
-    
+
     Z(Z >= 10) = 100;
     geoshow(Z, refvec, 'DisplayType', 'surface', ...
         'ZData', zeros(size(Z)), 'CData', Z);
-    
+
     cmap = cmocean('ice');
     cmap = cmap(150:256,:);
     colormap(cmap)
     % matlab renamed caxis to clim in R2022a...so try both
     try clim([-6000 0]); catch caxis([-6000 0]); end %#ok<SEPEX>
     brighten(.4);
-    
+
     [~,~] = contourm(Z, refvec, [-5000:1000:1000], 'LineColor', [0.6 0.6 0.6]); %#ok<NBRAK>
     [~,~] = contourm(Z, refvec, [-1000 -1000], 'LineColor', [0.3 0.3 0.3], ...
         'LineWidth', 0.8);
     [~,~] = contourm(Z, refvec, [-900:100:0], 'LineColor', [0.8 0.8 0.8]); %#ok<NBRAK>
     [~,~] = contourm(Z, refvec, [-500 -500], 'LineColor', [0.6 0.6 0.6]);
 end
+
 geoshow(states, 'FaceColor', [0 0 0], 'EdgeColor', 'k')
 
 
