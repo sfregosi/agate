@@ -1,15 +1,16 @@
-function plotGliderPath_etopo(CONFIG, pp, varargin)
-%PLOTGLIDERPATH_ETOPO	Plot glider path on bathymetric map
+function mapMissionPath(CONFIG, pp, varargin)
+%MAPMISSIONPATH	Plot glider path on bathymetric map
 %
 %   Syntax:
-%       PLOTGLIDERPATH_ETOPO(CONFIG, PP, VARARGIN)
+%       MAPMISSIONPATH(CONFIG, PP, VARARGIN)
 %
 %   Description:
-%       Map of glider planned track (from the targets file) and actual
-%       track, showing surface locations for each dive, a line connecting
-%       these surface locations (not dead-reckoned positions between
-%       surfacings) and vectorsmshowing the depth averaged current for
-%       that dive.
+%       Map of glider's path to date during a mission overlayed on the
+%       planned track (from the targets file). Shows surface locations for
+%       each dive, a line connecting these surface locations (not
+%       dead-reckoned positions between surfacings) and vectors showing the
+%       depth averaged current for each dive. The next waypoint is
+%       highlighted with a green circle. 
 %
 %   Inputs:
 %       CONFIG      [struct] mission/agate configuration variable.
@@ -38,9 +39,9 @@ function plotGliderPath_etopo(CONFIG, pp, varargin)
 %
 %   Examples:
 %       tf = 'C:\targets'; % path to targets file
-%       plotGliderPath_etopo(CONFIG, pp6, 'targetsFile', tf, 'bathyOn', 1)
+%       mapMissionPath(CONFIG, pp6, 'targetsFile', tf, 'bathyOn', 1)
 %
-%   See also EXTRACTPILOTINGPARAMS
+%   See also EXTRACTPILOTINGPARAMS, MAPPLANNEDTRACK
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
