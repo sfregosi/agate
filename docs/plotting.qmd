@@ -31,11 +31,13 @@ CONFIG = agate(agate_config.cnf);
 CONFIG = agate;
 ```
 
-Most of the plotting functions rely on a `pp` (piloting parameters) variable that is a large table with various outputs from the .nc and .log files compiled in one place. If this has already be created, it can be loaded directly. If not, use `extractPilotingParams` to build it. 
+Most of the plotting functions rely on a `pp` (piloting parameters) variable that is a large table with various outputs from the `.nc` and `.log` files compiled in one place. If this has already be created, it can be loaded directly. If not, use `extractPilotingParams` to build it. See the [Post-mission Processing page](mission-processing.qmd) for more detail. 
 
 ```matlab
 % load existing pp table
 load(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glider '.mat']))
+
+% OR 
 
 % create new pp table
 pp = extractPilotingParams(CONFIG, fullfile(CONFIG.path.mission, 'basestationFiles'), fullfile(CONFIG.path.mission, 'flightStatus'), 0);
@@ -48,7 +50,25 @@ save(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 ## Piloting plots
 
-Some of the below piloting plots are also available within the Seaglider Piloting Tools, but __*agate*__ allows for more automated plotting (without the GUI) and tries to improve on some of those existing plots, either with better labels, more detail, or addition of acoustic inputs. 
+The below section of plots is useful during active piloting. 
+
+To configure default positions for each of these plots, create a cell array with 4-element locations for each plot. They defined `[left edge, bottom edge, width, height]` in pixels. It can then be saved for later use. The path to this file is defined in the [configuration file](configurat.qmd#optinal-plotting-settings. 
+
+For example:
+
+```matlab
+positions{1} = [800, 240, 1000, 700]; 
+positions{2} = [1920, 260, 550, 300];
+% etc for up to 9 figures
+
+% save it for later use
+save('C:\Users\User.Name\Documents\gliders\figPositions.mat', positions);
+
+% load it if it already exists
+load('C:\Users\User.Name\Documents\gliders\figPositions.mat');
+
+```
+
 
 ### Humidity and pressure
 
@@ -79,7 +99,9 @@ If the glider is using a PMAR acoustic system, the free space remaining on each 
 The 30% battery line and 35 GB PMAR line are hard coded into the plot, but could be modified within the function. The 'target mission duration' line is defined by `CONFIG.tmd`, as set in the configuration file. 
 
 ```matlab
-plotBattUseFreeSpace(CONFIG, pp)
+% look up total available amp hours ($AH0_24V parameter; e.g., 310 for 15V system)
+AH0_24V = 310; 
+plotBattUseFreeSpace(CONFIG, pp, AH0_24V)
 ```
 
 ![Remaining battery and PAM storage space for SG639 with PMARXL installed and operating.Note glider battery was not full at start of mission so remaining battery starts at just over 60%.](images/examplePlots/sg639_battUseFreeSpace.png){#batt-free-639 fig-align='center' width=50%}

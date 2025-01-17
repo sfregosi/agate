@@ -132,6 +132,8 @@ CONFIG.map.scaleMinor = [0:12.5:25];
 
 For piloting related plots:
 
+If piloting plots are being regenerated after each dive, it can be useful to assign them each figure numbers and locations so they are just 'refreshed' rather than having new plots created each time resulting in a very cluttered desktop! Each piloting plot has a default order that can be modified with the `[0 1 2 3 4 5 6 7 8 9]` section of the `CONFIG.plots.figNumList`. The The position of each plot can also be defined and loaded (allowing for these positions to be saved between missions or to have options when viewing on a laptop or multiple screens). For help setting up a `figPositions.mat` see the [Plotting page](plotting.qmd#piloting-plots).
+
 ```matlab
 % piloting plot settings
 % pre allocate fig numbers so figures are updated rather than created new

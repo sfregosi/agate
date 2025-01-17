@@ -164,6 +164,8 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 
 The code in this section follows along with the [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m). 
 
+It requires the sound files to be in `.wav` or `.flac` format. 
+
 #### Summarize acoustic recording status for locations/positions
 
 Use the `extractPAMSatus` function to use the timestamp/timing info of each sound file to calculate the total recording duration per dive and mark if the PAM system was on (1) or off (0) for each calculated location/glider data sample. This function can be slow as it runs through every sound file using `audioinfo` to check the file size and calculate it's duration. It requires an existing `locCalcT` and `gpsSurfT` made above and updates them with a *pam* column. 
@@ -239,6 +241,8 @@ writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
 #### Summarize acoustic effort
 
 Use the `calcPAMEffort` function to summarize mission acoustic effort at several scales: by minute, minutes per hour, minutes per day, and hours per day. This prints a few summary statistics to the Command Window and creates tables with minute and hour-sized bins. 
+
+This and the other acoustic effort 
 
 ```matlab
 %% (3) Summarize acoustic effort
