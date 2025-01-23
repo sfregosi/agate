@@ -164,7 +164,7 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 
 The code in this section follows along with the [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m). 
 
-It requires the sound files to be in `.wav` or `.flac` format. 
+It requires the sound files to be in `.wav` or `.flac` format. See [Convert Acoustics](convert-acoustics.qmd) for help converting from original `.dat` raw files to either `.wav` or `.flac`.
 
 #### Summarize acoustic recording status for locations/positions
 

@@ -253,7 +253,7 @@ end
 % 1 if pam on, 0 if off
 
 locCalcT.pam = zeros(height(locCalcT),1);
-fprintf(1,'%s - %d science samples:\n', CONFIG.gmStr, height(locCalcT));
+fprintf(1,'%s - assigning PAM status for %d science samples:\n', CONFIG.gmStr, height(locCalcT));
 fprintf(1, '\n%3d', floor((height(locCalcT))/8000));
 for f = 1:height(locCalcT)
     if strcmp(loggerType, 'WISPR') % drop ms from sample matching
@@ -285,20 +285,24 @@ fprintf(1, '\n');
 
 %% duration per dive
 
+% set up the output table
 pamByDive = table;
-pamByDive.dive = gpsSurfT.dive;
-pamByDive.diveStart = gpsSurfT.startDateTime;
-pamByDive.diveStop = gpsSurfT.endDateTime;
-pamByDive.numFiles = nan(height(pamByDive),1);
+pamByDive.dive       = gpsSurfT.dive;
+pamByDive.diveStart  = gpsSurfT.startDateTime;
+pamByDive.diveStop   = gpsSurfT.endDateTime;
+pamByDive.numFiles   = nan(height(pamByDive), 1);
+pamByDive.pamDur_sec = nan(height(pamByDive), 1);
+pamByDive.pamStart   = NaT(height(pamByDive),  1);
+pamByDive.pamStop    = NaT(height(pamByDive),1);
 
 for f = 1:height(pamByDive)
     [r, ~] = find(isbetween(pamFiles.start, pamByDive.diveStart(f), ...
         pamByDive.diveStop(f)));
     if ~isempty(r)
-        pamByDive.numFiles(f,1) = length(r);
-        pamByDive.pamDur(f,1) = sum(pamFiles.dur(r));
-        pamByDive.pamStart(f,1) = pamFiles.start(r(1));
-        pamByDive.pamStop(f,1) = pamFiles.stop(r(end));
+        pamByDive.numFiles(f) = length(r);
+        pamByDive.pamDur_sec(f) = seconds(sum(pamFiles.dur(r)));
+        pamByDive.pamStart(f) = pamFiles.start(r(1));
+        pamByDive.pamStop(f) = pamFiles.stop(r(end));
     end
 end
 
@@ -307,7 +311,7 @@ pamByDive.lagStart = pamByDive.pamStart - pamByDive.diveStart;
 pamByDive.lagStop = pamByDive.diveStop - pamByDive.pamStop;
 
 % append to gpsSurfT and save
-gpsSurfT.pamDur = pamByDive.pamDur;
+gpsSurfT.pamDur_sec = pamByDive.pamDur_sec;
 gpsSurfT.pamNumFiles = pamByDive.numFiles;
 gpsSurfT.pamStart = pamByDive.pamStart;
 gpsSurfT.pamStop = pamByDive.pamStop;
