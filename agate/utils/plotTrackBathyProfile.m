@@ -139,6 +139,7 @@ if isempty(bathyFile)
 		[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
 			'Select bathymetry raster file');
 		bathyFile = fullfile(path, fn);
+	fprintf('bathymetry raster file selected: %s\n', fn);
 	end
 end
 
