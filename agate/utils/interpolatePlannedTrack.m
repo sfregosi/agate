@@ -77,6 +77,8 @@ for f = 1:height(targets)-1
 	pairDist = distance(targets.lat(f), targets.lon(f), ...
 		targets.lat(f+1), targets.lon(f+1), referenceEllipsoid('wgs 84'))/1000;
 	npts = round(pairDist/spacing);
+    % add 1 because the start point
+    npts = npts + 1;
 	tt = track2(targets.lat(f), targets.lon(f), ...
 		targets.lat(f+1), targets.lon(f+1), [1 0], 'degrees', npts);
 	it = [it; tt(1:end-1,:)]; % remove the last one so no dupes
