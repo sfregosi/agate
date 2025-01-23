@@ -19,11 +19,6 @@
 %       (2) Simplify positional data into smaller .csvs for to include with
 %       as metadata when sending sound files to NCEI
 %       (3) Plot sound speed profiles
-%       (4) PAM status get more accurate info on recording times and
-%       durations from the files themselves, and update positional data
-%       tables with a flag for PAM on or off at each sample or dive
-%       (5) Extract location data for each individual PAM file
-%       (6) Summarize acoustic effort by minutes, hours, and days
 %
 %	Notes
 %
@@ -33,7 +28,7 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Updated:        31 December 2024
+%	Updated:      23 January 2025
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,89 +136,3 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.gmStr, '_SSP.png']))
 exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.gmStr, '_SSP.pdf']))
-
-
-%% (4) Extract acoustic system status for each dive and sample time
-
-% load locCalcT and gpsSurfT if not already loaded
-if ~exist('locCalcT', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.gmStr, '_locCalcT.mat']))
-end
-if ~exist('gpsSurfT', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.gmStr, '_gpsSurfaceTable.mat']));
-end
-
-% loop through sound files to gets 'status' for existing positional tables
-[gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(CONFIG, ...
-	gpsSurfT, locCalcT);
-
-fprintf('Total PAM duration: %.2f hours\n', hours(sum(pamFiles.dur, 'omitnan')));
-
-% save updated positional tables and pam tables
-save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.gmStr, '_pamFiles.mat']), 'pamFiles');
-save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.gmStr, '_pamByDive.mat']), 'pamByDive');
-
-save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.gmStr '_locCalcT_pam.mat']), 'locCalcT');
-writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr '_locCalcT_pam.csv']));
-
-save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.gmStr '_gpsSurfaceTable_pam.mat']), 'gpsSurfT');
-writetable(gpsSurfT, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr '_gpsSurfaceTable_pam.csv']));
-
-
-%% (5) Extract positional data for each sound file
-
-% load locCalcT and pamFiles if not already loaded
-if ~exist('locCalcT', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.gmStr, '_locCalcT.mat']))
-end
-if ~exist('pamFiles', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.gmStr, '_pamFiles.mat']))
-end
-
-% set a time buffer around which locations are acceptable
-timeBuffer = 180;
-% get position at start of each sound file
-pamFilePosits = extractPAMFilePosits(pamFiles, locCalcT, timeBuffer);
-
-% save as .mat and .cs 
-save(fullfile(CONFIG.path.mission, 'profiles', ...
-    [CONFIG.gmStr '_pamFilePosits.mat']), 'pamFilePosits');
-writetable(pamFilePosits, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr '_pamFilePosits.csv']));
-
-
-%% (6) Summarize acoustic effort
-
-% load gpsSurfT, pamFiles, pamByDive if not already loaded
-if ~exist('gpsSurfT', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_gpsSurfaceTable.mat']))
-end
-if ~exist('pamFiles', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_pamFiles.mat']))
-end
-if ~exist('pamByDive', 'var')
-	load(fullfile(CONFIG.path.mission, 'profiles', ...
-		[CONFIG.glider, '_', CONFIG.mission, '_pamByDive.mat']))
-end
-
-% create byMin, minPerHour, minPerDay matrices 
-[pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = calcPAMEffort(...
-	CONFIG, gpsSurfT, pamFiles, pamByDive);
-
-% save as .mat
-save(fullfile(CONFIG.path.mission, 'profiles', [CONFIG.glider '_' ...
-	CONFIG.mission '_pamEffort.mat']), ...
-    'pamByMin', 'pamMinPerHour', 'pamMinPerDay', 'pamHrPerDay');
-
