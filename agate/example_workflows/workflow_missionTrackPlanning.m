@@ -24,11 +24,13 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	05 April 2023
-%	Updated:        19 September 2024
+%	Updated:      23 January 2025
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% make sure agate is on the path!
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 
 % initialize agate - either specify a .cnf or leave blank to browse/select
 CONFIG = agate('agate_mission_config.cnf');
@@ -68,40 +70,40 @@ bathyOn = 1;
 targetsFile = targetsOut;
 
 % create plot
-mapPlannedTrack(CONFIG, targetsFile, 'trackName', CONFIG.glider, ...
-   'bathy', bathyOn, 'col_track', 'red')
+targetsName = mapPlannedTrack(CONFIG, targetsFile, 'trackName', CONFIG.glider, ...
+   'bathy', bathyOn, 'col_track', 'red');
 % this function uses name-value pairs for optional arguments. 
 % CONFIG and targetsFile are not optional, but targetsFile may be set to 
 % empty [] to trigger a prompt to select the targets file
 
-% the title will default to CONFIG.glider and CONFIG.mission. To change:
+% the title will default to CONFIG.glider CONFIG.mission: targetsName
+% This can be very long. To change to whatever you want:
 title('Example Planned Track');
 
-% get file name only for plot saving
-[~, targetsName, ~] = fileparts(targetsFile);
-
 % save as .png
-exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
-	CONFIG.mission, '_plannedTrack_' targetsName, '.png']), ...
-    'Resolution', 300)
+exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
+    '_plannedTrack_' targetsName, '.png']), 'Resolution', 300)
 % as .fig
-savefig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
-    '_plannedTrack_' targetsName, '.fig']))
+savefig(fullfile(CONFIG.path.mission, [CONFIG.gmStr '_plannedTrack_' ...
+    targetsName, '.fig']))
 
 %% (3) Plot bathymetry profile of targets file
 
-% can specify bathymetry file
-bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec.tiff';
-plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, ...
-	'bathyFile', bathyFile)
-% OR leave that argument out to default to CONFIG.map.bathyFile if
+% can specify bathymetry file and/or targets file
+bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
+targetsFile = fullfile(CONFIG.path.mission, 'targets_exampleTrack');
+
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, 'bathyFile', bathyFile);
+
+% OR
+
+% leave that argument out to default to CONFIG.map.bathyFile if
 % available or prompt if not available
 plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile)
 
 % save as .png
-exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
-	CONFIG.mission, '_targetsBathymetryProfile_' targetsName, '.png']), ...
-    'Resolution', 300)
+exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
+    '_targetsBathymetryProfile_' targetsName, '.png']), 'Resolution', 300)
 
 %% (4) Export interpolated track points
 

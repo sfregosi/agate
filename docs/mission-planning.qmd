@@ -120,25 +120,22 @@ bathyOn = 1; % plot bathymetry
 targetsFile = targetsOut;
 
 % create plot
-mapPlannedTrack(CONFIG, targetsFile, 'trackName', CONFIG.glider, ...
-   'bathy', bathyOn, 'col_track', 'red')
+targetsName = mapPlannedTrack(CONFIG, targetsFile, 'trackName', CONFIG.glider, ...
+   'bathy', bathyOn, 'col_track', 'red');
 % this function uses name-value pairs for optional arguments. 
 % CONFIG and targetsFile are not optional, but targetsFile may be set to 
 % empty [] to trigger a prompt to select the targets file
 
-% the title will default to CONFIG.glider and CONFIG.mission. To change:
+% the title will default to CONFIG.glider CONFIG.mission: targetsName
+% This can be very long. To change to whatever you want:
 title('Example Planned Track');
 
-% get file name only for plot saving
-[~, targetsName, ~] = fileparts(targetsFile);
-
 % save as .png
-exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
-	CONFIG.mission, '_plannedTrack_' targetsName, '.png']), ...
-    'Resolution', 300)
+exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
+    '_plannedTrack_' targetsName, '.png']), 'Resolution', 300)
 % as .fig
-savefig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
-    '_plannedTrack_' targetsName, '.fig']))
+savefig(fullfile(CONFIG.path.mission, [CONFIG.gmStr '_plannedTrack_' ...
+    targetsName, '.fig']))
 ```
 
 ![Example of a planned track map with each waypoint labeled.](images/examplePlots/sg639_MHI_Apr2023_plannedTrack.png){#fig-planned-map fig-align='center' width=60%}
@@ -156,19 +153,21 @@ An indicator line (dashed red line) will be plotted at 990 m as the default (max
 NOTE: This function sets the arguments using *name-value* pairs because most of them are optional. So each is defined by the name of the argument in single quotes (e.g., `'bathyFile'`) followed by a comma and then the value for the argument (e.g., `'C:\bathyFile.tiff'`). Use `doc plotTrackBathyProfile` to see all possible arguments. 
 
 ```matlab
-% can specify bathymetry file
+% can specify bathymetry file and/or targets file
 bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
 targetsFile = fullfile(CONFIG.path.mission, 'targets_exampleTrack');
+
 plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, 'bathyFile', bathyFile);
-% OR 
-% leave empty to prompt to select files
-plotTrackBathyProfile(CONFIG);
+
+% OR
+
+% leave that argument out to default to CONFIG.map.bathyFile if
+% available or prompt if not available
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile)
 
 % save as .png
-[~, targetsName, ~] = fileparts(targetsFile); % get name for saving
-exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
-	CONFIG.mission, '_targetsBathymetryProfile_' targetsName, '.png']), ...
-    'Resolution', 300)
+exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
+    '_targetsBathymetryProfile_' targetsName, '.png']), 'Resolution', 300)
 ```
 
 ![Bathymetry profile for set targets file which shows the seafloor depth at each target and in the straight line between each target. The 990 m depth limit is marked with a dashed line.](images/examplePlots/sg639_MHI_Apr2023_targetsBathymetryProfile_targets.png){#fig-track-bathy fig-align='center' width=80%}
