@@ -86,8 +86,8 @@ if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
 elseif isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
     loggerType = 'WISPR';
 else
-    fprintf(1, 'Unknown acoustic logger type. Exiting\n');
-    return
+    error(['Unknown acoustic logger type. ', ...
+        'Check acoustics section of configuration file. Exiting.']);
 end
 
 % run checks for required CONFIGs and set them if they are missing or exit
