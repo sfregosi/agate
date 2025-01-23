@@ -1,8 +1,8 @@
-% WORKFLOW_PROCESSWISPR.M
-%	Workflow for processing raw WISPR data into .flac files
+% WORKFLOW_CONVERTWISPR.M
+%	Workflow for converting raw WISPR data into .flac files
 %
 %	Description:
-%		This script provides the minimum steps to process a directory (or
+%		This script provides the minimum steps to convert a directory (or
 %		directories) of raw WISPR .dat files into a more readable format,
 %		in this case .flac. The script can be modified to also convert to
 %		.wav files. 
@@ -22,8 +22,7 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	13 December 2024
-%	Updated:
+%	Updated:      23 January 2025
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

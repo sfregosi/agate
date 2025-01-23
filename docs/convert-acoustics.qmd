@@ -30,7 +30,7 @@ An __*agate*__ user does not need to download or clone these repositories for th
 
 #### Example workflow
 
-See `workflow_processWISPR.m` in the `example_workflows` folder for the basic lines needed to convert a directory (that can include subdirectories) of WISPR `.dat` files into either `.flac` or `.wav` files. 
+See `workflow_convertWISPR.m` in the `example_workflows` folder for the basic lines needed to convert a directory (that can include subdirectories) of WISPR `.dat` files into either `.flac` or `.wav` files. 
 
 Like other workflows in __*agate*__ it must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)). Only the top `REQUIRED` and `CONFIG.ws` settings in the `OPTIONAL - acoustics` sections of the configuration file are needed for file conversion.
 
