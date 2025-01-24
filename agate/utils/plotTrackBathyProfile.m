@@ -100,7 +100,7 @@ end
 
 % select targetsFile if none specified
 if isempty(targetsFile)
-	[fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
+	[fn, path] = uigetfile(CONFIG.path.mission, '*.*', ...
 		'Select targets file');
 	targetsFile = fullfile(path, fn);
 	fprintf('targets file selected: %s\n', fn);
