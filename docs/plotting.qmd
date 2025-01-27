@@ -149,13 +149,13 @@ High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www
 targetsFile = fullfile(CONFIG.path.mission, 'targets');
 
 % map set up configurations - all should be specified in configuration file 
-CONFIG.map.latLim = [19.0 22.75];
-CONFIG.map.lonLim = [-160.0 -154.25];
-CONFIG.map.naLat = 22.15;
-CONFIG.map.naLon = -154.5;
-CONFIG.map.scalePos = [-0.04 0.34];
+CONFIG.map.latLim = [40.25 45.00];
+CONFIG.map.lonLim = [-129.50 -123.00];
+CONFIG.map.naLat = 44.4; 
+CONFIG.map.naLon = -129;
+CONFIG.map.scalePos = [-0.042 0.775]; 
 CONFIG.map.scaleMajor = [0:50:100];
-CONFIG.map.scaleMinor = [0:12.5:25];
+CONFIG.map.scaleMinor = [0:25:50];
 
 % plot with bathymetry - use file specified in CONFIG or if that does not exist, prompt to select
 mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile');
