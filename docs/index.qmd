@@ -64,7 +64,11 @@ A raster file is needed to plot bathymetry data on any of the maps. Detailed bas
 There are tradeoffs in the resolution of basemap raster selected.
 
 - High resolution basemaps are necessary for fine-scale piloting to ensure the glider does not hit the bottom, but they require manual export of a .tiff from NCEI. 15 arc second is the finest resolution option and can be extracted for the specific area of interest using the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/). The smaller the area extracted, the faster it will load and plot. 
-- Lower resolution may be sufficient for post-mission plotting. The global 60 arc second tiff is a good mid-resolution option that is easy, although slow, to download, import, and plot. Alternatively, 60 arc second resolution for just a specific area of interest can be extracted with the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) providing a smaller file size and faster loading/plotting.  
+- Lower resolution may be sufficient for post-mission plotting. The global 60 arc second tiff is a good mid-resolution option that is easy, although slow, to download, import, and plot. Alternatively, 60 arc second resolution for just a specific area of interest can be extracted with the [ETOPO Grid Extract tool](https://www.ncei.noaa.gov/maps/grid-extract/) providing a smaller file size and faster loading/plotting. 
+
+## Test dataset 
+
+A small example test dataset for a WISPR-equipped Seaglider is available [here](https://drive.google.com/drive/folders/1YZqnzZEor6v1lGQPB4EQll3-U2lfSh8n?usp=sharing). The test dataset includes Seaglider flight files for 10 dives and 10 minutes of raw WISPR acoustic files to test the setup and functionality of __*agate*__. 
 
 ## Disclaimer
 
