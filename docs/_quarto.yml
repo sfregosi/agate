@@ -7,7 +7,7 @@ website:
   site-url: "https://sfregosi.github.io/agate" 
   repo-url: "https://github.com/sfregosi/agate"
   repo-actions: [issue]
-  favicon: images/favicon.ico
+  favicon: images/agate_logo_thick_orange.svg
   
   page-footer:
     right: 'This page is built with [Quarto](https://quarto.org/).'
@@ -15,8 +15,8 @@ website:
   
   sidebar:
     background: $beaver-orange
-    # logo: "https://raw.githubusercontent.com/nmfs-opensci/assets/main/logo/nmfs-opensci-logo3.png"
-    favicon: images/favicon.ico
+    logo: images/agate_logo_thick_white.svg
+    # favicon: images/agate_logo_thick_orange.png
     pinned: true
     align: center
     tools: 
