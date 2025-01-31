@@ -52,7 +52,7 @@ save(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 The below section of plots is useful during active piloting. 
 
-To configure default positions for each of these plots, create a cell array with 4-element locations for each plot. They defined `[left edge, bottom edge, width, height]` in pixels. It can then be saved for later use. The path to this file is defined in the [configuration file](configurat.qmd#optinal-plotting-settings. 
+To configure default positions for each of these plots, create a cell array with 4-element locations for each plot. They defined `[left edge, bottom edge, width, height]` in pixels. It can then be saved for later use. The path to this file is defined in the [configuration file](configuration.qmd#optinal-plotting-settings. 
 
 For example:
 
@@ -62,7 +62,7 @@ positions{2} = [1920, 260, 550, 300];
 % etc for up to 9 figures
 
 % save it for later use
-save('C:\Users\User.Name\Documents\gliders\figPositions.mat', positions);
+save('C:\Users\User.Name\Documents\gliders\figPositions.mat', 'positions');
 
 % load it if it already exists
 load('C:\Users\User.Name\Documents\gliders\figPositions.mat');
@@ -158,10 +158,10 @@ CONFIG.map.scaleMajor = [0:50:100];
 CONFIG.map.scaleMinor = [0:25:50];
 
 % plot with bathymetry - use file specified in CONFIG or if that does not exist, prompt to select
-mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile');
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile);
 
 % plot without bathymetry
-plotGliderPath_etopo(CONFIG, pp, 'targetsFile', targetsFile, 'bathy', 0);
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile, 'bathy', 0);
 ```
 
 ![Example piloting map with planned track and waypoints in black, realized track in red with surface positions in yellow, and depth averaged currents as blue vector arrows. The current target waypoint is circled in green. ](images/examplePlots/sg639_map.png){#map fig-align='center' width=80%}

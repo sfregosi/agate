@@ -429,7 +429,7 @@ for d = loopNums
 	pp.minVolt_10(d) = sVal;
 
 	% By Devices *****EXPERIMENTAL******
-	if CONFIG.sgVer == 66.12
+	if CONFIG.sgVer == 66.12 || CONFIG.sgVer == 66.14
 		% order of devices = pitch, roll, VBD apogee, VBD surf, VBD valve
 		idx = strfind(x, '$DEVICE_SECS');
 		idxComma = regexp(x(idx:end), '\,');
@@ -455,7 +455,7 @@ for d = loopNums
 		vkJ3 = calckJ(vSec3, vMamps3, V);
 		pp.vkJ(d,1) = vkJ1 + vkJ2 + vkJ3;
 
-	elseif CONFIG.sgVer == 67.00
+	elseif CONFIG.sgVer == 67.00 || CONFIG.sgVer == 67.01
 		% order of devices = VBD, pitch, roll
 		idx = strfind(x, '$DEVICE_SECS');
 		idxComma = regexp(x(idx:end), '\,');
