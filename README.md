@@ -1,6 +1,8 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<img src="docs/images/agate_logo_thick_orange.svg" style="width:20.0%" data-fig-align="center" />
+<p align="center">
+   <img src="docs/images/agate_logo_thick_orange.svg" width="160">
+</p>
 
 # Acoustic Glider Analysis Tools and Environment
 
