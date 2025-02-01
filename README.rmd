@@ -16,7 +16,9 @@ knitr::opts_chunk$set(
 ```
 
 
-![](docs/images/agate_logo_thick_orange.svg){width=20% fig-align="center"}
+<p align="center">
+   <img src="docs/images/agate_logo_thick_orange.svg" width="160">
+</p>
 
 # Acoustic Glider Analysis Tools and Environment
 
