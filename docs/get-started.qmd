@@ -63,7 +63,7 @@ The configuration file has settings for the glider and mission, paths to relevan
 
 Additional info on setting up configuration files can be found in the [Configuration file guide](https://sfregosi.github.io/agate/configuration.html).
 
-To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate/issues/new){target='_blank'}.
+To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate/issues/new).
 
 #### Basestation configuration file
 
@@ -71,7 +71,7 @@ The path and filename for a basestation configuration file is specified in the m
 
 This is a separate configuration file that typically does not change between missions and gliders, and contains potentially sensitive information for the SSH connection to a research group's basestation. *This file should be stored somewhere central and safe, preferably outside of the GitHub repository for security reasons.* 
 
-Additional info on setting up configuration files can be found in the [Configuration file guide](https://sfregosi.github.io/agate/configuration.html).
+Additional info on setting up configuration files can be found in the [Configuration file guide](configuration.qmd).
 
 <sub>[Back to top](#)</sub>
 

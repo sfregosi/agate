@@ -1,8 +1,10 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<img src="docs/images/agate_logo_thick_orange.svg" style="width:20.0%" data-fig-align="center" />
+
 # Acoustic Glider Analysis Tools and Environment
 
-<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/regular/calendar-check.svg" style="width:0.88em;height:1em"> *Last Update: 14 Aug 2024*
+<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/regular/calendar-check.svg" style="width:0.88em;height:1em"> *Last Update: 01 Feb 2025*
 
 A collection of MATLAB-based tools for piloting passive acoustic gliders, processing glider positional and environmental data, and analyzing glider-collected passive acoustic data, particularly for surveys of marine mammals.
 
@@ -12,6 +14,8 @@ This code was either developed or most recently updated and tested with MATLAB v
 
 **Detailed documentation and information on dependencies can be found at [sfregosi.github.io/agate](https://sfregosi.github.io/agate)**
 *(the documentation is also under construction and I welcome any and all feedback!)*
+
+A small test data set of Seaglider data can be downloaded from Google Drive: <a href="https://drive.google.com/drive/u/1/folders/1YZqnzZEor6v1lGQPB4EQll3-U2lfSh8n" target="_blank">agate test data</a>. Request access via the Google Drive link or email me for access.
 
 ## Disclaimer
 
