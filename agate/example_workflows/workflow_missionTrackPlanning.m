@@ -90,7 +90,7 @@ savefig(fullfile(CONFIG.path.mission, [CONFIG.gmStr '_plannedTrack_' ...
 %% (3) Plot bathymetry profile of targets file
 
 % can specify bathymetry file and/or targets file
-bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec_MHI.tiff';
+bathyFile = 'C:\GIS\etopo\ETOPO2022_ice_15arcsec_OR_wide.tiff';
 targetsFile = fullfile(CONFIG.path.mission, 'targets_exampleTrack');
 
 plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, 'bathyFile', bathyFile);
