@@ -110,7 +110,13 @@ targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', 'manual', 'radius', 1000
 
 ### Plot planned track
 
-The `mapPlannedTrack` function will create a simple map of the planned track with labeled waypoints. This function requires map extent (lat/lon limits) to be defined in the configuration file. Optionally, a north arrow and scale bar location can be defined in the configuration file. For more help setting those parameters, see the [Map Help](map-help.qmd) page. Bathymetry is optional and is toggled on or off with the `bathyOn` argument. This is useful for plotting a single track. If you want to plot multiple tracks in a single figure, use `createBaseMap` and add the tracks manually. See more on this on the [Map Help](map-help.qmd) page.
+The `mapPlannedTrack` function will create a simple map of the planned track with labeled waypoints. This function requires map extent (lat/lon limits) to be defined in the configuration file. Optionally, a north arrow and scale bar location can be defined in the configuration file. For more help setting those parameters, see the [Map Help](map-help.qmd) page. 
+
+NOTE: This function sets the arguments using *name-value* pairs because most of them are optional. So each is defined by the name of the argument in single quotes (e.g., `'bathy'`) followed by a comma and then the value for the argument (e.g., `'C:\bathyFile.tiff'`). Use `doc mapPlannedTrack` to see all possible arguments.
+
+A bathymetric basemap is optional and is toggled on or off with the `bathy` argument. Bathymetry will be plotted if `bathy` is set to 1 or to a fullfile path to a bathymetry `.tiff` file. The specified file must cover the area of the track. If set to 1 it will first look for a file specified in the configuration file (`CONFIG.map.bathyFile`) otherwise it will prompt to select a file. See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
+
+This function is useful for plotting a single track. If you want to plot multiple tracks in a single figure, use `createBaseMap` and add the tracks manually. See more on this on the [Map Help](map-help.qmd) page.
 
 ```default
 % set up map configuration
@@ -138,7 +144,7 @@ savefig(fullfile(CONFIG.path.mission, [CONFIG.gmStr '_plannedTrack_' ...
     targetsName, '.fig']))
 ```
 
-![Example of a planned track map with each waypoint labeled.](images/examplePlots/sg639_MHI_Apr2023_plannedTrack.png){#fig-planned-map fig-align='center' width=60%}
+![Example of a planned track map with each waypoint labeled.](images/examplePlots/sg639_testData_Sep2024_plannedTrack_targets_A_Nearshore_2024-09-14.png){#fig-planned-map fig-align='center' width=60%}
 
 <sub>[Back to top](#)</sub>
 
@@ -170,7 +176,7 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
     '_targetsBathymetryProfile_' targetsName, '.png']), 'Resolution', 300)
 ```
 
-![Bathymetry profile for set targets file which shows the seafloor depth at each target and in the straight line between each target. The 990 m depth limit is marked with a dashed line.](images/examplePlots/sg639_MHI_Apr2023_targetsBathymetryProfile_targets.png){#fig-track-bathy fig-align='center' width=80%}
+![Bathymetry profile for set targets file which shows the seafloor depth at each target and in the straight line between each target. The 990 m depth limit is marked with a dashed line.](images/examplePlots/sg639_testData_Sep2024_targetsBathymetryProfile_targets_A_Nearshore_2024-09-14.png){#fig-track-bathy fig-align='center' width=80%}
 
 ### Summarize planned track 
 
