@@ -274,15 +274,15 @@ save(fullfile(CONFIG.path.mission, 'profiles', ...
 
 ### Generate mission summaries
 
-The code in this section follows along with the [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m).
+The code in this section follows along with the [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m). It is expecting the data inputs/outputs to follow the folder structure described in the [Set up folder structure](get-started.html#set-up-folder-structure) section of the Get Started page. 
 
 This workflow does not actually require __*agate*__ but the example code could be modified to use a mission configuration file/__*agate*__ to set the mission/profiles path. Each loop through a mission would just need to load that mission's configuration file before populating the table. Alternatively, the paths can just be set manually:
 
 ```matlab
 % path to location where each glider's mission folder lives e.g., if 
 % gpsSurfT is in C:\Users\User.Name\Desktop\sgXXX_Mon20XX\profiles, use:
-% (loop assumes gpsSurfT is within a profiles folder in a mission folder)
 path_missions = fullfile('C:\Users\User.Name\Desktop\');
+% (loop assumes gpsSurfT is within a profiles folder in a mission folder)
 
 % path to save .csvs
 path_out = fullfile('C:\Users\User.Name\Desktop\', 'project_outputs');

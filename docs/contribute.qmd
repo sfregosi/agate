@@ -10,13 +10,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-We welcome contributions from the passive acoustic glider community! If you would like to contribute to this repository, you can do so in a few ways: 
+We welcome contributions from the passive acoustic glider community! Help us make this more useful for all. If you would like to contribute to this repository, you can do so in a few ways: 
 
 ### If you find a bug...
 
 Please [report an issue on GitHub](https://github.com/sfregosi/agate/issues/new){target='_blank'}. Please use the *Bug report* template. 
 
-### If you'd like to request a feature or suggest an enhancement...
+### If you'd like to request a feature or suggest an enhancement (to code or documentation)...
 
 Please [report an issue on GitHub](https://github.com/sfregosi/agate/issues/new){target='_blank'}. There is a *Feature request* template just for this purpose. 
 
@@ -50,23 +50,23 @@ function output = newFunction(input)
 %
 %   Description:
 %       Detailed description here, please
+%
 %   Inputs:
 %       input   describe, please
 %
-%	Outputs:
+%	   Outputs:
 %       output  describe, please
 %
-%   Examples:
+%    Examples:
 %
-%   See also
+%    See also
 %
-%   Authors:
+%    Authors:
 %       F. Last <first.last@email.com> <https://github.com/username>
 %
-%   FirstVersion:   05 August 2024
-%   Updated:
+%	   Updated:      01 February 2025
 %
-%   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
+%    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ```
 
@@ -89,8 +89,7 @@ Paste the below code into the top of the new script and fill in the detail as ne
 %	Authors:
 %       F. Last <first.last@email.com> <https://github.com/username>
 %
-%	FirstVersion: 	05 August 2024
-%	Updated:
+%	Updated:      01 February 2025
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

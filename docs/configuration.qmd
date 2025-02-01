@@ -32,7 +32,7 @@ The top section `% %%%% REQUIRED CONFIG PARAMETERS %%%%%%%%%%%` is required to i
 ```matlab
 CONFIG.glider = 'sgXXX'; % glider serial number
 CONFIG.mission = 'Location_Mon20XX'; % mission identifier defined in sg_calib_constants.m 
-CONFIG.sgVer = XX.XX; % 66.12 or 67.0, firmware version displayed on glider start up
+CONFIG.sgVer = XX.XX; % 66.12, 66.14, 67.00 or 67.1, firmware version displayed on glider start up
 CONFIG.tmd = XX; % target mission duration in days
 
 % define paths
