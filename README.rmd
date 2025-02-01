@@ -2,7 +2,7 @@
 output:
   md_document:
     pandoc_args: ["--wrap=preserve"]
-    variant: markdown_github
+    variant: gfm
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -14,6 +14,11 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
+
+<p align="center">
+   <img src="docs/images/agate_logo_thick_orange.svg" width="160">
+</p>
 
 # Acoustic Glider Analysis Tools and Environment
 
@@ -27,6 +32,8 @@ This code was either developed or most recently updated and tested with MATLAB v
 
 **Detailed documentation and information on dependencies can be found at [sfregosi.github.io/agate](https://sfregosi.github.io/agate)**
 *(the documentation is also under construction and I welcome any and all feedback!)*
+
+A small test data set of Seaglider data can be downloaded from Google Drive: [agate test data](https://drive.google.com/drive/u/1/folders/1YZqnzZEor6v1lGQPB4EQll3-U2lfSh8n){target="_blank"}. Request access via the Google Drive link or email me for access. 
 
 
 ## Disclaimer
