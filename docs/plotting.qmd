@@ -1,0 +1,186 @@
+---
+title: "Plotting"
+subtitle: 'Overview of all plotting functions'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
+
+This page provides example calls and outputs for each of the plotting functions contained within __*agate*__. There are plotting functions that may be useful during mission planning, active piloting, and in post-processing and analysis, and the plots are grouped by those categories below.
+
+Basic details for each plotting function are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc <function>` or `help <function>` within the MATLAB Command Window.
+
+## Initialization
+
+To run any of the __*agate*__ plotting functions, the toolbox must be initialized with a configuration file. 
+
+No configuration file yet? Go back to [Get started - Create configuration files](get-started.html#create-configuration-files). At a minimum, the configuration file must include the top *required* portion, as well as the *optional - plotting* section.
+
+```matlab
+% ensure agate is on the path
+
+% initialize with specified configuration file, 'agate_config.cnf'
+CONFIG = agate(agate_config.cnf);
+
+% initialize with prompt to select configuration file
+CONFIG = agate;
+```
+
+Most of the plotting functions rely on a `pp` (piloting parameters) variable that is a large table with various outputs from the `.nc` and `.log` files compiled in one place. If this has already be created, it can be loaded directly. If not, use `extractPilotingParams` to build it. See the [Post-mission Processing page](mission-processing.qmd) for more detail. 
+
+```matlab
+% load existing pp table
+load(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glider '.mat']))
+
+% OR 
+
+% create new pp table
+pp = extractPilotingParams(CONFIG, fullfile(CONFIG.path.mission, 'basestationFiles'), fullfile(CONFIG.path.mission, 'flightStatus'), 0);
+% zero as last argument creates it from scratch (does not load any previous tables)
+save(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glider '.mat']), 'pp');
+
+```
+
+<sub>[Back to top](#)</sub>
+
+## Piloting plots
+
+The below section of plots is useful during active piloting. 
+
+To configure default positions for each of these plots, create a cell array with 4-element locations for each plot. They defined `[left edge, bottom edge, width, height]` in pixels. It can then be saved for later use. The path to this file is defined in the [configuration file](configuration.qmd#optinal-plotting-settings. 
+
+For example:
+
+```matlab
+positions{1} = [800, 240, 1000, 700]; 
+positions{2} = [1920, 260, 550, 300];
+% etc for up to 9 figures
+
+% save it for later use
+save('C:\Users\User.Name\Documents\gliders\figPositions.mat', 'positions');
+
+% load it if it already exists
+load('C:\Users\User.Name\Documents\gliders\figPositions.mat');
+
+```
+
+
+### Humidity and pressure
+
+```matlab
+plotHumidityPressure(CONFIG, pp)
+```
+
+![Example humidity and pressure plot.](images/examplePlots/sg639_humidityPressure.png){#humid-press fig-align='center' width=50%}
+
+### Minimum voltage
+
+Rev B gliders (*e.g.*, SG639 - left side) will have two lines - one each for the '24V' and '10V' batteries (even if both are 15V), while Rev E gliders (*e.g.*, SG679 - right side) will also have two lines, but the `10V` line will primarily remain at 15V and only the `24V` line will decrease over the mission. 
+
+```matlab
+plotMinVolt(CONFIG, pp)
+```
+
+::: {#min-volt layout-ncol=2}
+![Minimum voltage plot for SG639 (Rev B glider).](images/examplePlots/sg639_minimumVoltage.png){#min-volt-639}
+
+![Minimum voltage plot for SG679 (Rev E glider).](images/examplePlots/sg679_minimumVoltage.png){#min-volt-679}
+:::
+
+### Battery remaining and PAM free space
+
+If the glider is using a PMAR acoustic system, the free space remaining on each SD card will plot with the remaining battery capacity. 
+
+The 30% battery line and 35 GB PMAR line are hard coded into the plot, but could be modified within the function. The 'target mission duration' line is defined by `CONFIG.tmd`, as set in the configuration file. 
+
+```matlab
+% look up total available amp hours ($AH0_24V parameter; e.g., 310 for 15V system)
+AH0_24V = 310; 
+plotBattUseFreeSpace(CONFIG, pp, AH0_24V)
+```
+
+![Remaining battery and PAM storage space for SG639 with PMARXL installed and operating.Note glider battery was not full at start of mission so remaining battery starts at just over 60%.](images/examplePlots/sg639_battUseFreeSpace.png){#batt-free-639 fig-align='center' width=50%}
+
+### Voltage use by device
+If the glider is using a PMAR or WISPR acoustic system, power draw of the acoustic system will be included with measures of pitch, roll, and VBD (variable buoyancy device). 
+
+```matlab
+plotVoltagePackUse(CONFIG, pp)
+```
+
+::: {#use layout-ncol=2}
+![Energy use by device, reported for each dive for SG639 (Rev B glider).](images/examplePlots/sg639_usageByDevice.png){#use-639}
+
+![Energy use by device, reported for each dive for SG679 (Rev E glider).](images/examplePlots/sg679_usageByDevice.png){#use-679}
+:::
+
+### Voltage use by device, normalized by dive duration
+
+If the glider is using a PMAR or WISPR acoustic system, power draw of the acoustic system will be included with measures of pitch, roll, and VBD (variable buoyancy device).
+
+```matlab
+plotVoltagePackUse_norm(CONFIG, pp)
+```
+
+::: {#use-norm layout-ncol=2}
+
+![Energy use by device, normalized by dive duration for SG639 (Rev B glider).](images/examplePlots/sg639_usageByDevice_normalized.png){#use-norm-639}
+
+![Energy use by device, normalized by dive duration for SG679 (Rev E glider).](images/examplePlots/sg679_usageByDevice_normalized.png){#use-norm-679}
+
+:::
+
+### Map
+
+The map will include the waypoints and track from the [`targets` file](mission-planning.qmd#create-targets-file-from-kml) and will plot the surface positions of each dive (yellow dots), with red lines connecting surface positions, currents plotted as blue vector arrows, and the next target waypoint with a green circle.
+
+Map extent (latitude and longitude limits), the location of the north arrow, and the location and scale of the scale bar are all set within the [mission configuration file](configuration.html#optional-plotting-settings), with example values below. `CONFIG.latLim` and `CONFIG.map.lonLim` are required to make the map; the north arrow and scale bar are optional and if those settings do not exist in `CONFIG` they will not be included in the plot. 
+
+In this example, bathymetry is plotted, specified by `CONFIG.map.bathyFile`. That last argument can be left out to not plot bathymetry (which can be slow depending on the resolution of the selected bathymetry raster). If the last argument is set to `1`, a prompt will appear to select the correct bathymetry file. 
+
+High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
+
+```matlab
+targetsFile = fullfile(CONFIG.path.mission, 'targets');
+
+% map set up configurations - all should be specified in configuration file 
+CONFIG.map.latLim = [40.25 45.00];
+CONFIG.map.lonLim = [-129.50 -123.00];
+CONFIG.map.naLat = 44.4; 
+CONFIG.map.naLon = -129;
+CONFIG.map.scalePos = [-0.042 0.775]; 
+CONFIG.map.scaleMajor = [0:50:100];
+CONFIG.map.scaleMinor = [0:25:50];
+
+% plot with bathymetry - use file specified in CONFIG or if that does not exist, prompt to select
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile);
+
+% plot without bathymetry
+mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile, 'bathy', 0);
+```
+
+![Example piloting map with planned track and waypoints in black, realized track in red with surface positions in yellow, and depth averaged currents as blue vector arrows. The current target waypoint is circled in green. ](images/examplePlots/sg639_map.png){#map fig-align='center' width=80%}
+
+<sub>[Back to top](#)</sub>
+
+
+## Mission summary plots
+
+### Final trackline map
+
+### Dive profile
+
+### Sound speed profile
+
+## Analysis plots
+
+### Cetacean event maps
+
+
+
+

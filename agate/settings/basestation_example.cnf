@@ -4,7 +4,7 @@
 % Guide for creating configuration files:  
 %    https://sfregosi.github.io/agate-public/configuration.html
 
-CONFIG.bs.host = 'url.com'; # e.g., 'seaglider.pub'
+CONFIG.bs.host = 'url.com'; % e.g., 'seaglider.pub'
 CONFIG.bs.username = 'pilot';
 
 % For authentication to log in to the server and transfer files, you can

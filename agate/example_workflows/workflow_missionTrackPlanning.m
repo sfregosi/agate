@@ -24,83 +24,86 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	05 April 2023
-%	Updated:        19 September 2024
+%	Updated:      1 February 2025
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% make sure agate is on the path!
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 
 % initialize agate - either specify a .cnf or leave blank to browse/select
 CONFIG = agate('agate_mission_config.cnf');
 
 %% (1) Generate targets file from Google Earth path saved as .kmml
+% this function uses name-value pairs for optional arguments. If an argument is 
+% not specified, the default will be used
+% CONFIG and kmlFile are not optional, but kmlFile may be set to empty [] to 
+% trigger a prompt to select the .kml file 
+% Set the waypoint naming via the 'method' argument. The alphanumeric method 
+% starting with 'WP' is the default
+% Set the raidus via the 'radius' argument. Default is 2000. 
 
-% specify file name to .kml path
+% specify file name to .kml track
 kmlFile = fullfile(CONFIG.path.mission, 'exampleTrack.kml');
-% OR
-% leave empty and will prompt to select .kml path
-kmlFile = []; 
 
-% specify radius
-radius = 2000;
+% use 1 of 3 options to name waypoints
 
-% create targets file, 3 options to name waypoints
 % (1) alphanumeric/prefix-based automated naming
-alphaNum = 'WP'; % Any two letters make easy to reference and read options
-targetsOut = makeTargetsFile(CONFIG, kmlFile, alphaNum, radius);
+alphaNum = 'WPT'; % Any few letters make easy-to-reference and -read options
+targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', alphaNum, 'radius', 1000);
+
 % OR
-% (2) use a text file with list of waypoint names; will prompt to select .txt
-targetsOut = makeTargetsFile(CONFIG, kmlFile, 'file', radius);
+% (2) use a text file with list of waypoint names; will prompt to select .txt file
+targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', 'file', 'radius', 1000);
+
 % OR
 % (3) manually enter in command window when prompted
-targetsOut = makeTargetsFile(CONFIG, kmlFile, 'manual', radius);
+targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', 'manual', 'radius', 1000);
 
 %% (2) Plot and print/save proposed track map
 
 % set up map configuration
 bathyOn = 1;
-figNum = 26;
 
 % use targetsOut file from above as input targets file
 targetsFile = targetsOut;
 
-% create plot - single track only
-mapPlannedTrack(CONFIG, targetsFile, 'bathy', bathyOn, ...
-	'trackName', CONFIG.glider, 'figNum', figNum)
-% uses default color (orange). Change with 'col_track' argument
+% create plot
+targetsName = mapPlannedTrack(CONFIG, targetsFile, 'trackName', CONFIG.glider, ...
+   'bathy', bathyOn, 'col_track', 'red');
+% this function uses name-value pairs for optional arguments. 
+% CONFIG and targetsFile are not optional, but targetsFile may be set to 
+% empty [] to trigger a prompt to select the targets file
 
-% get file name only for plot saving
-[~, targetsName, ~] = fileparts(targetsFile);
+% the title will default to CONFIG.glider CONFIG.mission: targetsName
+% This can be very long. To change to whatever you want:
+title('Example Planned Track');
 
 % save as .png
-exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
-	CONFIG.mission, '_plannedTrack_' targetsName, '.png']), ...
-    'Resolution', 300)
+exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
+    '_plannedTrack_' targetsName, '.png']), 'Resolution', 300)
 % as .fig
-savefig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
-    '_plannedTrack_' targetsName, '.fig']))
-
-% save as .pdf or .eps - requires the export_fig toolbox available at
-%  https://github.com/altmany/export_fig
-export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
-    '_plannedTrack_' targetsName, '.eps']), '-eps', '-painters');
-export_fig(fullfile(CONFIG.path.mission, [CONFIG.glider '_' CONFIG.mission, ...
-    '_plannedTrack_' targetsName, '.pdf']), '-pdf', '-painters');
+savefig(fullfile(CONFIG.path.mission, [CONFIG.gmStr '_plannedTrack_' ...
+    targetsName, '.fig']))
 
 %% (3) Plot bathymetry profile of targets file
 
-% can specify bathymetry file
-bathyFile = 'C:\GIS\etopo\ETOPO2022_bedrock_30arcsec.tiff';
-plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, ...
-	'bathyFile', bathyFile)
-% OR leave that argument out to default to CONFIG.map.bathyFile if
+% can specify bathymetry file and/or targets file
+bathyFile = 'C:\GIS\etopo\ETOPO2022_ice_15arcsec_OR_wide.tiff';
+targetsFile = fullfile(CONFIG.path.mission, 'targets_exampleTrack');
+
+plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile, 'bathyFile', bathyFile);
+
+% OR
+
+% leave that argument out to default to CONFIG.map.bathyFile if
 % available or prompt if not available
 plotTrackBathyProfile(CONFIG, 'targetsFile', targetsFile)
 
 % save as .png
-exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.glider '_' ...
-	CONFIG.mission, '_targetsBathymetryProfile_' targetsName, '.png']), ...
-    'Resolution', 300)
+exportgraphics(gcf, fullfile(CONFIG.path.mission, [CONFIG.gmStr ...
+    '_targetsBathymetryProfile_' targetsName, '.png']), 'Resolution', 300)
 
 %% (4) Export interpolated track points
 

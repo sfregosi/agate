@@ -100,7 +100,7 @@ for f = 1:length(files)
 		gpsSurfT.avg_speed_e_gsm(f)	= ncread(fname,'flight_avg_speed_east_gsm');
 		gpsSurfT.hdm_qc(f)			= str2double(ncread(fname,'hdm_qc'));
 	catch
-				fprintf(1, 'Problem loading %s. Skipped.\n', [fname_name fname_ext])
+		fprintf(1, 'Problem loading %s. Skipped.\n', [fname_name fname_ext])
 	end
 end
 

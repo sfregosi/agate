@@ -7,39 +7,49 @@ function plotMinVolt(CONFIG, pp)
 %   Description:
 %       Plot of minimum battery voltage(s) reported on each dive, over
 %       time.
-%       
+%
 %       For Rev B gliders, both 10V and 24V battery voltage is
 %       plotted, even if it's a 2-15V glider.
-%       
+%
 %       For Rev E gliders, a single voltage is reported and plotted
 %
 %   Inputs:
-%       CONFIG   Mission/agate global configuration variable
-%       pp       Piloting parameters table created with
-%                extractPilotingParams.m
+%       CONFIG  agate mission configuration file with relevant mission and
+%               glider information. Minimum CONFIG fields are 'glider'.
+%               Optionally, the CONFIG.plots section can be set to specify
+%               a figure number and set figure position
+%       pp      Piloting parameters table created with extractPilotingParams
 %
 %   Outputs:
 %       no output, creates figure
 %
 %	Examples:
+%       plotMinVolt(CONFIG, pp)
 %
 %	See also EXTRACTPILOTINGPARAMS
 %
 %	Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   23 April 2023
-%   Updated:        2 May 2023
-% 
+%   Updated:   16 January 2025
+%
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% set figNum
+figNum = []; % leave blank if not specified
+% or pull from config if it is
+if isfield(CONFIG, 'plots')
+    if isfield(CONFIG.plots, 'figNumList')
+        figNum = CONFIG.plots.figNumList(6);
+    end
+end
 
-figNum = CONFIG.plots.figNumList(6);
 % set position
 figPosition = [800   40    600    400];
 % overwrite if in config
-if isfield(CONFIG.plots, 'positions')
+if isfield(CONFIG, 'plots') && ...
+        isfield(CONFIG.plots, 'positions') && isfield(CONFIG.plots, 'figNumList')
     % is a position defined for this figure
     fnIdx = find(figNum == CONFIG.plots.figNumList);
     if length(CONFIG.plots.positions) >= fnIdx && ~isempty(CONFIG.plots.positions{fnIdx})
@@ -47,7 +57,26 @@ if isfield(CONFIG.plots, 'positions')
     end
 end
 
-figure(figNum); 
+% set basestation local path. if not specified, prompt to select
+if isfield(CONFIG, 'path') && isfield(CONFIG.path, 'bsLocal')
+    bsFolder = CONFIG.path.bsLocal;
+else
+    bsFolder = [];
+end
+if isempty(bsFolder) || ~exist(bsFolder, 'dir')
+		bsFolder = uigetdir(CONFIG.path.mission, ...
+			'Select basestationFiles folder.');
+		fprintf('basestationFiles folder selected: %s\n', path);
+end
+
+
+% create the figure
+if isempty(figNum)
+    figure;
+else
+    figure(figNum);
+end
+
 set(gcf, 'Name', 'Minimum Voltage');
 clf;
 timeDays = datenum(pp.diveEndTime) - datenum(pp.diveStartTime(1));
@@ -59,8 +88,8 @@ xlim([0 max(timeDays)+5]); xlabel('days in mission');
 
 co = colororder;
 % pull specified voltage lims from most recent dive
-logFileList = dir(fullfile(CONFIG.path.bsLocal, ['p' CONFIG.glider(3:end) '*.log']));
-x = fileread(fullfile(CONFIG.path.bsLocal, logFileList(end).name));
+logFileList = dir(fullfile(bsFolder, ['p' CONFIG.glider(3:end) '*.log']));
+x = fileread(fullfile(bsFolder, logFileList(end).name));
 
 idx = strfind(x, '$MINV_24V');
 sl = length('$MINV_24V');

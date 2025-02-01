@@ -34,12 +34,11 @@ function pamFilePosits = extractPAMFilePosits(pamFiles, locCalcT, timeBuffer)
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
-%	FirstVersion: 	26 July 2018
-%	Updated:        11 July 2024
+%	Updated:        31 December 2024
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin < 3
-	timeBuffer = 180; % in seconds
+    timeBuffer = 180; % in seconds
 end
 
 % set up empty output table
@@ -54,20 +53,26 @@ noMatch.dateTime = NaT;
 
 % fileDate = datetime(fileName(1:end-4),'InputFormat','yyMMdd-HHmmss');
 for f = 1:height(pamFilePosits)
-	% find the closest positional data
-% 	[m,i] = min(abs(pamFilePosits.fileStart(f)-locCalcT.dateTime)); 
-	i = find(pamFilePosits.fileStart(f) <= locCalcT.dateTime, 1, 'first');
-    m = pamFilePosits.fileStart(f) - locCalcT.dateTime(i);
-	if m < seconds(timeBuffer) % within buffer specified by timeBuffer
-		pamFilePosits(f,3:width(locCalcT)+2) = locCalcT(i,:);
-	elseif m > seconds(timeBuffer) % outside buffer
-		fprintf(1, 'file %s closest time is > %i seconds\n', ...
-			pamFilePosits.fileStart(f), timeBuffer)
-		pamFilePosits(f, 3:width(locCalcT) + 2) = noMatch;
-	else % error??
-		fprintf(1, 'file %s error\n', pamFilePosits.fileStart(f))
-		pamFilePosits(f,3:width(locCalcT)+2) = noMatch;
-	end
+    % find the closest positional data after the file start
+    % 	[m,i] = min(abs(pamFilePosits.fileStart(f)-locCalcT.dateTime));
+    i = find(pamFilePosits.fileStart(f) <= locCalcT.dateTime, 1, 'first');
+    if ~isempty(i)
+        m = pamFilePosits.fileStart(f) - locCalcT.dateTime(i);
+        if abs(m) < seconds(timeBuffer) % within buffer specified by timeBuffer
+            pamFilePosits(f,3:width(locCalcT)+2) = locCalcT(i,:);
+        elseif abs(m) > seconds(timeBuffer) % outside buffer
+            fprintf(1, 'file %s closest time is > %i seconds\n', ...
+                pamFilePosits.fileStart(f), timeBuffer)
+            pamFilePosits(f, 3:width(locCalcT) + 2) = noMatch;
+        else % error??
+            fprintf(1, 'file %s error\n', pamFilePosits.fileStart(f))
+            pamFilePosits(f, 3:width(locCalcT) + 2) = noMatch;
+        end
+    else
+        fprintf(1, 'file %s starts after all possible glider times. \n', ...
+            pamFilePosits.fileStart(f))
+        pamFilePosits(f, 3:width(locCalcT) + 2) = noMatch;
+    end
 end
 
 % add locCalc column names and clean up a bit

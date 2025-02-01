@@ -130,7 +130,7 @@ end
 pamMinPerHour.pam(pamMinPerHour.pam == 0) = nan; % if all zeros, make nan
 fprintf(1, '%s: %i partial hours with PAM on, total %.2f hours\n', ...
 	CONFIG.glider, sum(~isnan(pamMinPerHour.pam)), ...
-	sum(pamMinPerHour.pam, 'omitnan')/60);
+	hours(sum(pamFiles.dur, 'omitnan')));
 
 % by Day
 %   Minutes per day

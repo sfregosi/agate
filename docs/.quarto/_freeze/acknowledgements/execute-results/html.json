@@ -1,7 +1,8 @@
 {
-  "hash": "77149cfd4eba5dab39d6cf9d28fe5eda",
+  "hash": "fbd10f5a560c8b5b46dcc0d80342c32b",
   "result": {
-    "markdown": "---\ntitle: \"Acknowledgements\"\npage-layout: full\n---\n\n\n\n\nDevelopment of this toolbox was funded by:\n\n**Initial development** - National Defense Science and Engineering Graduate (NDSEG) Fellowship to S. Fregosi's PhD, Oregon State University\n\n**Further development** - NOAA's Uncrewed Systems Research Transition Office Grant awarded to Pacific Islands Fisheries Science Center and Oregon State University\n\n![Testing and ballasting of SG639 in a saltwater tank before deployment](images/sg639-in-tank-hawaii_2023-04-10.JPG){#fig-tank-test width=50%}\n",
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Acknowledgements\"\npage-layout: full\n---\n\n\n\n\n\nDevelopment of this toolbox was funded by:\n\n**Initial development** - National Defense Science and Engineering Graduate (NDSEG) Fellowship to S. Fregosi's PhD, Oregon State University\n\n**Further development** - NOAA's Uncrewed Systems Research Transition Office Grant awarded to Pacific Islands Fisheries Science Center and Oregon State University\n\n![Testing and ballasting of SG639 in a saltwater tank before deployment](images/sg639-in-tank-hawaii_2023-04-10.JPG){#fig-tank-test width=50%}\n",
     "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"
