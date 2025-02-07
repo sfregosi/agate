@@ -5,13 +5,14 @@ function convertWispr(CONFIG, varargin)
 %       CONVERTWISPR(CONFIG)
 %
 %   Description:
-%       Given one or more directories, each full of subdirectories with
-%       .dat soundfiles recorded by the WISPR acoustic recording system on
-%       a Seaglider(tm), convert the .dat soundfiles to FLAC (.flac) or WAV
-%       (.wav) files. Default is FLAC.
+%       Converts .dat soundfiles recorded by the WISPR acoustic recording
+%       system on a Seaglider to FLAC (.flac) or WAV (.wav) files (default
+%       is .flac). This operates on a directory, full of subdirectories
+%       where each subdirectory is named with the date using the format
+%       'YYMMDD', (e.g., 230504 for 4 May 2023).
 %
-%       Also create a fileheaders.txt file in each of these directories
-%       with a copy of the header portion of each .dat file, which is text.
+%       Also creates a fileheaders.txt file in the output directory with a
+%       copy of the header portion of each .dat file, which is text.
 %       A log file (text file) is generated to document each conversion and
 %       identify any files with errors/issues.
 %
@@ -25,7 +26,12 @@ function convertWispr(CONFIG, varargin)
 %
 %   Inputs:
 %       CONFIG        [struct] mission/agate configuration variable.
-%                     Required fields: CONFIG.ws.inDir, CONFIG.ws.outDir
+%                     Suggested fields: CONFIG.ws.inDir, CONFIG.ws.outDir
+%                     CONFIG.ws.inDir must be a directory with
+%                     subdirectories where each subdirectory is named with
+%                     the date using the format 'YYMMDD' (e.g., 230504 for
+%                     4 May 2023) and each subdirectory contains all sound
+%                     files for that day.
 %
 %       all varargins are specified using name-value pairs
 %                 e.g., 'showProgress', true
@@ -50,7 +56,7 @@ function convertWispr(CONFIG, varargin)
 %       Dave Mellinger Oregon State University
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:        13 December 2024
+%   Updated:      06 February 2025
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,6 +70,8 @@ showProgress = true;        % true or false
 restartDir = '';            % string for restart subdirectory
 inExt = '.dat';             % input extension
 outExt = '.flac';           % output extension
+inDir = [];                 % input directory
+outDir = [];                % output directory
 
 % parse arguments
 vIdx = 1;
@@ -98,11 +106,19 @@ end
 %  'E:\sg679_MHI_May2023\raw_acoustic_data\descent\' ...
 %  'E:\sg679_MHI_May2023\raw_acoustic_data\ascent\'
 %  };
-if isfield(CONFIG.ws, 'inDir') && ~isempty(CONFIG.ws.inDir) && isfolder(CONFIG.ws.inDir)
-    inDir = CONFIG.ws.inDir;
-else
-    inDir = uigetdir(CONFIG.path.mission, 'Select raw data folder');
+if isfield(CONFIG, 'ws')
+    if isfield(CONFIG.ws, 'inDir') && ~isempty(CONFIG.ws.inDir) && isfolder(CONFIG.ws.inDir)
+        inDir = CONFIG.ws.inDir;
+    end
 end
+if isempty(inDir)
+    if isfield(CONFIG.path, 'mission')
+        inDir = uigetdir(CONFIG.path.mission, 'Select raw data folder');
+    else
+        inDir = uigetdir('C:\', 'Select raw data folder');
+    end
+end
+
 
 % outDir specifies the directory to put the .wav files in. It can be a
 % string (one output directory name) or a cell array of strings
@@ -121,10 +137,17 @@ end
 %  'G:\sg679_MHI_May2023\wav\'
 %  };
 % check/select out directory
-if isfield(CONFIG.ws, 'outDir') && ~isempty(CONFIG.ws.outDir) && isfolder(CONFIG.ws.outDir)
-    outDir = CONFIG.ws.outDir;
-else
-    outDir = uigetdir(CONFIG.path.mission, 'Select output folder');
+if isfield(CONFIG, 'ws')
+    if isfield(CONFIG.ws, 'outDir') && ~isempty(CONFIG.ws.outDir) && isfolder(CONFIG.ws.outDir)
+        outDir = CONFIG.ws.outDir;
+    end
+end
+if isempty(outDir)
+    if isfield(CONFIG.path, 'mission')
+        outDir = uigetdir(CONFIG.path.mission, 'Select output folder');
+    else
+        outDir = uigetdir('C:\', 'Select output folder');
+    end
 end
 
 % check that inDir and outDir are formatted properly (if multiples)
@@ -173,7 +196,7 @@ for di = 1 : length(inDir) % inDir is a cell array
     % fprintf(1, 'Destination:  %s\n', outDir{:});
     fprintf(1, 'Source: %s\nDestination: %s\n\n', inDir{di}, outDir{:});
     fprintf(logFp(dk), 'Source: %s\nDestination: %s\n', inDir{di}, outDir{:});
-    fprintf(logFp(dk), 'Start time: %s\n\n', datestr(now, 0));
+    fprintf(logFp(dk), 'Start time: %s\n\n', datestr(now, 0)); %#ok<TNOW1,DATST>
 
     % Get all possible .dat files and directories
     datFiles_all = dir(fullfile(inDir{di}, '**\*.dat')); % recurse through subdirs
@@ -285,7 +308,7 @@ end
 fprintf(1, '%i files were skipped. Check log for more information\n', skippedCount);
 % finalize the log
 fprintf(logFp(dk), '\n%i files were skipped\n', skippedCount);
-fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0));
+fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0)); %#ok<TNOW1,DATST>
 
 % close header and log files
 fclose(hdrFp);

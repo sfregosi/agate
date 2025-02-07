@@ -35,7 +35,7 @@ warning off % this is turned off for plotting messages
 
 CONFIG = struct;
 
-CONFIG.ver = '1.0.20250201   https://github.com/sfregosi/agate';
+CONFIG.ver = '1.0.20250206   https://github.com/sfregosi/agate';
 fprintf('      agate   version %s\n', CONFIG.ver)
 
 if nargin < 1
@@ -88,8 +88,7 @@ function CONFIG = checkPath(CONFIG)
 %       created by S. Wiggins and available at
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
-%   FirstVersion:   06 April 2023
-%   Updated:        06 August 2024
+%   Updated:      06 February 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,10 +100,6 @@ addpath(CONFIG.path.agate); % no subdirs
 % make sure utils is on path
 CONFIG.path.utils = fullfile(CONFIG.path.agate, 'utils');
 addpath(genpath(CONFIG.path.utils)); % with subdirs
-
-% make sure convertAcoustics is on path
-CONFIG.path.convertAcoustics = fullfile(CONFIG.path.agate, 'convertAcoustics');
-addpath(genpath(CONFIG.path.convertAcoustics)); % with subdirs
 
 % check/create settings folder
 CONFIG.path.settings = fullfile(CONFIG.path.agate,'settings');
