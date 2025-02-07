@@ -26,8 +26,7 @@ function CONFIG = setCONFIG(CONFIG)
 %       created by S. Wiggins and available at
 %           https://github.com/MarineBioAcousticsRC/Triton/
 %
-%   FirstVersion: 	06 April 2023
-%   Updated:        07 August 2024
+%   Updated:      06 February 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,7 +56,9 @@ else
 end
 % CONFIG.path.cnfFid = fopen(CONFIG.missionCnf, 'r');
 CONFIG = parseCnf(CONFIG.missionCnf, CONFIG);
-CONFIG.gmStr = [CONFIG.glider '_' CONFIG.mission];
+if isfield(CONFIG, 'glider') && isfield(CONFIG, 'mission')
+    CONFIG.gmStr = [CONFIG.glider '_' CONFIG.mission];
+end
 
 % if basestation 'bs' configurations exist
 if isfield(CONFIG, 'bs')
@@ -95,7 +96,7 @@ end
 al = textscan(fid,'%s','delimiter','\n');
 nl = length(al{1});
 if nl < 1
-	fprintf(1, 'Error: no data in configuration file\n')
+	fprintf(1, 'Warning: no data in configuration file. Only default paths set.\n')
 else
 	frewind(fid);
 	for i = 1:nl
