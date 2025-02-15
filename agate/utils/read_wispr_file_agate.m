@@ -117,7 +117,7 @@ elseif(sample_size == 3)
     q = adc_vref/8388608.0;  % 24 bit scaling to volts
     fmt = 'bit24';
 elseif(sample_size == 4)
-    q = 1.0;
+    q = adc_vref/2147483648.0;  % 32 bit scaling to volts
     fmt = 'int32';
 end
 
