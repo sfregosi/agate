@@ -1,0 +1,39 @@
+% %%%% agate - mission configuration file %%%
+% create a new file for each glider and mission
+% Guide for creating configuration files:  
+%    https://sfregosi.github.io/agate-public/configuration.html
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%     HEFRING EXAMPLE                  %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%% REQUIRED CONFIG PARAMETERS %%%%%%%%%%%
+% define glider and mission information
+%CONFIG.glider = 'sgXXX';  % glider serial number
+CONFIG.glider = 'os1024'; 
+%CONFIG.mission = 'techtank_20250318'; % mission identifier defined in sg_calib_constants.m 
+%CONFIG.sgVer = XX.XX; % 66.12 or 67.0, firmware version displayed on glider start up
+%CONFIG.tmd = XX; % target mission duration in days
+
+% define paths
+% mission path - path to umbrella folder that either contains previously 
+%                downloaded basestation and output files or will contain 
+%                downloaded and processed/produced files and figures
+%CONFIG.path.mission = 'C:\Users\User.Name\Desktop\sgXXX_Location_Mon20XX\';
+% analysis path - optional path to an 'analysis' folder that would typically
+%                 contain the outputs of acoustic analyses (e.g., Pamguard
+%                 or Triton)
+%CONFIG.path.analysis = 'C:\Users\User.Name\project\analysis';
+
+
+% %%%% OPTIONAL - acoustics %%%%%%%%%%%%%%%%%
+% WISPR settings
+% only needed after mission is complete (no piloting functionality for WISPR)
+%CONFIG.ws.loggers = 0; % 1 for active, 0 for inactive
+CONFIG.ws.inDir = 'C:\Users\selene.fregosi\Desktop\hefring_training\Elrond_WISPR\WISPR_SD1';   % path to raw .dat files
+CONFIG.ws.outDir = 'C:\Users\selene.fregosi\Desktop\hefring_training\Elrond_WISPR\flac';   % path to save converted files
+CONFIG.ws.outExt = '.flac';   % determines output format
+%CONFIG.ws.fileLength = 60; % in seconds
+CONFIG.ws.dateFormat = 'yyMMdd_HHmmss'; % format of timestamp in filename
+CONFIG.ws.dateStart = 7; % character of filename where date starts
+% example file name: WISPR_230504_202206.flac
