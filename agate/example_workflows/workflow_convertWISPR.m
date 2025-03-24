@@ -14,6 +14,11 @@
 %       respectively. But, if it does not, the function will prompt to
 %       select the correct folder.  
 %
+%       Currently, the input directory must either be a directory named
+%       with the date or a directory full of subdirectories where each
+%       subdirectory is named with the date using the format 'YYMMDD',
+%       (e.g., 230504 for 4 May 2023). 
+%
 %	Notes
 %
 %	See also

@@ -32,7 +32,9 @@ An __*agate*__ user does not need to download or clone these repositories for th
 
 See `workflow_convertWISPR.m` in the `example_workflows` folder for the basic lines needed to convert a directory (that can include subdirectories) of WISPR `.dat` files into either `.flac` or `.wav` files. 
 
-Like other example workflows, __*agate*__ must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)). For the task of converting WISPR files, this can be empty. But, optionally the `CONFIG.ws.inDir` and `CONFIG.ws.outDir` settings in the `OPTIONAL - acoustics` sections can be set to streamline processing and avoid manual selection of the input and output folders.
+Like other example workflows, __*agate*__ must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)). For the task of converting WISPR files, this can be empty (use [`agate_config_empty.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_empty.cnf)). But, optionally the `CONFIG.ws.inDir` and `CONFIG.ws.outDir` settings in the `OPTIONAL - acoustics` sections can be set to streamline processing and avoid manual selection of the input and output folders.
+
+Currently, the input directory must either be a directory named with the date or a directory full of subdirectories where each subdirectory is named with the date using the format 'YYMMDD', (e.g., 230504 for 4 May 2023). 
 
 ```{default}
 
@@ -40,8 +42,7 @@ Like other example workflows, __*agate*__ must first be initialized with a missi
 addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 
 % initialize agate
-% make sure configuration file now has updated WISPR Settings section
-% (not required during mission so may not be set yet)
+% use WISPR Settings section to set in and out paths
 CONFIG = agate('agate_mission_config.cnf');
 
 ```
