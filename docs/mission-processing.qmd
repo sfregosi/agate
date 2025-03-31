@@ -13,7 +13,8 @@ library(fontawesome)
 
 This page is meant to provide some examples of how to run the post-mission processing tools after a mission is complete. These include functions to extract glider surface and dead-reckoned positional data, environmental data, and acoustic recording status into simplified tables for further analysis and some simple summary tables and figures. 
 
-This page covers four example workflows found in the `agate\example_workflows` folder.
+This page covers four example workflows found in the `agate\example_workflows` folder:
+
 - [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m): Extracts glider surface and dead-reckoned sampling locations, environmental data and piloting/orientation data into tables for future analysis. Saves as `.mat` and `.csv`. Also creates NCEI-ready location and CTD data tables. [Jump to section](#process-positional-data)
 - [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m): Assesses acoustic effort in space and time adding a *pam* column to the location tables,  extracting location and depth for each sound file, and quanitfying effort at a few time scales. [Jump to section](#calculate-acoustic-effort)
 - [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m): Create a summary table with timing, distance, and acoustic effort for multiple gliders [Jump to section](#generate-mission-summaries) 

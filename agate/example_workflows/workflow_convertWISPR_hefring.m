@@ -1,5 +1,6 @@
-% WORKFLOW_CONVERTWISPR.M
+% WORKFLOW_CONVERTWISPR_HEFRING.M
 %	Workflow for converting raw WISPR data into .flac files
+%     **WORKING ON MODS FOR HEFRING OCEANSCOUT**
 %
 %	Description:
 %		This script provides the minimum steps to convert a directory (or
@@ -27,7 +28,7 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Updated:      06 February 2025
+%	Updated:      24 March 2025
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,7 +40,7 @@ addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 % this can be empty but setting CONFIG.ws.inDir and CONFIG.ws.outDir will
 % streamline processing so the directories do not need to be manually
 % selected
-CONFIG = agate('agate_mission_config.cnf');
+CONFIG = agate('agate_config_hefring.cnf');
 
 % process all the files!
 convertWispr(CONFIG, 'showProgress', true, 'outExt', '.flac');

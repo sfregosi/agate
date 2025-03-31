@@ -1,5 +1,5 @@
 function downloadBasestationFiles(CONFIG)
-%DOWNLOADBASESTATIONFILES  download basestation files locally via SFTP
+%DOWNLOADBASESTATIONFILES   download basestation files locally via SFTP
 %
 %   Syntax:
 %      DOWNLOADBASESTATIONFILES(CONFIG)
