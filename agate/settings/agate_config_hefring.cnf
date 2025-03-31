@@ -1,0 +1,18 @@
+% %%%% agate - mission configuration file %%%
+% create a new file for each glider and mission
+% Guide for creating configuration files:  
+%    https://sfregosi.github.io/agate-public/configuration.html
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%     HEFRING WISPR EXAMPLE            %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%% REQUIRED CONFIG PARAMETERS %%%%%%%%%%%
+% define glider and mission information
+CONFIG.glider = 'osXXXX';   % glider serial number
+
+
+% %%%% OPTIONAL - acoustics %%%%%%%%%%%%%%%%%
+% WISPR settings
+CONFIG.ws.inDir = 'C:\Users\User.Name\Desktop\hefring_mission\raw';   % path to raw .dat files
+CONFIG.ws.outDir = 'C:\Users\User.Name\Desktop\hefring_mission\flac';   % path to save converted files
