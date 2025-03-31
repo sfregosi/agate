@@ -1,6 +1,6 @@
 ---
 title: "Convert acoustic files"
-subtitle: 'Guide for converting raw acoustic .dat files to .wav'
+subtitle: 'Guide for converting raw acoustic .dat files'
 ---
 
 ```{r, include = FALSE}
@@ -11,10 +11,14 @@ knitr::opts_chunk$set(
 library(fontawesome)
 ```
 
-The Seaglider can be equipped with a variety of acoustic systems. Two - the PMARXL and WISPR systems - both record raw data as .dat files that need to be converted to `.wav` or `.flac` for analysis. __*agate*__ includes conversion utilities for both systems. Example workflows for each system are provided in the `agate\example_workflows` folder and detailed instructions are below.
+__*agate*__ includes utilities for converting raw acoustic files (`.dat`) recorded with either the PMARXL or WISPR acoustic systems into a more easily readable `.wav` or `.flac` format. Example workflows for each system are provided in the `agate\example_workflows` folder and detailed instructions are below.
 
-Following a mission in Spring 2023, a bug in the WISPR2 firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to 'fix' this gain in an attempt to standardize it across all files. In the name of posterity, that process is documented on the [WISPR gain fix](wispr-gain-fix.qmd) page. 
+::: {.callout-caution collapse="true"}
 
+## WISPR2 gain bug
+
+Following a Seaglider mission in Spring 2023, a bug in the WISPR2 firmware was discovered that led to variable gain over the duration of the deployment. We developed a systematic way to 'fix' this gain in an attempt to standardize it across all files. In the name of posterity, that process is documented on the [WISPR gain fix](wispr-gain-fix.qmd) page. 
+:::
 
 <sub>[Back to top](#)</sub>
 
@@ -22,22 +26,25 @@ Following a mission in Spring 2023, a bug in the WISPR2 firmware was discovered 
 
 #### Dependency references
 
-Embedded Ocean Systems, the WISPR developer, has MATLAB and Python tools to work with raw WISPR data. These tools can be found on GitHub - [wispr3](https://github.com/embeddedocean/wispr3). 
+Embedded Ocean Systems, the WISPR developer, has MATLAB and Python tools to work with raw WISPR data available on GitHub: [wispr3](https://github.com/embeddedocean/wispr3). An __*agate*__ user does not need to download or clone this repository but the link is provided here for reference.
 
-Some pieces of the MATLAB tools have been modified to better interface with __*agate*__. Those modified functions are included within __*agate*__ but more detailed info on the modifications can be found in a forked version: [sfregosi-noaa/wispr3 sf branch](https://github.com/sfregosi-noaa/wispr3/tree/sf). 
+Some functions from [wispr3](https://github.com/embeddedocean/wispr3) have been modified to better interface with __*agate*__; the modified functions are included within __*agate*__ and more detailed info on the modifications can be found in a forked version: [sfregosi-noaa/wispr3 sf branch](https://github.com/sfregosi-noaa/wispr3/tree/sf). 
 
-An __*agate*__ user does not need to download or clone these repositories for the below conversion to work, but these links are provided for reference.
+### Example workflow
 
-#### Example workflow
+See `workflow_convertWISPR.m` in the `example_workflows` folder for the basic steps needed to convert a directory (that can include subdirectories) of Seaglider-collected WISPR `.dat` files into either `.flac` or `.wav` files. 
 
-See `workflow_convertWISPR.m` in the `example_workflows` folder for the basic lines needed to convert a directory (that can include subdirectories) of WISPR `.dat` files into either `.flac` or `.wav` files. 
+:::{.callout-tip}
+## Oceanscout or Slocum gliders
+
+Use the `workflow_convertWISPR_hefring.m` script for a simplified example to convert WISPR data collected by a Hefring Oceanscout or TWR Slocum glider. This workflow uses a blank or very basic configuration file and ignores some Seaglider specific settings.
+:::
 
 Like other example workflows, __*agate*__ must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)). For the task of converting WISPR files, this can be empty (use [`agate_config_empty.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_empty.cnf)). But, optionally the `CONFIG.ws.inDir` and `CONFIG.ws.outDir` settings in the `OPTIONAL - acoustics` sections can be set to streamline processing and avoid manual selection of the input and output folders.
 
 Currently, the input directory must either be a directory named with the date or a directory full of subdirectories where each subdirectory is named with the date using the format 'YYMMDD', (e.g., 230504 for 4 May 2023). 
 
 ```{default}
-
 % add agate to the path
 addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 
@@ -47,10 +54,9 @@ CONFIG = agate('agate_mission_config.cnf');
 
 ```
 
-The `convertWispr` function will actually run the conversion. The output file type is set with the `'outExt'` argument; it can be either `'.flac'` or `'.wav'`. Setting the `'showProgress'` argument to `true` will print each file name to the Command Window as it is processed. This information is automatically also stored in a log file called `conversionLog.txt` that is saved in the output folder. The log will track the start and end time and state if any files have to be skipped due to being invalid/empty. 
+Use the `convertWispr` function to run the conversion. The output file type is set with the `'outExt'` argument; it can be either `'.flac'` or `'.wav'`. Set the `'showProgress'` argument to `true` to print each file name to the Command Window as it is processed. This information is automatically stored in a log file called `conversionLog.txt` that is saved in the output folder. The log tracks the processing start and end time and will record any files that have to be skipped due to being invalid/empty. 
 
 ```{default}
-
 % process all the files!
 convertWispr(CONFIG, 'showProgress', true, 'outExt', '.flac');
 

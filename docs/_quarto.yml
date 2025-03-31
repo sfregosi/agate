@@ -3,7 +3,7 @@ project:
 
 website: 
   page-navigation: true
-  title: 'AGATE' 
+  #title: 'AGATE' 
   site-url: "https://sfregosi.github.io/agate" 
   repo-url: "https://github.com/sfregosi/agate"
   repo-actions: [issue]
