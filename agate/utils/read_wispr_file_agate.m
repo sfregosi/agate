@@ -56,7 +56,7 @@ function [hdr, data, time, stamp, hdrStrs] = read_wispr_file_agate(name, first, 
 %       inFile = 'C:\wispr_241010_121418.dat';
 %       [hdr, raw, time, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
 %
-%   See also CONVERTWISPR
+%   See also CONVERTWISPR, READ_WISPR_FILE_QUICK
 %
 %   Authors:
 %       Chris Jones, Embedded Ocean Systems
