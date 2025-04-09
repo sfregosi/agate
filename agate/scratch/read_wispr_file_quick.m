@@ -39,16 +39,18 @@ function [hdr, data, time, stamp] = read_wispr_file_quick(name, first, last)
 % check arguments
 if nargin == 0
     [name, path] = uigetfile('*.dat', 'Select raw WISPR sound file');
+    name = fullfile(path, name);
     first = 1; % start at beginning of file
     last = 0; % read whole file
+    
 end
 
 if nargin == 3 && isempty(name)
     [name, path] = uigetfile('*.dat', 'Select raw WISPR sound file');
+    name = fullfile(path, name);
 end
 
 % read in file
-[hdr, data, time, stamp, ~] = read_wispr_file_agate(fullfile(path, name), ...
-    first, last);
+[hdr, data, time, stamp, ~] = read_wispr_file_agate(name, first, last);
 
 end

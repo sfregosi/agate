@@ -247,6 +247,7 @@ for di = 1 : length(inDir) % inDir is a cell array
                 % read_wispr_file originally by C. Jones
                 % https://github.com/sfregosi/wispr3)
                 [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
+                % this scales to 
 
                 % Produce an output file in each output directory.
                 for dk = 1:length(outDir)
@@ -278,6 +279,8 @@ for di = 1 : length(inDir) % inDir is a cell array
 
                     % get bits
                     nOutputBits = hdr.sample_size*8; % should be 24
+                    % get vref
+                    vref = hdr.adc_vref; % should be 5
                     % reshape the data
                     nchans = hdr.channels;
                     nsamps = length(raw(:)) / nchans;
@@ -287,7 +290,7 @@ for di = 1 : length(inDir) % inDir is a cell array
                     % audiowrite expects sample values in the range of (-1,1].
                     if ~isempty(data)
                         % audiowrite(outFile, data / 2^(nOutputBits-1), hdr.sampling_rate, 'BitsPerSample', nOutputBits);
-                        audiowrite(outFile, data, hdr.sampling_rate, ...
+                        audiowrite(outFile, data/hdr.adc_vref, hdr.sampling_rate, ...
                             'BitsPerSample', nOutputBits);
                         % update log
                         fprintf(logFp(dk), '%s\n', outName);

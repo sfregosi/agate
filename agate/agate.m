@@ -31,7 +31,7 @@ function CONFIG = agate(missionCnf)
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear CONFIG;
-warning off % this is turned off for plotting messages
+% warning off % this is turned off for plotting messages
 
 CONFIG = struct;
 
