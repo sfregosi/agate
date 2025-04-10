@@ -8,7 +8,6 @@ agate/settings/secret/*
 !agate/settings/secret/README-secret.md
 
 
-
 # CONFIG FILES #
 ################
 #*.cnf
@@ -16,6 +15,12 @@ agate/settings/secret/*
 !agate_config_example.cnf
 !pmarConvert_example.cnf
 !wisprConvert_example.cnf
+
+
+# SOUND FILES #
+###############
+*.flac
+*.wav
 
 
 # MATLAB #
