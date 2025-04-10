@@ -279,8 +279,6 @@ for di = 1 : length(inDir) % inDir is a cell array
 
                     % get bits
                     nOutputBits = hdr.sample_size*8; % should be 24
-                    % get vref
-                    vref = hdr.adc_vref; % should be 5
                     % reshape the data
                     nchans = hdr.channels;
                     nsamps = length(raw(:)) / nchans;
