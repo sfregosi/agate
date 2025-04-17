@@ -31,7 +31,7 @@ function [hdr, data, time, stamp] = read_wispr_file_quick(name, first, last)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:   2025 April 08
+%   Updated:   2025 April 17
 %
 %   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,6 +51,7 @@ if nargin == 3 && isempty(name)
 end
 
 % read in file
-[hdr, data, time, stamp, ~] = read_wispr_file_agate(name, first, last);
+[hdr, data, time, stamp] = read_wispr_file(name, first, last);
 
+fprintf(1, 'Read %s\n', name);
 end
