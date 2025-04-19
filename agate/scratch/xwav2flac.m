@@ -82,3 +82,44 @@ disp(' Done processing!')
 % [~,missingIdx] = setdiff({xwavList.name},{flacList.name});
 % disp('Missing files:')
 % unique({xwavList(missingIdx).folder})
+
+%% sf version - decode
+tic
+% set source drive containing flac files
+cd('G:\sg639_CalCurCEAS_Sep2024')
+% set output directory to put new files - VERY IMPORTANT TO HAVE FINAL SLASH \
+outDir = 'F:\CalCurCEAS2024_glider_data\sg639_CalCurCEAS_Sep2024_wav\';
+
+% set location of FLAC program
+fullPathFlac = 'C:\Users\selene.fregosi\programs\flac-1.5.0-win\Win64\flac';
+% myStr = '%s --keep-foreign-metadata --output-prefix=%s %s';
+decodeStr = '%s --decode --keep-foreign-metadata-if-present --output-prefix=%s %s';
+
+% make output directory if it doesn't exist
+if ~isfolder(outDir)
+    mkdir(outDir)
+end
+
+% find subdirectories to loop through
+% !note: all output files will end up in 1 directory!
+dirList = dir;
+dirList = stripEmptyFolders(dirList);
+
+% loop through all data folders and convert
+for iDir = 1:length(dirList)
+    % check for presence of flac files
+    thisList = dir(fullfile(dirList(iDir).folder, dirList(iDir).name, '*.flac'));
+    if isempty(thisList)
+        continue
+    end
+    cd(fullfile(dirList(iDir).folder, dirList(iDir).name))
+    nFiles = length(thisList);
+    for iFile = 1:10%:length(thisList)
+        myCMD = sprintf(decodeStr, fullPathFlac, outDir, thisList(iFile).name);
+        [status, cmdout] = system(char(myCMD));    
+        fprintf('Folder %0.0f: Done with file %0.0f of %0.0f - %s\n', ...
+            iDir, iFile, nFiles, thisList(iFile).name)
+    end
+end
+
+fprintf(' Done processing! Elapsed time %.0f seconds.\n', toc)
