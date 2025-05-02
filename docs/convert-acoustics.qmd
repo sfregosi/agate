@@ -93,5 +93,29 @@ Additionally, a PMAR conversion configuration file (*e.g.*, [`pmarConvert_exampl
 
 <sub>[Back to top](#)</sub>
 
+## WAV to FLAC and FLAC to WAV conversion
 
+The tools within __*agate*__ allow conversion from raw `.dat` files directly to either `.wav.` or `.flac`. Some users may later want to convert between `.wav.` and `.flac`. Rather than re-converting the raw `.dat` files, it is much faster to use `flac.exe` to encode/decode to/from `.flac`. There are several ways to do this (free GUIs, command line, MATLAB `audioread`/`audiowrite`). 
+
+One simple and efficient way is to use a MATLAB wrapper-type function available from [github.com/sfregosi/myUtils](https://github.com/sfregosi/myUtils). These two functions (`wav2flac` and `flac2wav`) call `flac.exe` via command line but have the added functionality to operate over a directory of files, check for proper paths, and track progress. 
+
+After downloading `wav2flac.m` and `flac2wav.m` from [myUtils](https://github.com/sfregosi/myUtils) (in the main folder, or can clone the whole repository), add them to the MATLAB path and follow the below example code:
+
+```{default}
+% set path to flac software, input directory of WAV files, output directory for FLAC files
+path_flac = 'C:\Users\User.Name\programs\flac-1.5.0-win\Win64\flac';
+
+% to convert from WAV to FLAC
+inDir = 'F:\wavFiles';
+outDir = 'F:\flacFiles\'; % important it ends in slash! Function has built in check for this
+
+wav2flac(path_flac, inDir, outDir)
+
+% to convert from FLAC to WAV
+inDir = 'F:\flacFiles';
+outDir = 'F:\wavFiles\'; % important it ends in slash! Function has built in check for this
+
+flac2wav(path_flac, inDir, outDir)
+
+```
 
