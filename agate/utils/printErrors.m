@@ -78,11 +78,11 @@ RevE_error_names = {
 %% Figure out which error names to use.
 if (CONFIG.sgVer == 66.12)
 	errstrs = RevB_error_names;
-elseif (CONFIG.sgVer == 67)
+elseif (CONFIG.sgVer == 67 || CONFIG.sgVer == 67.01)
 	errstrs = RevE_error_names;
 else
-	warning(['Version number (%f) in CONFIG.sgVer is unknown; I expected either '
-		'66.12 or 67.\nRaw error counts:'], CONFIG.sgVer);
+	warning(['Version number (%f) in CONFIG.sgVer is unknown; I expected ' ...
+		'66.12 or 67 or 67.01.\nRaw error counts:'], CONFIG.sgVer);
 	pp.ERRORS(divenums)					%#ok<NOPRT>
 	return
 end

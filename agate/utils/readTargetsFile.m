@@ -2,7 +2,7 @@ function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
 %READTARGETSFILE Read in Seaglider formatted targets file
 %
 %   Syntax:
-%       TARGETS = TREADTARGETSFILE(CONFIG, TARGETSFILE)
+%       TARGETS = READTARGETSFILE(CONFIG, TARGETSFILE)
 %
 %   Description:
 %       Read in a Seaglider formatted targets file to a table variable.
@@ -22,6 +22,8 @@ function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
 %       targetsFile  fullfile pathname either input or selected
 %
 %   Examples:
+%       % can provide no input arguments to prompt to select file
+%       targets = readTargetsFile;
 %
 %   See also MAKETARGETSFILE
 %
@@ -74,7 +76,8 @@ idxBreak = idxBreak + idx(end);
 
 numTargets = length(idxBreak);
 
-targets = table;
+targets = table(strings(numTargets, 1), NaN(numTargets, 1), NaN(numTargets, 1), ...
+    'VariableNames', {'name', 'lat', 'lon'});
 
 for t = 1:numTargets
 	idxPeriod = regexp(x(idxBreak(t):end), '\.');
@@ -84,10 +87,14 @@ for t = 1:numTargets
 
 	if ~isempty(idxLat)
 		targets.name{t} = deblank(x(idxBreak(t):idxBreak(t) + idxLat - 2));
-		targets.lat(t) = str2num(x(idxBreak(t) + idxLat + 3:idxPeriod(1) + idxBreak(t) - 4)) ...
-			+ str2num(deblank(x(idxPeriod(1) + idxBreak(t) - 3:idxBreak(t) + idxLon - 2)))/60;
-		targets.lon(t) = str2num(x(idxLon + idxBreak(t) + 3:idxPeriod(2) + idxBreak(t) - 4)) ...
-			- str2num(deblank(x(idxPeriod(2) + idxBreak(t) - 3:idxBreak(t) + idxRad - 2)))/60;
+		targets.lat(t) = str2double(x(idxBreak(t) + idxLat + ...
+            3:idxPeriod(1) + idxBreak(t) - 4)) ...
+			+ str2double(deblank(x(idxPeriod(1) + idxBreak(t) - ...
+            3:idxBreak(t) + idxLon - 2)))/60;
+		targets.lon(t) = str2double(x(idxLon + idxBreak(t) + ...
+            3:idxPeriod(2) + idxBreak(t) - 4)) ...
+			- str2double(deblank(x(idxPeriod(2) + idxBreak(t) - ...
+            3:idxBreak(t) + idxRad - 2)))/60;
 	end
 end
 

@@ -171,6 +171,9 @@ targets.dist_km = zeros(height(targets), 1);
 targets.depth_m = nan(height(targets), 1);
 for f = 1:height(targets)
 	wpIdx = find(latq == targets.lat(f) & lonq == targets.lon(f));
+    % if the recovery is back at deployment, may have two indices
+    if f == 1 && length(wpIdx) > 1; wpIdx = wpIdx(1); end
+    if f == height(targets) && length(wpIdx) > 1; wpIdx = wpIdx(end); end
 	targets.dist_km(f) = distq_km(wpIdx);
 	targets.depth_m(f) = zq(wpIdx);
 end
@@ -192,7 +195,9 @@ plot(distq_km, zq, 'k:');
 hold on;
 scatter(targets.dist_km, targets.depth_m, 10, 'k', 'filled')
 % label the waypoints
-text(targets.dist_km + max(targets.dist_km)*.006, targets.depth_m - 100, ...
+% offset the text by a 5% of the y axis
+yOffset = round((min(zq) + min(zq)*.1)*.05);
+text(targets.dist_km + max(targets.dist_km)*.006, targets.depth_m + yOffset, ...
 	targets.name, 'FontSize', 10);
 yline(yLine, '--', 'Color', '#900C3F');
 grid on;
