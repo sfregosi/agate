@@ -2,7 +2,7 @@ function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
 %READTARGETSFILE Read in Seaglider formatted targets file
 %
 %   Syntax:
-%       TARGETS = TREADTARGETSFILE(CONFIG, TARGETSFILE)
+%       TARGETS = READTARGETSFILE(CONFIG, TARGETSFILE)
 %
 %   Description:
 %       Read in a Seaglider formatted targets file to a table variable.
@@ -22,6 +22,8 @@ function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
 %       targetsFile  fullfile pathname either input or selected
 %
 %   Examples:
+%       % can provide no input arguments to prompt to select file
+%       targets = readTargetsFile;
 %
 %   See also MAKETARGETSFILE
 %

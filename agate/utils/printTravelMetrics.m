@@ -91,8 +91,13 @@ tm.distRem = dist_remEst + pp.distTGT_km(end);
 tm.avgSpd = tm.distTot/tm.missionElapsed;
 tm.avgTrkSpd = tm.distCov/tm.missionElapsed;
 % last 5 dives only (typically 20-30 hours)
+if height(pp) >=5 
 tm.avgSpdRec = sum(pp.dog_km(end-4:end))/...
 	days(pp.diveEndTime(end) - pp.diveStartTime(end-4));
+else % use all dives
+    tm.avgSpdRec = sum(pp.dog_km)/...
+	days(pp.diveEndTime(end) - pp.diveStartTime(1));
+end
 
 % remaining days
 tm.missionRem = tm.distRem/tm.avgTrkSpd;
