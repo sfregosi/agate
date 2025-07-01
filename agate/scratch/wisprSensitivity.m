@@ -1,8 +1,11 @@
-% WISPR_CALIBRATION_TO_NETCDF.M
-%	Generate netCDF file and  summary plot of WISPR system calibration
+function sysResp = wisprSensitivity(path_cals, metadata, path_out, outType, fRange)
+% WISPRSENSITIVITY  Generate system sensitivity for WISPR
 %
-%	Description:
-%       Generate netCDF files and summary plots of WISPR system
+%   Syntax:
+%       OUTPUT = WISPRSENSITIVITY(INPUT)
+%
+%   Description:
+%       Generate netCDF and/or CSV files and summary plots of WISPR system
 %       calibration metadata including hydrophone and preamp sensitivities,
 %       user-defined system gain, and anti-aliasing filters. The netCDF
 %       files are used by PyPAM Based Processin (PBP) when creating daily
@@ -13,144 +16,237 @@
 %       written by J. Ryan (MBARI) and S. Haver (NEFSC) available at
 %       https://github.com/sahav/NRS
 %
-%	See also
+%   Inputs:
+%       path_cals  [char] fullfile path to folder containing input
+%                  calibration files (e.g., hydrophone calibration curves,
+%                  preamp gain curves)
+%       metadata   [char] fullfile path to text file with relevant WISPR
+%                  metadata for this mission. Set to blank ([]) to prompt
+%                  to select file. See XXXX for example and additional
+%                  descriptors/detail
+%               wisprVer = 3           % integer either 1, 2, or 3
+%               wisprSN = 'WISPR3_no2' % string
+%               version = 'v1.3.0'     % string for WISPR firmware version
+%               sampling_rate = 200000 % integer, in Hz
+%               sample_size = 3        % integer, bits per sample
+%               adc_vref = 5           % integer, reference voltage
+%               adc_df = 4             % integer, decimation factor 4, 8, 16
+%               gain = 0               % integer, e.g., 0, 6, 12, 18
+%               hpType = 'HTI92WB'     % string, hydrophone type
+%               hpSN = 1211001         % integer, hydrophone serial num
+%               hpSens = -164.5        % double, in dB, from manufacturer,
+%                                      % set to 'file' to select curve
+%               hpFc = 25              % hydrophone high pass filter in Hz
+%             **WISPR2 only**
+%               paVer = 'WBRev6'       % string, preamp version
+%               paSN = '015'           % string, preamp serial number
 %
+%       path_out   [char] fullfile path to folder to save output
+%                  sensitivity netCDF or CSV and plot. Suggest saving
+%                  within a folder relevant to this mission or a central
+%                  glider folder
+%       out_type   [char] to set output file type. Either 'netcdf', 'csv',
+%                  or 'both'. Default is 'both'
+%       fRange     [1x2 matrix] upper and lower limits of analysis
+%                  frequency in Hz (e.g., [0 90000]). Note this is
+%                  typically a value below the Nyquist because of the
+%                  roll-off location of the anti-aliasing filter
 %
-%	Authors:
-%		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%	Outputs:
+%       sysResp    
 %
-%	Updated:   1 May 2025
+%   Examples:
 %
-%	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
+%   See also
+%
+%   Authors:
+%       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
+%
+%   Updated:   30 June 2025
+%
+%   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Set mission and calibration path
-% define glider mission
-% mission = 'sg679_CalCurCEAS_Aug2024';
-mission = 'sg679_MHI_May2023';
-% mission = 'sg639_CalCurCEAS_Sep2024';
-
-% set path to calibration data files
-path_calibrations = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
-
+%% DEAL WITH THIS STUFF
 % set path/add path to Samara's NRS repo
-path_NRS = 'C:\Users\selene.fregosi\Documents\GitHub\NRS';
-addpath(genpath(path_NRS));
+% path_NRS = 'C:\Users\selene.fregosi\Documents\GitHub\NRS';
+% addpath(genpath(path_NRS));
+
+
+%% for testing
+path_cals = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
+metadata = []; % WISPR metadata file
+path_out = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
+outType = [];
+fRange = [1 70000]; % in Hz
+
+%% Set defaults/check args
+
+% set path to input calibration files (preamp, hydrophone)
+if ~exist(path_cals, 'dir')
+    path_out = uigetdir('Select input calibration directory');
+end
+
+% contains various specs for mission acoustic config that will get eval'd
+% if none specified, prompt to locate one
+if isempty(metadata) || ~exist(metadata, 'file')
+    [name, path] = uigetfile([path_cals, '\*.txt'], ...
+        'Select WISPR metadata file for this mission');
+    metadata = fullfile(path, name);
+    fprintf(1, 'WISPR metadata file:\n      %s\n', metadata);
+end
+
+% check/select output path
+if ~exist(path_out, 'dir')
+    path_out = uigetdir('Select output directory');
+end
+
+% default to save as netCDF and CSV
+if isempty(outType)
+    outType = 'both';
+end
 
 % define analysis frequency range (may change with mission sample rate)
-fRange = [1 70000]; % in Hz
+if isempty(fRange)
+    fRange = [1 50000]; % in Hz
+end
 % sg679 WISPR2 sample rate was 180 kHz but filter has steep drop off at
 % around 67 kHz so using 70 kHz
 % similar to how Nyquist for NRS is 2500 Hz but only analyze to 2200 Hz
 
-%% Parse correct mission info
-% In the future, will either read in a mission record table, or a single
-% csv or xlsx for each mission, or something else to parse the relevant
-% metadata. For now, hard coding for testing/building an example.
-if strcmp(mission, 'sg679_CalCurCEAS_Aug2024') || ...
-    strcmp(mission, 'sg679_MHI_May2023')
-    % recorder type
-    loggerType = 'WISPR2';      % e.g., PMARXL, WISPR2, WISPR3
-    loggerVer = '0.2';          % string
-    loggerSN = '';              % string
+%% read contents of metadata file
 
-    % recorder settings
-    sampleRate = 180000;        % in Hz
-    decimationFactor = 4;       % integer like 4, 8, 16
-    bitRate = 24;               % bits per sample - 16, 24, etc
-    adcVoltRef = 5;             % voltage referece - 5
+% this text file should contain direct arguments to be evaluated. For an
+% example see agate/settings/wispr_metadata_example.txt
+% must include the following variables: glider, mission, wisprVer,
+% sensor_id, version, sampling_rate, adc_vref, adc_df, gain, hpType, hpSN,
+% hpSens
 
-    % hydrophone info
-    hSN = '653007';         % string (or should be numeric?)
-    hSens = -162.5;         % in dB, from manufacturer, or could be a curve?
-    hydroFc = 25;               % in Hz (high pass filter setting?)
+fid = fopen(metadata, 'r');
+if fid == -1
+    error('Invalid file selected. Exiting.\n')
+end
+al = textscan(fid, '%s', 'delimiter', '\n');
+nl = length(al{1});
+if nl < 1
+    error(['No data in WISPR metadata file. ', ...
+        'Did you select the correct file?\n'])
+else
+    frewind(fid);
+    for i = 1:nl
+        line = fgets(fid);
+        if ~strcmp(line(1), '%')
+            eval(line);
+        end
+    end
+end
+fclose(fid);
 
-    % system gain
-    sysGain = 0;             % integer e.g., 0, 6, 12, 18
+% rename some things for clarity bc WISPR header labels aren't great
+sysGain = gain;
+sampleRate = sampling_rate;
 
-    % preamp info
-    paVer = 'WBRev6';        % string
-    paSN = '015';           % string
+%% select correct files where needed (preamp gain, anti-aliasing filter, hydrophone cal)
 
-    % preampGain = ;              % this should be a matrix
-    % preampGain = [-2.9 6.8 13.6 15.7 16.3 16.6 16.8 17.3 19.9 23.9 ...
-    %     29.1 36.3 41.2 44.5 45.6 45.5 45.2 44.9 44.6 44.3 ...
-    %     44 43.5]; % From gain curve file
-    % preampFreq = ;              % this should be a matrix
-    paFile = 'preamp_WISPR2_rev6_board15_2023-08-22.csv';
+% WISPR2
+if wisprVer == 2
 
-    % anti-aliasing filter info
-    % use hand-extracted values from LTC2512 materials
-    % select the csv based on input sample rate/decimation factor
-    aaFile = 'LTC2512-24_antialiasingFilter_200kHz_df4.csv';
-    % antiAliasGain = [zeros(1,length(frqSys)-7) ...
-    %     -5 -108 -108 -108 -108 -110 -112];
+    % set sensor ID string for this mission/configuration
+    sensorID = sprintf('WISPR2 %s Preamp Ver: %s, SN: %s, Hydrophone SN: %i', ...
+        firmwareVer, paVer, paSN, hpSN);
 
-elseif strcmp(mission, 'sg639_CalCurCEAS_Sep2024')
-    % recorder type
-    loggerType = 'WISPR3';      % e.g., PMARXL, WISPR2, WISPR3
-    loggerVer = '1.3.0';        % string
-    loggerSN = 'no4';           % string
+    % select correct preamp file
+    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+        'preamp calibration file. WISPR2 preamp ver %s, SN %s'], paVer, paSN), ...
+        path_cals);
+    paFile = fullfile(path, name);
 
-    % hydrophone info
-    hSN = '635013';         % string (or should be numeric?)
-    hSens = -164.5;         % in dB, from manufacturer, or could be a curve?
+    % select correct anti-aliasing filter file - IS THIS CORRECT for WISPR2?
+    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+        'anti-aliasing filter file. fs %i, df %i'], sampling_rate/1000, adc_df), ...
+        path_cals);
+    aaFile = fullfile(path, name);
 
-    % system gain
-    sysGain = 0;             % integer e.g., 0, 6, 12, 18
-
-    % anti-aliasing filter info
-    % use hand-extracted values from LTC2512 materials
-    % select the csv based on input sample rate/decimation factor
-    aaFile = 'LTC2512-24_antialiasingFilter_200kHz_df4.csv';
-    % antiAliasGain = [zeros(1,length(frqSys)-7) ...
-    %     -5 -108 -108 -108 -108 -110 -112];
-
-elseif strcmp(mission, 'sg680_CalCurCEAS_Sep2024')
-    % recorder type
-    loggerType = 'WISPR3';      % e.g., PMARXL, WISPR2, WISPR3
-    loggerVer = '1.3.0';        % string
-    loggerSN = 'no2';           % string
-    % note DAT FILE HEADERS STATE no3. THIS IS INCORRECT!
-
-    % hydrophone info
-    hSN = '635013';         % string (or should be numeric?)
-    hSens = -164.5;         % in dB, from manufacturer, or could be a curve?
-
-    % system gain
-    sysGain = 0;             % integer e.g., 0, 6, 12, 18
-
-    % anti-aliasing filter info
-    % use hand-extracted values from LTC2512 materials
-    % select the csv based on input sample rate/decimation factor
-    aaFile = 'LTC2512-24_antialiasingFilter_200kHz_df4.csv';
+    % example from WISPR1
     % antiAliasGain = [zeros(1,length(frqSys)-7) ...
     %     -5 -108 -108 -108 -108 -110 -112];
 end
 
-% set hydrophone ID string for this configuration
-% hydrophoneID = sprintf('Mission: %s, Hydrophone SN: %s, Preamp SN_Ver: %s_%s', ...
-%     mission, hSN, paSN, paVer); % with mission string
-hydrophoneID = sprintf('Hydrophone SN: %s, Preamp SN: %s, Preamp Ver: %s', ...
-   hSN, paSN, paVer);
+% WISPR3
+if wisprVer == 3
+
+    pause
+
+    % set sensor string for this mission/configuration
+    sensorID = sprintf('WISPR3 SN: %s, %s, Hydrophone SN: %i, ', ...
+        wisprSN, version, hpSN);
+
+
+    % select correct sensitivity file
+    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+        'WISPR3 calibration file. WISPR3 SN %s, ver %s'], wisprSN, version), ...
+        path_cals);
+    paFile = fullfile(path, name);
+end
+
+% if hydrophone curve available
+if ~isnumeric(hpSens)
+    % select hydrophone calibration file
+    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select hydrophone ', ...
+        'calibration file. %s SN %s'], hpType, hpSN), ...
+        path_cals);
+    hpFile = fullfile(path, name);
+end
+
+%% read in the gain/calibration/filter curves
+
+% read in preamp gain curve
+paCurve = readmatrix(paFile);
+
+% read in anti-aliasing filter curve if exists
+if exist('aaFile', 'var')
+    aaCurve = readmatrix(aaFile);
+else
+    aaCurve = [NaN, NaN];
+end
+
+% read in hydrophone calibration curve if it exists
+if exist('hpFile', 'var')
+    hpCal = readmatrix(hpFile);
+else
+    hpCal = [NaN, NaN];
+end
+
 
 %% Calculate general system response
 
-% read in preamp and anti aliasing filter
-paGain = readmatrix(fullfile(path_calibrations, paFile));
-aaFilt = readmatrix(fullfile(path_calibrations, aaFile));
+% get sampled frequencies
+% freq of multiple curves may not match so standardize to all unique
+freq = unique([paCurve(:,1); hpCal(:,1); aaCurve(:,1)]);
+% freq = unique([paSens(:,1); aaFilt(:,1)]);
+% remove NaNs
+freq(isnan(freq)) = [];
 
-% sampled frequencies of gain curves may not match - standardize to add
-% find all unique frequencies
-freq = unique([paGain(:,1); aaFilt(:,1)]);
-% interpolate both curves at those frequencies
-paGain = interp1(paGain(:,1), paGain(:,2), freq);
-aaFilt = interp1(aaFilt(:,1), aaFilt(:,2), freq);
 
-%***May need to add hydrophone sensitivity curves***
+% interpolate at all freqs or put in single values
+paGain = interp1(paCurve(:,1), paCurve(:,2), freq);
+% anti-aliasing filter if needed
+if exist('aaFile', 'var')
+    aaFilt = interp1(aaCurve(:,1), aaCurve(:,2), freq);
+else
+    aaFilt = 0;
+end
+% hydrophone curve if available, or use single value
+if exist('hpFile', 'var')
+    hpSens = interp1(hpCal(:,1), hpCal(:,2), freq);
+else
+    % keep single value hpSens
+    % hpSens = hpSens;
+end
 
-% calculate general system response
-sysResp = hSens + paGain + sysGain + aaFilt;
+
+% calculate overall system response
+sysResp = hpSens + paGain + sysGain + aaFilt;
 
 
 %% Calculate HMD bands
@@ -163,21 +259,28 @@ fftBinSize = 1; %P.fs = 5000;
 mDecBands = getBandTable(fftBinSize, 0, sampleRate, 10, 1000, 1, 1);
 bcf = mDecBands(:,2);  % band center frequency
 % subset to analysis frequency range set at top
-k = find(bcf >= fRange(1) & bcf <= fRange(2));
-bcf = bcf(k);
+bcf = bcf(bcf >= fRange(1) & bcf <= fRange(2));
 % interpolate
 R = interp1(freq, sysResp, bcf);
 
 
 %% Plot
 % Produce summary plot, to screen and png file
+
+% set colors
+hpCol = '#901200'; % NMFS PI Coral red
+paCol = '#003087'; % NMFS Oceans blue
+aaCol = '#4B8320'; % NMFS SE Seagrass
 figure(8);
 clf;
 set(gcf, 'position', [100 100 900 450], 'color', 'w');
 hold on;
-plot(freq, repmat(hSens, size(freq)), 'ro--', 'DisplayName', 'Hydrophone Sensitivity');
-plot(freq, paGain, 'bo--', 'DisplayName', 'Pre-amp gain');
-plot(freq, aaFilt, 'go--', 'DisplayName', 'Anti-aliasing filter')%
+if isscalar(hpSens) % single value
+    hpSens = repmat(hpSens, size(freq));
+end
+plot(freq, hpSens, 'o--', 'Color', hpCol,  'DisplayName', 'Hydrophone Sensitivity');
+plot(freq, paGain, 'o--', 'Color', paCol, 'DisplayName', 'Preamp gain');
+plot(freq, aaFilt, 'o--', 'Color', aaCol, 'DisplayName', 'Anti-aliasing filter')%
 plot(freq, sysResp, 'ks', 'MarkerSize', 10, 'DisplayName', ...
     'System response - original'); % combined/original
 plot(bcf, R, 'k', 'LineWidth', 1.5, 'DisplayName', ...
@@ -186,20 +289,21 @@ xline(fRange(2), 'k-.', 'DisplayName', 'Upper limit for valid data');
 set(gca, 'XScale', 'log', 'FontSize', 12)
 grid on;
 axis tight;
-xlim([0 max(freq)/2]); % xlim([0 max(freq)];
+xlim([0 max(freq)/2]); % xlim([0 max(freq)]; % only plot to nyquist
 % ylim([min([paGain; aaFilt; sysResp; sysGain; hSens])-2, ...
 %     max([paGain; aaFilt; sysResp; sysGain; hSens])]+2)
 ylabel('sensitivity [dB]');
 xlabel('frequency [Hz]');
-title(hydrophoneID, 'Interpreter', 'none');
+title(sensorID, 'Interpreter', 'none');
 legend('Location', 'west');
 
-exportgraphics(gcf, fullfile(path_calibrations, sprintf('%s_sensitivity_%s.png', ...
-    mission, datetime('now', 'Format', 'yyyy-MM-dd'))), 'Resolution', 300)
+exportgraphics(gcf, fullfile(path_cals, sprintf('%s_%s_sensitivity_%s.png', ...
+    glider, mission, datetime('now', 'Format', 'yyyy-MM-dd'))), ...
+    'Resolution', 300)
 
 %% save as netCDF
 
-ncFilename = fullfile(path_calibrations, sprintf('%s_sensitivity_%s.nc', ...
+ncFilename = fullfile(path_cals, sprintf('%s_sensitivity_%s.nc', ...
     mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
 ncid = netcdf.create(ncFilename, 'CLOBBER');
 
@@ -212,7 +316,7 @@ ttl = sprintf(['%s WISPR system response interpolated to center ', ...
 netcdf.putAtt(ncid, varid, 'title', ttl);
 
 % Hydrophone ID
-netcdf.putAtt(ncid, varid, 'hydrophone ID', hydrophoneID);
+netcdf.putAtt(ncid, varid, 'hydrophone ID', sensorID);
 
 % Metadata source
 % ms = ("Excel file "+ xlfilename +", sheet name "+ xlsheetname);
@@ -245,7 +349,7 @@ ncdisp(ncFilename)
 
 %% save as csv
 
-csvFilename = fullfile(path_calibrations, sprintf('%s_sensitivity_%s.csv', ...
+csvFilename = fullfile(path_cals, sprintf('%s_sensitivity_%s.csv', ...
     mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
 
 ot = table(bcf, R, 'VariableNames', {'frequency', 'sensitivity'});
