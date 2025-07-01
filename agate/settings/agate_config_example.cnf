@@ -11,8 +11,8 @@
 % define glider and mission information
 CONFIG.glider = 'sgXXX';  % glider serial number
 CONFIG.mission = 'Location_Mon20XX'; % mission identifier defined in sg_calib_constants.m 
-CONFIG.sgVer = XX.XX; % 66.12 or 67.0, firmware version displayed on glider start up
-CONFIG.tmd = XX; % target mission duration in days
+CONFIG.sgVer = XX.XX; % 66.12, 66.14, 67.0, or 67.01 firmware version displayed on glider start up
+CONFIG.tmd = XX; % target mission duration in days, used to set plot axes limits
 
 % define paths
 % mission path - path to umbrella folder that either contains previously 
