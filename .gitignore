@@ -38,6 +38,8 @@ agate/settings/secret/*
 .Ruserdata
 /.quarto/
 /_site/
+/docs/.quarto/
+/docs/_site/
 *.rda
 *.rdata
 
