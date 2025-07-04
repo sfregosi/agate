@@ -42,14 +42,20 @@ website:
         text: Piloting
       - href: mission-processing.qmd
         text: Post-mission processing
-      - href: convert-acoustics.qmd
-        text: Convert acoustic files
+      - section: Process acoustic data
+        contents:
+        - href: convert-acoustics.qmd
+          text: Convert acoustic files
+        - href: wispr-calibration.qmd
+          text: WISPR calibration
       - href: plotting.qmd
         text: Plotting functions
-      - href: contribute.qmd
-        text: Contribute
-      - href: acknowledgements.qmd
-        text: Acknowledgements
+      - section: Community
+        contents:
+        - href: contribute.qmd
+          text: Contribute
+        - href: acknowledgements.qmd
+          text: Acknowledgements
 
 format:
   html:
