@@ -1,8 +1,8 @@
-function sysResp = wisprSensitivity(path_cals, metadata, path_out, outType, fRange)
+function sr = wisprSensitivity(metadata, path_out, outType, fRange)
 % WISPRSENSITIVITY  Generate system sensitivity for WISPR
 %
 %   Syntax:
-%       OUTPUT = WISPRSENSITIVITY(INPUT)
+%       SR = WISPRSENSITIVITY(PATH_CALS, METADATA, PATH_OUT, OUTTYPE, FRANGE)
 %
 %   Description:
 %       Generate netCDF and/or CSV files and summary plots of WISPR system
@@ -53,7 +53,8 @@ function sysResp = wisprSensitivity(path_cals, metadata, path_out, outType, fRan
 %                  roll-off location of the anti-aliasing filter
 %
 %	Outputs:
-%       sysResp    
+%       sr         [table] frequency and sensitivity of the system at
+%                  hybridmillidecade frequency bands from 1 to fRange
 %
 %   Examples:
 %
@@ -74,36 +75,42 @@ function sysResp = wisprSensitivity(path_cals, metadata, path_out, outType, fRan
 
 
 %% for testing
-path_cals = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
-metadata = []; % WISPR metadata file
-path_out = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
-outType = [];
-fRange = [1 70000]; % in Hz
+% path_cals = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
+% % metadata = []; % WISPR metadata file
+% metadata = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration\mission_metadata\sg679_CalCurCEAS_Aug2024_WISPR2_HTI653007.txt';
+% path_out = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
+% outType = [];
+% fRange = [1 70000]; % in Hz
 
 %% Set defaults/check args
 
-% set path to input calibration files (preamp, hydrophone)
-if ~exist(path_cals, 'dir')
-    path_out = uigetdir('Select input calibration directory');
-end
+% set up path_cal so uigetfile takes you back to the relevant folder
+path_cal = [];
 
 % contains various specs for mission acoustic config that will get eval'd
 % if none specified, prompt to locate one
 if isempty(metadata) || ~exist(metadata, 'file')
-    [name, path] = uigetfile([path_cals, '\*.txt'], ...
+    [name, path_cal] = uigetfile('*.txt', ...
         'Select WISPR metadata file for this mission');
-    metadata = fullfile(path, name);
+    metadata = fullfile(path_cal, name);
     fprintf(1, 'WISPR metadata file:\n      %s\n', metadata);
 end
 
 % check/select output path
 if ~exist(path_out, 'dir')
-    path_out = uigetdir('Select output directory');
+    path_out = uigetdir(path_cal, 'Select output directory');
 end
 
-% default to save as netCDF and CSV
+% default to save as netCDF and CSV - if any string other than netcdf or
+% csv is entered, will default to both
 if isempty(outType)
     outType = 'both';
+end
+nc = true; csv = true;
+if strcmpi(outType, 'netcdf')
+    csv = false;
+elseif strcmpi(outType, 'csv')
+    nc = false;
 end
 
 % define analysis frequency range (may change with mission sample rate)
@@ -146,7 +153,8 @@ fclose(fid);
 sysGain = gain;
 sampleRate = sampling_rate;
 
-%% select correct files where needed (preamp gain, anti-aliasing filter, hydrophone cal)
+%% check input curve files
+% select correct files where needed (preamp gain, anti-aliasing filter, hydrophone cal)
 
 % WISPR2
 if wisprVer == 2
@@ -156,16 +164,22 @@ if wisprVer == 2
         firmwareVer, paVer, paSN, hpSN);
 
     % select correct preamp file
-    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
-        'preamp calibration file. WISPR2 preamp ver %s, SN %s'], paVer, paSN), ...
-        path_cals);
-    paFile = fullfile(path, name);
+    if ~exist('paFile', 'var') || ~exist(paFile, 'file')
+        [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+            'preamp calibration file. WISPR2 preamp ver %s, SN %s'], paVer, paSN), ...
+            path_cal);
+        paFile = fullfile(path_cal, name);
+        fprintf(1, 'Selected preamp file:\n      %s\n', paFile);
+    end
 
     % select correct anti-aliasing filter file - IS THIS CORRECT for WISPR2?
-    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
-        'anti-aliasing filter file. fs %i, df %i'], sampling_rate/1000, adc_df), ...
-        path_cals);
-    aaFile = fullfile(path, name);
+    if ~exist('aaFile', 'var') || ~exist(aaFile, 'file')
+        [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+            'anti-aliasing filter file. fs %i, df %i'], sampling_rate/1000, adc_df), ...
+            path_cal);
+        aaFile = fullfile(path_cal, name);
+        fprintf(1, 'Selected anti-aliasing filter file:\n      %s\n', aaFile);
+    end
 
     % example from WISPR1
     % antiAliasGain = [zeros(1,length(frqSys)-7) ...
@@ -183,19 +197,22 @@ if wisprVer == 3
 
 
     % select correct sensitivity file
-    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+    [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
         'WISPR3 calibration file. WISPR3 SN %s, ver %s'], wisprSN, version), ...
-        path_cals);
-    paFile = fullfile(path, name);
+            path_cal);
+    paFile = fullfile(path_cal, name);
 end
 
-% if hydrophone curve available
+
+% for either WISPR version...check if hydrophone curve available
 if ~isnumeric(hpSens)
-    % select hydrophone calibration file
-    [name, path] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select hydrophone ', ...
-        'calibration file. %s SN %s'], hpType, hpSN), ...
-        path_cals);
-    hpFile = fullfile(path, name);
+    if ~exist('hpFile', 'var') || ~exist(hpFile, 'file')
+        % select hydrophone calibration file
+        [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select hydrophone ', ...
+            'calibration file. %s SN %s'], hpType, num2str(hpSN)), ...
+            path_cal);
+        hpFile = fullfile(path_cal, name);
+    end
 end
 
 %% read in the gain/calibration/filter curves
@@ -240,8 +257,8 @@ end
 if exist('hpFile', 'var')
     hpSens = interp1(hpCal(:,1), hpCal(:,2), freq);
 else
-    % keep single value hpSens
-    % hpSens = hpSens;
+    % repeat single value
+    hpSens = repmat(hpSens, size(freq));
 end
 
 
@@ -251,8 +268,8 @@ sysResp = hpSens + paGain + sysGain + aaFilt;
 
 %% Calculate HMD bands
 % Compute HMD bands centers, and interpolate calibration data
-%  This should use the revised code from Martin et al., after they
-%  corrected an error.
+%  This uses the revised code from Martin et al., after they corrected an
+% and is packaged in agate error.
 fftBinSize = 1; %P.fs = 5000;
 % [freqTable] = getBandTable(fftBinSize, bin1CenterFrequency, fs, base, ...
 %     bandsPerDivision, firstOutputBandCenterFrequency, useFFTResAtBottom);
@@ -275,9 +292,6 @@ figure(8);
 clf;
 set(gcf, 'position', [100 100 900 450], 'color', 'w');
 hold on;
-if isscalar(hpSens) % single value
-    hpSens = repmat(hpSens, size(freq));
-end
 plot(freq, hpSens, 'o--', 'Color', hpCol,  'DisplayName', 'Hydrophone Sensitivity');
 plot(freq, paGain, 'o--', 'Color', paCol, 'DisplayName', 'Preamp gain');
 plot(freq, aaFilt, 'o--', 'Color', aaCol, 'DisplayName', 'Anti-aliasing filter')%
@@ -297,60 +311,107 @@ xlabel('frequency [Hz]');
 title(sensorID, 'Interpreter', 'none');
 legend('Location', 'west');
 
-exportgraphics(gcf, fullfile(path_cals, sprintf('%s_%s_sensitivity_%s.png', ...
+exportgraphics(gcf, fullfile(path_out, sprintf('%s_%s_sensitivity_%s.png', ...
     glider, mission, datetime('now', 'Format', 'yyyy-MM-dd'))), ...
     'Resolution', 300)
 
+
+
 %% save as netCDF
 
-ncFilename = fullfile(path_cals, sprintf('%s_sensitivity_%s.nc', ...
-    mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
-ncid = netcdf.create(ncFilename, 'CLOBBER');
+if nc
+    ncFilename = fullfile(path_out, sprintf('%s_%s_sensitivity_%s.nc', ...
+        glider, mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
+    ncid = netcdf.create(ncFilename, 'CLOBBER');
 
-% global attributes
-varid = netcdf.getConstant('NC_GLOBAL');
+    % global attributes
+    varid = netcdf.getConstant('NC_GLOBAL');
 
-% title
-ttl = sprintf(['%s WISPR system response interpolated to center ', ...
-    'frequencies of hybrid millidecade bands, fs = %i Hz.'], mission, sampleRate);
-netcdf.putAtt(ncid, varid, 'title', ttl);
+    % attribute - title
+    ttl = sprintf(['%s WISPR system response interpolated to center ', ...
+        'frequencies of hybrid millidecade bands, fs = %i Hz.'], mission, sampleRate);
+    netcdf.putAtt(ncid, varid, 'title', ttl);
 
-% Hydrophone ID
-netcdf.putAtt(ncid, varid, 'hydrophone ID', sensorID);
+    % attribute - sensor ID
+    netcdf.putAtt(ncid, varid, 'sensor ID', sensorID);
 
-% Metadata source
-% ms = ("Excel file "+ xlfilename +", sheet name "+ xlsheetname);
-ms = sprintf('Preamp CSV %s, filter CSV %s, and script %s', ...
-    paFile, aaFile, 'WISPR_calibration_to_netCDF.m');
-netcdf.putAtt(ncid, varid, 'metadata source', ms);
+    % attribute - metadata source
+    if wisprVer == 2
+        % pull just filename
+        [~, mdName, mdExt] = fileparts(metadata);
+        [~, paName, paExt] = fileparts(paFile);
+        [~, aaName, aaExt] = fileparts(paFile);
+        ms = sprintf(['Mission metadata: %s. Preamp gain curve: %s ', ...
+            'Anti-aliasing filter: %s'], ...
+            [mdName, mdExt], [paName, paExt], [aaName, aaExt]);
+    end
 
-% vectors for frequency dependent sensitivity
-% frequency
-dimidt = netcdf.defDim(ncid, 'frequency', length(bcf));
-varid = netcdf.defVar(ncid, 'frequency', 'NC_DOUBLE', dimidt);
-netcdf.endDef(ncid) % end define mode for attributes
-netcdf.putVar(ncid, varid, bcf)
-netcdf.reDef(ncid); % Re-enter define mode for attributes
-netcdf.putAtt(ncid, varid, 'long_name', 'frequency of hybrid millidecade band center')
-netcdf.putAtt(ncid, varid, 'units', 'Hz')
-% sensitivity
-varid = netcdf.defVar(ncid, 'sensitivity', 'NC_DOUBLE', dimidt);
-netcdf.endDef(ncid)
-netcdf.putVar(ncid, varid, R)
-netcdf.reDef(ncid); % Re-enter define mode for attributes
-netcdf.putAtt(ncid, varid, 'long_name', 'hydrophone sensitivity')
-netcdf.putAtt(ncid, varid, 'units', 'dB V re micropascal')
+    % WISPR3 - just have metadata and paFile
+    if wisprVer == 3
+        % pull filenames from fullfile paths
+        [~, mdName, mdExt] = fileparts(metadata);
+        [~, paName, paExt] = fileparts(paFile);
+        ms = sprintf('Mission metadata: %s. Preamp gain curve: %s', ...
+            [mdName, mdExt], [paName, paExt]);
+    end
 
-% close
-netcdf.close(ncid)
+    netcdf.putAtt(ncid, varid, 'metadata source', ms);
 
-% display summary of written file
-ncdisp(ncFilename)
+    % add data - vectors for frequency dependent sensitivity
+
+    % variable - frequency
+    dimidt = netcdf.defDim(ncid, 'frequency', length(bcf));
+    varid = netcdf.defVar(ncid, 'frequency', 'NC_DOUBLE', dimidt);
+    % netcdf.reDef(ncid); % Re-enter define mode for attributes
+    netcdf.putAtt(ncid, varid, 'long_name', 'frequency of hybrid millidecade band center');
+    netcdf.putAtt(ncid, varid, 'units', 'Hz');
+    netcdf.endDef(ncid) % end define mode for attributes
+    netcdf.putVar(ncid, varid, bcf)
+
+    % variable - sensitivity
+    netcdf.reDef(ncid); % Re-enter define mode for attributes
+    varid = netcdf.defVar(ncid, 'sensitivity', 'NC_DOUBLE', dimidt);
+    netcdf.putAtt(ncid, varid, 'long_name', 'hydrophone sensitivity');
+    netcdf.putAtt(ncid, varid, 'units', 'dB V re micropascal');
+    netcdf.endDef(ncid); % Exit define mode
+    netcdf.putVar(ncid, varid, R);
+
+    % variable - raw preamp gain curve
+    netcdf.reDef(ncid); % Re-enter define mode for attributes
+    dimid_pa_row = netcdf.defDim(ncid, 'preamp_frequency', size(paCurve, 1));
+    dimid_pa_col = netcdf.defDim(ncid, 'preamp_sensitivity', 2);
+    varid_pa = netcdf.defVar(ncid, 'preamp_gain', 'NC_DOUBLE', [dimid_pa_row, dimid_pa_col]);
+    netcdf.putAtt(ncid, varid_pa, 'long_name', 'preamp frequency response');
+    netcdf.putAtt(ncid, varid_pa, 'units', 'Hz, dB');
+    netcdf.endDef(ncid); % Exit define mode
+    netcdf.putVar(ncid, varid_pa, paCurve(:,1:2));
+
+    % variable - raw anti-aliasing filter
+    netcdf.reDef(ncid); % Re-enter define mode for attributes
+    dimid_aa_row = netcdf.defDim(ncid, 'anti-alias_frequency', size(aaCurve, 1));
+    dimid_aa_col = netcdf.defDim(ncid, 'anti-alias_sensitivity', 2);
+    varid_aa = netcdf.defVar(ncid, 'anti-alias_filter', 'NC_DOUBLE', [dimid_aa_row, dimid_aa_col]);
+    netcdf.putAtt(ncid, varid_aa, 'long_name', 'anti-aliasing filter frequency response');
+    netcdf.putAtt(ncid, varid_aa, 'units', 'Hz, dB');
+    netcdf.endDef(ncid); % Exit define mode
+    netcdf.putVar(ncid, varid_aa, aaCurve(:,1:2));
+
+    % close
+    netcdf.close(ncid)
+
+    % display summary of written file
+    % ncdisp(ncFilename)
+end
 
 %% save as csv
 
-csvFilename = fullfile(path_cals, sprintf('%s_sensitivity_%s.csv', ...
-    mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
+if csv
+    csvFilename = fullfile(path_out, sprintf('%s_%s_sensitivity_%s.csv', ...
+        glider, mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
 
-ot = table(bcf, R, 'VariableNames', {'frequency', 'sensitivity'});
-writetable(ot, csvFilename);
+    ot = table(bcf, R, 'VariableNames', {'frequency', 'sensitivity'});
+    writetable(ot, csvFilename);
+end
+
+% clean up output argument
+sr = ot;
