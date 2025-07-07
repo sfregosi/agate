@@ -44,12 +44,10 @@ function downloadBasestationFiles(CONFIG)
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %       D. Mellinger <David.Mellinger@oregonstate.edu> <https://github.com/DMellinger>
 %
-%   FirstVersion:   7/22/2016.
-%                   Originally for AFFOGATO project/CatBasin deployment
-%   Updated:        27 September 2024
+%   Updated:   07 July 2025
 %
-%   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % Get the right sftp() function. Since sftp can exist in multiple places,

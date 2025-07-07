@@ -30,8 +30,7 @@ function [targets, targetsFile] = readTargetsFile(CONFIG, targetsFile)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   unkonwn
-%   Updated:        14 March 2024
+%   Updated:        07 July 2025
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

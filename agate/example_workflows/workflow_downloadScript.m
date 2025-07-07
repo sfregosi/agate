@@ -33,9 +33,7 @@
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 %
-%	FirstVersion: 	01 June 2023
-%	Updated:        10 September 2024
-
+%	Updated:      07 July 2025
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize agate
