@@ -64,100 +64,101 @@ function downloadBasestationFiles(CONFIG)
 
 originalDir = pwd();
 try		% use try/catch to cd back to originalDir in case of error
-	all_sftps = which('-all', 'sftp');	% cell array of all sftp.m locations
-	positions = regexpi(all_sftps, 'toolbox[/\\]matlab'); % find "toolbox/matlab"
-	index = find(~cellfun('isempty', positions), 1); % pick the ones find() found
-	sftpDir = fileparts(all_sftps{index});	% extract the directory name
-	cd(sftpDir);
-	matlabSFTP = @sftp;				% handle to the correct sftp
+    all_sftps = which('-all', 'sftp');	% cell array of all sftp.m locations
+    positions = regexpi(all_sftps, 'toolbox[/\\]matlab'); % find "toolbox/matlab"
+    index = find(~cellfun('isempty', positions), 1); % pick the ones find() found
+    sftpDir = fileparts(all_sftps{index});	% extract the directory name
+    cd(sftpDir);
+    matlabSFTP = @sftp;				% handle to the correct sftp
 catch ERR
-	cd(originalDir);
-	rethrow(ERR);
+    cd(originalDir);
+    rethrow(ERR);
 end
 cd(originalDir);		% restore user's original current directory
 
 % Open connection using either username/password or username/encryptionkey.
 if (isfield(CONFIG.bs, 'password') && ~isempty(CONFIG.password))
-	% Use password.
-	s = matlabSFTP(CONFIG.bs.host, CONFIG.username, CONFIG.password);
+    % Use password.
+    s = matlabSFTP(CONFIG.bs.host, CONFIG.username, CONFIG.password);
 elseif(isfield(CONFIG.bs, 'publicKeyFile') && isfield(CONFIG.bs, 'privateKeyFile'))
-	% Use encryption key.
-	s = matlabSFTP(CONFIG.bs.host, CONFIG.bs.username, ...
-		"PublicKeyFile", CONFIG.bs.publicKeyFile, ...
-		"PrivateKeyFile", CONFIG.bs.privateKeyFile);
+    % Use encryption key.
+    s = matlabSFTP(CONFIG.bs.host, CONFIG.bs.username, ...
+        "PublicKeyFile", CONFIG.bs.publicKeyFile, ...
+        "PrivateKeyFile", CONFIG.bs.privateKeyFile, ...
+        "ConnectionTimeout", duration(minutes(30)));
 else
-	error('downloadBasestationFiles:NeedAuthentication', ...
-		['You must specify some way to authenticate on the remote basestation so I\n'...
-		'can log in there. Normally you do this in a basestation configuration\n'...
-		'.cnf file (you''re currently using %s ).\n'...
-		'In that file, either specify CONFIG.bs.password, or specify both\n'...
-		'CONFIG.bs.privateKeyFile and CONFIG.bs.publicKeyFile .'], CONFIG.bs.cnfFile);
+    error('downloadBasestationFiles:NeedAuthentication', ...
+        ['You must specify some way to authenticate on the remote basestation so I\n'...
+        'can log in there. Normally you do this in a basestation configuration\n'...
+        '.cnf file (you''re currently using %s ).\n'...
+        'In that file, either specify CONFIG.bs.password, or specify both\n'...
+        'CONFIG.bs.privateKeyFile and CONFIG.bs.publicKeyFile .'], CONFIG.bs.cnfFile);
 end
 
 % Make sure local directory for downloading files exists.
 if (~mkdir(CONFIG.path.bsLocal))
-	error('downloadBasestationFiles:CantMakeDir', "Unable to create or access %s", ...
-		CONFIG.path.bsLocal);
+    error('downloadBasestationFiles:CantMakeDir', "Unable to create or access %s", ...
+        CONFIG.path.bsLocal);
 end
 
 % Download the files.
 try			% use try/catch so we always close the sftp connection
-	s.cd(CONFIG.path.bsRemote);
-	% s.dir() is slow; do it once here instead of every time in downloadFileType.
-	allRemoteFiles = { s.dir().name };
-	pGlider = ['p' CONFIG.glider(end-2:end)];
-	% Download the files.
-	destDir = CONFIG.path.bsLocal;
-	downloadFileType(s, [pGlider '.*\.nc$'],  '.nc',  allRemoteFiles, destDir);
-	fprintf(1, '**End of .nc files**\n');
-	downloadFileType(s, [pGlider '.*\.log$'], '.log', allRemoteFiles, destDir);
-	fprintf(1, '**End of .log files**\n');
-	downloadFileType(s, [pGlider '.*\.eng$'], '.eng', allRemoteFiles, destDir);
-	fprintf(1, '**End of .eng files**\n');
-	downloadFileType(s, [pGlider '.*\.asc$'], '.asc', allRemoteFiles, destDir);
-	fprintf(1, '**End of .asc files**\n');
-	downloadFileType(s, [pGlider '.*\.dat$'], '.dat', allRemoteFiles, destDir);
-	fprintf(1, '**End of .dat files**\n');
-	% PMAR files?
-	if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
-		% This pattern matches filenames starting with pm and having >=6 characters.
-		downloadFileType(s, '^pm.....*', 'pm', allRemoteFiles, destDir);
-		fprintf(1, '**End of PMAR folders**\n');
-	end
-	% WISPR files?
-	if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
-		% This pattern matches filenames starting with ws and having >=6 characters.
-		toGet = downloadFileType(s, '^ws.....*', 'ws', allRemoteFiles, destDir);
-		% 	% unzip these files so they are readable % THIS DOES NOT WORK!!! 2024
-		% 	for wsf = 1:length(toGet)
-		% 		processWisprDetFile(CONFIG, toGet{wsf});
-		% 	end
-		disp('**End of wispr files\n**');
-	end
+    s.cd(CONFIG.path.bsRemote);
+    % s.dir() is slow; do it once here instead of every time in downloadFileType.
+    allRemoteFiles = { s.dir().name };
+    pGlider = ['p' CONFIG.glider(end-2:end)];
+    % Download the files.
+    destDir = CONFIG.path.bsLocal;
+    downloadFileType(s, [pGlider '.*\.nc$'],  '.nc',  allRemoteFiles, destDir);
+    fprintf(1, '**End of .nc files**\n');
+    downloadFileType(s, [pGlider '.*\.log$'], '.log', allRemoteFiles, destDir);
+    fprintf(1, '**End of .log files**\n');
+    downloadFileType(s, [pGlider '.*\.eng$'], '.eng', allRemoteFiles, destDir);
+    fprintf(1, '**End of .eng files**\n');
+    downloadFileType(s, [pGlider '.*\.asc$'], '.asc', allRemoteFiles, destDir);
+    fprintf(1, '**End of .asc files**\n');
+    downloadFileType(s, [pGlider '.*\.dat$'], '.dat', allRemoteFiles, destDir);
+    fprintf(1, '**End of .dat files**\n');
+    % PMAR files?
+    if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1
+        % This pattern matches filenames starting with pm and having >=6 characters.
+        downloadFileType(s, '^pm.....*', 'pm', allRemoteFiles, destDir);
+        fprintf(1, '**End of PMAR folders**\n');
+    end
+    % WISPR files?
+    if isfield(CONFIG, 'ws') && CONFIG.ws.loggers == 1
+        % This pattern matches filenames starting with ws and having >=6 characters.
+        toGet = downloadFileType(s, '^ws.....*', 'ws', allRemoteFiles, destDir);
+        % 	% unzip these files so they are readable % THIS DOES NOT WORK!!! 2024
+        % 	for wsf = 1:length(toGet)
+        % 		processWisprDetFile(CONFIG, toGet{wsf});
+        % 	end
+        disp('**End of wispr files\n**');
+    end
 
-	% kmz (if basestation3); get every time
-	kmzFile = [CONFIG.glider '.kmz'];
-	if any(contains(allRemoteFiles, kmzFile))
-		downloadSingleFile(s, kmzFile, destDir);
-		fprintf(1, '**Downloaded .kmz file**\n');
-	end
-	% the up/down or timeseries file; get every time
-	% old basestation calls it 'sgXXX_MissionStr_up_and_down_profile.nc'
-	tsFile = [CONFIG.gmStr '_up_and_down_profile.nc'];
-	if any(contains(allRemoteFiles, tsFile))
-		downloadSingleFile(s, tsFile, destDir);
-		fprintf(1, '**Downloaded up down profile .nc file**\n');
-	end
-	tsFile =  [CONFIG.gmStr '_timeseries.nc'];
-	if any(contains(allRemoteFiles, tsFile))
-		downloadSingleFile(s, tsFile, destDir);
-		fprintf(1, '**Downloaded time series .nc file**\n');
-	end
+    % kmz (if basestation3); get every time
+    kmzFile = [CONFIG.glider '.kmz'];
+    if any(contains(allRemoteFiles, kmzFile))
+        downloadSingleFile(s, kmzFile, destDir);
+        fprintf(1, '**Downloaded .kmz file**\n');
+    end
+    % the up/down or timeseries file; get every time
+    % old basestation calls it 'sgXXX_MissionStr_up_and_down_profile.nc'
+    tsFile = [CONFIG.gmStr '_up_and_down_profile.nc'];
+    if any(contains(allRemoteFiles, tsFile))
+        downloadSingleFile(s, tsFile, destDir);
+        fprintf(1, '**Downloaded up down profile .nc file**\n');
+    end
+    tsFile =  [CONFIG.gmStr '_timeseries.nc'];
+    if any(contains(allRemoteFiles, tsFile))
+        downloadSingleFile(s, tsFile, destDir);
+        fprintf(1, '**Downloaded time series .nc file**\n');
+    end
 
-	s.close();
+    s.close();
 catch ERR
-	s.close();
-	rethrow(ERR);
+    s.close();
+    rethrow(ERR);
 end
 
 end
@@ -187,22 +188,47 @@ remoteFiles = allRemoteFiles(~cellfun(@isempty, regexp_match));
 localFiles = { dir(localDestDir).name };	% all filenames in localDestDir
 localExists = zeros(length(remoteFiles), 1);	% logical index w/existing files
 for i = 1 : length(localExists)
-	localExists(i) = any(~cellfun(@isempty, strfind(localFiles, remoteFiles{i})));
+    localExists(i) = any(~cellfun(@isempty, strfind(localFiles, remoteFiles{i})));
 end
 toGet = remoteFiles(~localExists);		% cell array of files to get
 
 % Download any missing files.
+% post-2024 changes (either MATLAB or seaglider.pub?) causes repeated
+% timeouts or throttling. Will try each file 3 times or move on
+maxAttempts = 3;
+
 if (~isempty(toGet))
-	fprintf('%d %s files: ', length(toGet), patName);
-	for i = 1 : length(toGet)
-		fprintf('.');
-		% This used to be "s.mget(toGet{i}, CONFIG.path.bsLocal)". But that takes
-		% ~11 seconds per file (!!!), so I copied the meat out of s.mget here:
-		options = struct("Mode", s.Mode, "RelativePathToRemoteFile", toGet{i}, ...
-			"RelativePathToLocalFile", fullfile(localDestDir, toGet{i}));
-		matlab.io.ftp.internal.matlab.mget(s.Connection, options);
-	end
-	fprintf('\n');
+    fprintf('%d %s files: ', length(toGet), patName);
+    for i = 1 : length(toGet)
+        % This used to be "s.mget(toGet{i}, CONFIG.path.bsLocal)". But that takes
+        % ~11 seconds per file (!!!), so I copied the meat out of s.mget here:
+        options = struct("Mode", s.Mode, "RelativePathToRemoteFile", toGet{i}, ...
+            "RelativePathToLocalFile", fullfile(localDestDir, toGet{i}));
+       
+        % set status
+        success = false;
+        for attempt = 1:maxAttempts
+            try
+                matlab.io.ftp.internal.matlab.mget(s.Connection, options);
+                fprintf('.');
+                success = true;
+                break; % success, exit retry loop
+            catch
+                if attempt == maxAttempts
+                    fprintf(1, 'Failed to download %s. Will need to retry downloadBasestationFiles. %s\n', ...
+                        toGet{i}, ME.message);
+                else
+                    pause(2);
+                    fprintf('/');
+                end
+            end
+        end
+
+        if ~success
+            continue;
+        end
+    end
+    fprintf('\n');
 end
 
 end   % function downloadFileType
@@ -220,7 +246,7 @@ function downloadSingleFile(s, fileName, localDestDir)
 %
 
 options = struct("Mode", s.Mode, "RelativePathToRemoteFile", fileName, ...
-	"RelativePathToLocalFile", fullfile(localDestDir, fileName));
+    "RelativePathToLocalFile", fullfile(localDestDir, fileName));
 matlab.io.ftp.internal.matlab.mget(s.Connection, options);
 
 end % function downloadSingleFile

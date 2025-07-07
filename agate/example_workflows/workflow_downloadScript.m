@@ -54,6 +54,12 @@ mkdir(path_bsLocal);
 %% (1) download files from the basestation
 downloadBasestationFiles(CONFIG)
 
+% In MATLAB 2024b onward/with seaglider.pub (not sure which change is
+% responsible) the SFTP connection can timeout or be throttled resulting in
+% an FTP error 0 that interupts a download. This error will print but the
+% loop will continue. If those errors are present, just re-run
+% downloadBasestationFiles until no more files/errors occur. 
+
 % To plot Seaglider Piloting Tools plots at this point, run DiveData below
 % DiveData
 
