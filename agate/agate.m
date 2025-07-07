@@ -35,7 +35,7 @@ clear CONFIG;
 
 CONFIG = struct;
 
-CONFIG.ver = '1.1.20250423   https://github.com/sfregosi/agate';
+CONFIG.ver = '1.1.20250707   https://github.com/sfregosi/agate';
 fprintf('      agate   version %s\n', CONFIG.ver)
 
 if nargin < 1
