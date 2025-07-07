@@ -25,13 +25,15 @@ function targetsName = mapPlannedTrack(CONFIG, targetsFile, varargin)
 %       trackName     [char] optional argument for the legend entry. If
 %                     empty will just say 'glider', e.g., 'sg639'
 %       bathy         optional argument for bathymetry plotting
-%	                  [double] Set to 1 to plot bathymetry or 0 to only
+%                     [double] Set to 1 to plot bathymetry or 0 to only
 %                     plot land. Default is 0. Will look for bathy file in
 %                     CONFIG.map.bathyFile.
 %                     [char] Path to the bathymetry file (if you want to
 %                     use a different one than specified in CONFIG or it is
 %                     not specified in CONFIG
-%       col_track	  [char or RGB mat] optional color for the track e.g.,
+%       contourOn     [double] optional argument. Set to 1 to plot 
+%                     contours or 0 for no contour lines. Default is off 0                   
+%       col_track     [char or RGB mat] optional color for the track e.g.,
 %                     [1 0.4 0] for orange or 'black'. Default is orange
 %       figNum        [double] optional argument defining figure number
 %                     so it doesn't keep making new figs but refreshes
@@ -58,7 +60,7 @@ function targetsName = mapPlannedTrack(CONFIG, targetsFile, varargin)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:      23 January 2025
+%   Updated:      26 May 2025
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,6 +73,7 @@ narginchk(2, inf)
 % set defaults/empties
 trackName = 'glider';
 bathy = 0;
+contourOn = 0;
 col_track = [1 0.4 0];
 figNum = [];
 
@@ -84,6 +87,10 @@ while vIdx <= length(varargin)
         case 'bathy'
             % just carry the arg through to createBasemap
             bathy = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'contourOn'
+            % just carry the arg through to createBasemap
+            contourOn = varargin{vIdx+1};
             vIdx = vIdx+2;
         case 'col_track'
             col_track = varargin{vIdx+1};
@@ -110,7 +117,7 @@ end
 
 % create basemap
 % by default, don't include contours. Include bathymetry if specified.
-[baseFig] = createBasemap(CONFIG, 'bathy', bathy, 'contourOn', 0, ...
+[baseFig] = createBasemap(CONFIG, 'bathy', bathy, 'contourOn', contourOn, ...
     'figNum', figNum);
 
 % plot glider track from targets file
