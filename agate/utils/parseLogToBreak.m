@@ -27,17 +27,17 @@ function val = parseLogToBreak(x, string)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   24 April 2023
+%   FirstVersion:   28 May 2025
 %   Updated:
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % find the string in the log character vector (read in with fileread)
-idx = strfind(x, string);
+idx = strfind(x, [string, ',']); % add , to get full strings only
 sl = length(string);
 % find the index of the next break
-idxBreak = regexp(x(idx+sl+1:end),'\n','once') + idx + sl;
+idxBreak = regexp(x(idx+sl+1:length(x)),'\n','once') + idx + sl;
 % parse out the value
 if ~isempty(idx) % in case it didn't find anything
     val = x(idx+sl+1:idxBreak-1); 
