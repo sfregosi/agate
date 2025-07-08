@@ -12,7 +12,7 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Updated:   2025 July 03
+%	Updated:   2025 July 07
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,4 +29,4 @@ fRange = [1 70000];
 
 
 
-sr = wisprSensitivity(metadata, path_out, outType, fRange);
+sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange);

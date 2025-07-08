@@ -1,8 +1,8 @@
-function sr = wisprSensitivity(metadata, path_out, outType, fRange)
-% WISPRSENSITIVITY  Generate system sensitivity for WISPR
+function sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange)
+% WISPRSENSITIVITY  Generate overall system sensitivity for WISPR
 %
 %   Syntax:
-%       SR = WISPRSENSITIVITY(PATH_CALS, METADATA, PATH_OUT, OUTTYPE, FRANGE)
+%       SR = GENERATEWISPRSYSTEMSENSITIVITY(PATH_CALS, METADATA, PATH_OUT, OUTTYPE, FRANGE)
 %
 %   Description:
 %       Generate netCDF and/or CSV files and summary plots of WISPR system
@@ -15,6 +15,13 @@ function sr = wisprSensitivity(metadata, path_out, outType, fRange)
 %       This script is based off the NRS_calibration_to_netcdf.m script
 %       written by J. Ryan (MBARI) and S. Haver (NEFSC) available at
 %       https://github.com/sahav/NRS
+%
+%       It calls several functions from Martin et al. 2021 Erratum: Hybrid
+%       millidecade spectra: A practical format for exchange of long-term 
+%       ambient sound data, JASA Express Lett 1, 081201 
+%       doi: 10.1121/10.0005818. The functions were copied from the
+%       supplemental materials and included with agate in the 
+%       utils/martin_et_al_2021
 %
 %   Inputs:
 %       path_cals  [char] fullfile path to folder containing input
@@ -63,15 +70,10 @@ function sr = wisprSensitivity(metadata, path_out, outType, fRange)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:   30 June 2025
+%   Updated:   2025 July 08
 %
 %   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% DEAL WITH THIS STUFF
-% set path/add path to Samara's NRS repo
-% path_NRS = 'C:\Users\selene.fregosi\Documents\GitHub\NRS';
-% addpath(genpath(path_NRS));
 
 
 %% for testing
