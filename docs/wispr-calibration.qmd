@@ -11,4 +11,65 @@ knitr::opts_chunk$set(
 library(fontawesome)
 ```
 
-Coming soon...
+*This page was assembled from a more chaotic but possibly more detailed Google Doc [WISPR Sensitivity Measurement](https://docs.google.com/document/d/1Rx4ZI_vU_zIv3D66HPnFLJdk0iMx67Wh25fIO6qGQ50/edit?tab=t.0#heading=h.p6aqnfpw5pme)*
+
+### Goals:
+
+- Measure system sensitivity (preamplifier gain curve) of a Seaglider-type WISPR3
+- Output the preamp gain curve in a format that can be combined with other calibration info (hydrophone sensitivity, system gain) to produce an overall system response curve that can be used to produce calibrated noise measurements and be uploaded with raw data to NCEI
+
+Ideally this process would be conducted before and after each deployment to track any possible changes in preamplifier sensitivity over time as the WISPR3 system sits on the shelf or is out on a mission. 
+
+### Equipment
+
+- Laptop
+  - Needs to have at least 2 USB-B ports and 1 USB-C port or a hub
+  - Install Waveforms software from Digilent ([Download here](https://digilent.com/reference/software/waveforms/waveforms-3/start?srsltid=AfmBOoqQFAVA5bOYY3qVcSi-L1BjduXonW3feLVdlmE9vslEZtLLzPh3))
+- Digilent Analog Discovery 3
+- Bench power supply (for powering WISPR)
+- Homemade cables
+  - Power cable to power WISPR3. Requires three wires - ground, power, and 'enable' that is used by the glider to turn WISPR on and off
+  - Two UART (univeral asynchronous receiver transmitter) cables
+    - Built from WISPR3 docs section 1.2.3 but skipped wire 6 - PWR out to hydrophone because not needed here. Far right, square is pin 1/ground
+    - Both use a USB to TTL/CMOS (purchased from digikey) that reduces the USB voltage to the CMOS (transistor) level that the WISPR3 board can accept. **Set Power Supply swithch to 3.3 v to talk WISPR3**
+    - UART0 cable has ground, UART0 transmit, UART0 receive
+    - UART1 cable has ground, UART1 transmit, UART1 receive
+  - Hydrophone cable to receive the calibration signal. Requires three wires - ground, positive, and negative inputs
+  - Digilent BNC connector (purchased) and BNC cables (two - one for positive and one for negative inputs on hydrophone cable)
+- 20 dB attenuators 
+
+
+### Set up
+
+![](full-set-up.png)
+
+### Procedure
+
+#### Record calibration signals
+
+#### Process calibration recordings
+
+Use `agate` to measure the sensitivity from the recorded calibration signals. See `workflow_exportWisprSensitivity.m` in the `agate/example_workflows` folder for an example or follow the below steps. 
+
+```{matlab}
+
+# make sure agate is on the path
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
+
+```
+
+Convert the recorded `.dat` files to `.flac` or `.wav` to preview/browse in your preferred analysis software. 
+
+```{matlab}
+
+# initialize agate with an empty configruation file
+CONFIG = agate('agate_config_empty.cnf');
+# will prompt to select - use agate_config_empty.cnf example in agate/settings or
+
+# run conversion
+convertWispr(CONFIG);
+# this will prompt to select the raw file location and the output file location
+# and will default to writing to flac. Alternatively, specify more input 
+# arguments to avoid promts and choose wave output
+# convertWispr(CONFIG, 'inDir', 'E:/wisprFiles', 'outDir', 'E:/wav', 'outExt', '.wav')
+```
