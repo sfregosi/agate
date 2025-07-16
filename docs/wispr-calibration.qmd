@@ -53,23 +53,26 @@ Use `agate` to measure the sensitivity from the recorded calibration signals. Se
 
 ```{matlab}
 
-# make sure agate is on the path
+% make sure agate is on the path
 addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 
 ```
 
-Convert the recorded `.dat` files to `.flac` or `.wav` to preview/browse in your preferred analysis software. 
+To preview or browse through the recordings in your preferred analysis software, convert the recorded `.dat` files to `.flac` or `.wav`. This can be useful to pick which file has a full calibration signal that you will want to select in the measurement step. 
 
 ```{matlab}
 
-# initialize agate with an empty configruation file
-CONFIG = agate('agate_config_empty.cnf');
-# will prompt to select - use agate_config_empty.cnf example in agate/settings or
-
-# run conversion
-convertWispr(CONFIG);
-# this will prompt to select the raw file location and the output file location
-# and will default to writing to flac. Alternatively, specify more input 
-# arguments to avoid promts and choose wave output
-# convertWispr(CONFIG, 'inDir', 'E:/wisprFiles', 'outDir', 'E:/wav', 'outExt', '.wav')
+% run conversion
+convertWispr;
+% this will prompt to select the raw file location and the output file location
+% and will default to writing to flac. Alternatively, specify more input 
+% arguments to avoid promts and choose wave output
+% convertWispr('inDir', 'E:/wisprFiles', 'outDir', 'E:/wav', 'outExt', '.wav')
 ```
+
+Review the files and find one that has a nice complete calibration signal
+
+![](images/wispr_calibration_signal.png)
+
+
+![Example showing selection of a single 60 second sweep from the waveform](images/wispr_calibration_select_sweep.png)
