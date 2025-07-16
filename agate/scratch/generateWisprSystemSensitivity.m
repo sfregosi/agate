@@ -191,7 +191,7 @@ end
 % WISPR3
 if wisprVer == 3
 
-    pause
+    % pause
 
     % set sensor string for this mission/configuration
     sensorID = sprintf('WISPR3 SN: %s, %s, Hydrophone SN: %i, ', ...
