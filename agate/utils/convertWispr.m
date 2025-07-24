@@ -2,14 +2,15 @@ function convertWispr(varargin)
 %CONVERTWISPR    Convert WISPR .dat soundfiles to FLAC (.flac) or WAV (.wav) format
 %
 %   Syntax:
-%       CONVERTWISPR(CONFIG)
+%       CONVERTWISPR(VARARGIN)
 %
 %   Description:
 %       Converts .dat soundfiles recorded by the WISPR acoustic recording
 %       system on a Seaglider to FLAC (.flac) or WAV (.wav) files (default
 %       is .flac). This operates on a directory, full of subdirectories
 %       where each subdirectory is named with the date using the format
-%       'YYMMDD', (e.g., 230504 for 4 May 2023).
+%       'YYMMDD', (e.g., 230504 for 4 May 2023). Subdirectories MUST follow
+%       this format. 
 %
 %       Also creates a fileheaders.txt file in the output directory with a
 %       copy of the header portion of each .dat file, which is text.
@@ -25,7 +26,9 @@ function convertWispr(varargin)
 %       file_duration = (file_size*512)/sample_size/sampling_rate
 %
 %   Inputs:
-%       CONFIG        [struct] mission/agate configuration variable.
+%       CONFIG        [struct] mission/agate configuration variable. This
+%                     is optional but can be used to specify paths rather
+%                     than being prompted to select input/output dirs 
 %                     Suggested fields: CONFIG.ws.inDir, CONFIG.ws.outDir
 %                     CONFIG.ws.inDir must be a directory with
 %                     subdirectories where each subdirectory is named with
@@ -36,7 +39,7 @@ function convertWispr(varargin)
 %       all varargins are specified using name-value pairs
 %                 e.g., 'showProgress', true
 %       showProgress  [true or false] set to true to print progress in the
-%                     Command Window
+%                     Command Window. Default is true
 %       restartDir    [string] specifies a subfolder (named by day
 %                     typically) to restart processing. E.g., '20241030'
 %       outExt        [string] to specify output file extension/format
@@ -51,11 +54,19 @@ function convertWispr(varargin)
 %       None. Generates sound files
 %
 %   Examples:
+%       % use all defaults, will prompt to select input/output dirs
+%       convertWispr;
+%
+%       % write to wav and do not display progress, prompt for dirs
+%       convertWispr('outExt', '.wav', 'showProgress', false);
+% 
 %       % run with empty CONFIG will prompt to select in/out directories
 %       convertWispr(CONFIG);
 %
-%       % specify output extension type
-%       convertWispr(CONFIG, 'outExt', '.wav');
+%       % use a configuration file to specify directories and restart at a
+%       % specified subdirectory
+%       CONFIG = agate('agate_mission_config.cnf');
+%       convertWispr(CONFIG, 'outExt', '.wav', 'restartDir', '20240201);
 %
 %   See also CONVERTPMAR
 %
@@ -63,7 +74,7 @@ function convertWispr(varargin)
 %       Dave Mellinger Oregon State University
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:      2025 July 15
+%   Updated:      2025 July 23
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
