@@ -17,10 +17,10 @@ function sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange
 %       https://github.com/sahav/NRS
 %
 %       It calls several functions from Martin et al. 2021 Erratum: Hybrid
-%       millidecade spectra: A practical format for exchange of long-term 
-%       ambient sound data, JASA Express Lett 1, 081201 
+%       millidecade spectra: A practical format for exchange of long-term
+%       ambient sound data, JASA Express Lett 1, 081201
 %       doi: 10.1121/10.0005818. The functions were copied from the
-%       supplemental materials and included with agate in the 
+%       supplemental materials and included with agate in the
 %       utils/martin_et_al_2021
 %
 %   Inputs:
@@ -33,7 +33,7 @@ function sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange
 %                  descriptors/detail
 %               wisprVer = 3           % integer either 1, 2, or 3
 %               wisprSN = 'WISPR3_no2' % string
-%               version = 'v1.3.0'     % string for WISPR firmware version
+%               firmwareVer = 'v1.3.0' % string for WISPR firmware version
 %               sampling_rate = 200000 % integer, in Hz
 %               sample_size = 3        % integer, bits per sample
 %               adc_vref = 5           % integer, reference voltage
@@ -128,8 +128,8 @@ end
 % this text file should contain direct arguments to be evaluated. For an
 % example see agate/settings/wispr_metadata_example.txt
 % must include the following variables: glider, mission, wisprVer,
-% sensor_id, version, sampling_rate, adc_vref, adc_df, gain, hpType, hpSN,
-% hpSens
+% sensor_id, firmwareVer, sampling_rate, adc_vref, adc_df, gain, hpType,
+% hpSN, hpSens
 
 fid = fopen(metadata, 'r');
 if fid == -1
@@ -167,7 +167,7 @@ if wisprVer == 2
 
     % select correct preamp file
     if ~exist('paFile', 'var') || ~exist(paFile, 'file')
-        [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+        [name, path_cal] = uigetfile({'*.txt; *.csv; *.xlsx'}, sprintf(['Select correct ', ...
             'preamp calibration file. WISPR2 preamp ver %s, SN %s'], paVer, paSN), ...
             path_cal);
         paFile = fullfile(path_cal, name);
@@ -176,7 +176,7 @@ if wisprVer == 2
 
     % select correct anti-aliasing filter file - IS THIS CORRECT for WISPR2?
     if ~exist('aaFile', 'var') || ~exist(aaFile, 'file')
-        [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
+        [name, path_cal] = uigetfile({'*.txt; *.csv; *.xlsx'}, sprintf(['Select correct ', ...
             'anti-aliasing filter file. fs %i, df %i'], sampling_rate/1000, adc_df), ...
             path_cal);
         aaFile = fullfile(path_cal, name);
@@ -190,25 +190,26 @@ end
 
 % WISPR3
 if wisprVer == 3
-
-    % pause
-
     % set sensor string for this mission/configuration
     sensorID = sprintf('WISPR3 SN: %s, %s, Hydrophone SN: %i, ', ...
-        wisprSN, version, hpSN);
+        wisprSN, firmwareVer, hpSN);
 
-
-    % select correct sensitivity file
-    [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select correct ', ...
-        'WISPR3 calibration file. WISPR3 SN %s, ver %s'], wisprSN, version), ...
-            path_cal);
-    paFile = fullfile(path_cal, name);
+    % select correct preamp file
+    if ~exist('paFile', 'var') || ~exist(paFile, 'file')
+    [name, path_cal] = uigetfile({'*.txt; *.csv; *.xlsx'}, ...
+        sprintf('Select correct WISPR3 preamp calibration file. WISPR3 SN %s, ver %s', ...
+        wisprSN, firmwareVer), path_cal);
+        paFile = fullfile(path_cal, name);
+        fprintf(1, 'Selected preamp file:\n      %s\n', paFile);
+    end
 end
 
 
 % for either WISPR version...check if hydrophone curve available
 if ~isnumeric(hpSens)
-    if ~exist('hpFile', 'var') || ~exist(hpFile, 'file')
+    if exist(hpSens, 'file')
+        hpFile = hpSens;
+    elseif ~exist('hpFile', 'var') || ~exist(hpSens, 'file')
         % select hydrophone calibration file
         [name, path_cal] = uigetfile({'*.csv; *.xlsx'}, sprintf(['Select hydrophone ', ...
             'calibration file. %s SN %s'], hpType, num2str(hpSN)), ...
@@ -249,11 +250,11 @@ freq(isnan(freq)) = [];
 
 % interpolate at all freqs or put in single values
 paGain = interp1(paCurve(:,1), paCurve(:,2), freq);
-% anti-aliasing filter if needed
+% anti-aliasing filter if needed (not WISPR3)
 if exist('aaFile', 'var')
     aaFilt = interp1(aaCurve(:,1), aaCurve(:,2), freq);
 else
-    aaFilt = 0;
+    aaFilt = zeros(size(freq));
 end
 % hydrophone curve if available, or use single value
 if exist('hpFile', 'var')
@@ -290,13 +291,17 @@ R = interp1(freq, sysResp, bcf);
 hpCol = '#901200'; % NMFS PI Coral red
 paCol = '#003087'; % NMFS Oceans blue
 aaCol = '#4B8320'; % NMFS SE Seagrass
+
+% plot
 figure(8);
 clf;
 set(gcf, 'position', [100 100 900 450], 'color', 'w');
 hold on;
 plot(freq, hpSens, 'o--', 'Color', hpCol,  'DisplayName', 'Hydrophone Sensitivity');
 plot(freq, paGain, 'o--', 'Color', paCol, 'DisplayName', 'Preamp gain');
-plot(freq, aaFilt, 'o--', 'Color', aaCol, 'DisplayName', 'Anti-aliasing filter')%
+if wisprVer == 2
+    plot(freq, aaFilt, 'o--', 'Color', aaCol, 'DisplayName', 'Anti-aliasing filter')%
+end
 plot(freq, sysResp, 'ks', 'MarkerSize', 10, 'DisplayName', ...
     'System response - original'); % combined/original
 plot(bcf, R, 'k', 'LineWidth', 1.5, 'DisplayName', ...
@@ -324,7 +329,7 @@ exportgraphics(gcf, fullfile(path_out, sprintf('%s_%s_sensitivity_%s.png', ...
 if nc
     ncFilename = fullfile(path_out, sprintf('%s_%s_sensitivity_%s.nc', ...
         glider, mission,  datetime('now', 'Format', 'yyyy-MM-dd')));
-    ncid = netcdf.create(ncFilename, 'CLOBBER');
+    ncid = netcdf.create(ncFilename, 'NETCDF4');
 
     % global attributes
     varid = netcdf.getConstant('NC_GLOBAL');
@@ -380,23 +385,47 @@ if nc
 
     % variable - raw preamp gain curve
     netcdf.reDef(ncid); % Re-enter define mode for attributes
-    dimid_pa_row = netcdf.defDim(ncid, 'preamp_frequency', size(paCurve, 1));
-    dimid_pa_col = netcdf.defDim(ncid, 'preamp_sensitivity', 2);
+    dimid_pa_row = netcdf.defDim(ncid, 'preamp_rows', size(paCurve, 1));
+    dimid_pa_col = netcdf.defDim(ncid, 'preamp_cols', 2);
     varid_pa = netcdf.defVar(ncid, 'preamp_gain', 'NC_DOUBLE', [dimid_pa_row, dimid_pa_col]);
     netcdf.putAtt(ncid, varid_pa, 'long_name', 'preamp frequency response');
     netcdf.putAtt(ncid, varid_pa, 'units', 'Hz, dB');
     netcdf.endDef(ncid); % Exit define mode
     netcdf.putVar(ncid, varid_pa, paCurve(:,1:2));
 
-    % variable - raw anti-aliasing filter
+    % variable - raw anti-aliasing filter frequency response
+    if wisprVer == 2
+        netcdf.reDef(ncid); % Re-enter define mode for attributes
+        dimid_aa_row = netcdf.defDim(ncid, 'anti-alias_rows', size(aaCurve, 1));
+        dimid_aa_col = netcdf.defDim(ncid, 'anti-alias_cols', 2);
+        varid_aa = netcdf.defVar(ncid, 'anti-alias_filter', 'NC_DOUBLE', ...
+            [dimid_aa_row, dimid_aa_col]);
+        netcdf.putAtt(ncid, varid_aa, 'long_name', 'anti-aliasing filter frequency response');
+        netcdf.putAtt(ncid, varid_aa, 'units', 'Hz, dB');
+        netcdf.endDef(ncid); % Exit define mode
+        netcdf.putVar(ncid, varid_aa, aaCurve(:,1:2));
+    end
+
+    % variable hydrophone sensitivity
     netcdf.reDef(ncid); % Re-enter define mode for attributes
-    dimid_aa_row = netcdf.defDim(ncid, 'anti-alias_frequency', size(aaCurve, 1));
-    dimid_aa_col = netcdf.defDim(ncid, 'anti-alias_sensitivity', 2);
-    varid_aa = netcdf.defVar(ncid, 'anti-alias_filter', 'NC_DOUBLE', [dimid_aa_row, dimid_aa_col]);
-    netcdf.putAtt(ncid, varid_aa, 'long_name', 'anti-aliasing filter frequency response');
-    netcdf.putAtt(ncid, varid_aa, 'units', 'Hz, dB');
-    netcdf.endDef(ncid); % Exit define mode
-    netcdf.putVar(ncid, varid_aa, aaCurve(:,1:2));
+    % single value
+    if isscalar(unique(hpSens(~isnan(hpSens))))
+        dimid_hp = netcdf.defDim(ncid, 'hydrophone', size(1,1));
+        varid_hp = netcdf.defVar(ncid, 'hydrophone', 'NC_DOUBLE', dimid_hp);
+        netcdf.putAtt(ncid, varid_hp, 'long_name', 'nominal hydrophone sensitivity at 3 kHz');
+        netcdf.putAtt(ncid, varid_hp, 'units', 'dB');
+        netcdf.endDef(ncid); % Exit define mode
+        netcdf.putVar(ncid, varid_hp, unique(hpSens));
+    else
+        dimid_hp_row = netcdf.defDim(ncid, 'hydrophone_rows', size(hpCal, 1));
+        dimid_hp_col = netcdf.defDim(ncid, 'hydrophone_cols', 2);
+        varid_hp = netcdf.defVar(ncid, 'hydrophone', 'NC_DOUBLE', ...
+            [dimid_hp_row, dimid_hp_col]);
+        netcdf.putAtt(ncid, varid_hp, 'long_name', 'calibrated hydrophone sensitivity curve');
+        netcdf.putAtt(ncid, varid_hp, 'units', 'Hz, dB');
+        netcdf.endDef(ncid); % Exit define mode
+        netcdf.putVar(ncid, varid_hp, hpCal(:,1:2));
+    end
 
     % close
     netcdf.close(ncid)

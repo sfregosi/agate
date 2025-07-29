@@ -23,18 +23,13 @@
 addpath(genpath('C:\Users\selene.fregosi\Documents\MATLAB\agate'))
 
 
-%% convert to .wav or .flac if needed
-% this can be useful to browse through several files recorded to find one
-% with a complete calibration signal
+%% measure preamp gain curve
+% IF NECESSARY see workflow_generatePreampGainCurve to measure a WISPR3
+% gain curve from a known voltage sweep
 
-convertWispr;
-% this will prompt to select the raw file location and the output file 
-% location and will default to writing to flac. Alternatively, specify more
-% input arguments to avoid promts and choose wave output
-% convertWispr('inDir', 'E:/wisprFiles', 'outDir', 'E:/wav', 'outExt', '.wav')
+% [preamp_freq, preamp_gain]= measureWisprSensitivity(sn, sweep_file, ...
+%     hydro_sens, amp, attenuator, path_out);
 
-% identify a good candidate file
-% 134457
 
 %% Define some settings
 
@@ -51,7 +46,9 @@ sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange);
 %% Test with WISPR2
 
 metadata = [];
+metadata = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration\mission_metadata\sg679_CalCurCEAS_Aug2024_WISPR2_HTI653007_wHydrophoneCalCurve.txt';
 path_out = [];
+path_out = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
 outType = 'both';
 fRange = [1 70000];
 
@@ -62,7 +59,9 @@ sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange);
 %% Test with WISPR3
 
 metadata = [];
+metadata = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration\mission_metadata\sg680_CalCurCEAS_Sep2024_WISPR3_no2_HTI1211001.txt';
 path_out = [];
+path_out = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration';
 outType = 'both';
 fRange = [1 70000];
 
