@@ -54,23 +54,18 @@ addpath(genpath('C:\Users\selene.fregosi\Documents\MATLAB\agate'))
 
 %% User modified inputs
 
-% SN of the WISPR preamp/adc board - must be a string less than 16 chars
-% used for filename generation
+% serial number of the WISPR preamp/adc board - must be a string < 16 chars
+% used for filename generation and output file header info
 sn = 'WISPR3_no2';
 
 % fullfile path of calibration recording (as raw .dat file)
 % see OPTIONAL step below for help converting .dat to .flac/.wav for review
 % sweep_file = []; % set to [] to be prompted to select file
-sweep_file = "E:\wispr_calibration\wispr_no2\250514\WISPR_250514_213247.dat"; % 100 kHz 20 sec sweep
-% sweep_file = "E:\wispr_calibration\wispr_no2\250514\WISPR_250514_214326.dat"; % 200 kHz 60 sec sweep
-
+sweep_file = "E:\wispr_calibration\wispr_no2\250514\WISPR_250514_213247.dat";
 
 % define hydrophone sensitivity, not used for the calibration
 % but saved in the calibration file for record keeping
 hydro_sens = -164.5;
-
-% target frequency resolution of sample points
-fRes = 1000;
 
 % define the amplitude of sine wave sweep (in volts) and sweep duration
 % typically 10 mV and 20 or 60 seconds
@@ -85,12 +80,12 @@ attenuator = true;
 path_out = 'C:\Users\selene.fregosi\Documents\GitHub\glider-lab\calibration\wispr\preamps';
 
 % OPTIONAL
-% specify an output filename. Default is SN_preamp_gain_mixedResolution_YYYY-MM-DD
+% specify an output filename. Default is SN_preamp_gain_YYYY-MM-DD
 % where the timestamp is the date of creation. Do not specify an extension.
 % out_file_name = 'testFile';
 out_file_name = []; %
 
-%% OPTIONAL - convert to flac for review
+%% OPTIONAL - convert sweep files to flac for review
 % it may be useful to convert the raw .dat files to .flac (or .wav) to
 % browse through several recorded files to find a good candidate file with
 % a complete sweep
@@ -102,7 +97,7 @@ convertWispr;
 % specify input arguments to avoid prompts and write to .wav. E.g.,
 % convertWispr('inDir', 'E:/wisprFiles', 'outDir', 'E:/wav', 'outExt', '.wav')
 
-%% calculate sensitivity
+%% calculate WISPR3/preamp sensitivity
 
 % this function will plot the waveform of the specified calibration sweep
 % file, prompt the user to select the start of one complete sweep,
