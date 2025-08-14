@@ -44,8 +44,10 @@ website:
         text: Post-mission processing
       - section: Process acoustic data
         contents:
-        - href: convert-acoustics.qmd
-          text: Convert acoustic files
+        # - href: convert-acoustics.qmd
+        #   text: Convert acoustic files
+        - href: convert-wispr.qmd
+          text: Convert raw WISPR files          
         - href: wispr-calibration.qmd
           text: WISPR calibration
       - href: plotting.qmd
