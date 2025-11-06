@@ -122,7 +122,7 @@ if sweep_file == "" || ~exist(sweep_file, 'file')
     fprintf('Selected calibration recording file %s\n', file);
 end
 
-% set hydrophone sensitivty - not used in calculation but stored in output
+% set hydrophone sensitivity - not used in calculation but stored in output
 if hydro_sens == 0
     in = input('Enter hydrophone sensitivity (dB re 1V/µPa) [0]: ');
     if (~isempty(in))
@@ -182,9 +182,6 @@ nearNyquist = .89; % percent of Nyquist e.g., .89 kHz for 100 kHz Nyquist
 
 %% read in and mark sweep
 
-% Read the calibration data file collected with a signal generator input
-% [hdr, vout, time] = read_wispr_file(sweep_file, 2, 1024);
-
 % first read header
 [hdr, ~, ~] = read_wispr_file_agate(sweep_file, 0);
 
@@ -198,10 +195,8 @@ end
 [hdr, vout, time] = read_wispr_file_agate(sweep_file, 2, lastBuffer);
 % why does chris start on buffer 2?
 
-%vout = sqrt(mean(data(:).^2)); % RMS
+% convert to matrix
 vout = vout(:);
-% time = time(:);
-% secs = time - time(1);
 
 % downsample so plotted waveform fig isn't massive
 d = 50;
@@ -209,7 +204,6 @@ plot_fs = hdr.sampling_rate/d;
 tick_secs = 5;
 % plot waveform of input calibration signal
 figure(1); clf;
-% plot(secs(1:d:end,:), vout(1:d:end,:),'-');
 plot(vout(1:d:end),'-');
 xticks(1:(tick_secs*plot_fs):length(vout)/d); % ticks every 10 seconds
 xTicks = get(gca, 'XTick');
@@ -220,12 +214,12 @@ grid on;
 %axis([min(min(time)) max(max(time)) -5.1 5.1]);
 title('Pick the start and end of one complete calibration sweep');
 
-% pick a segment of the input data to use for calibration
+% Pick a segment of the input data to use for calibration
 % This should be at a minimum one complete sweep pulse
 fprintf(1, 'Select a single sweep pulse from the input signal to use for calibration.\n');
 fprintf(1, 'This should be one complete sweep pulse.\n');
 
-% select start
+% select start only
 bound = ginput(1);
 hold on;
 xline(bound(1), 'LineWidth', 2, 'color', 'green');
@@ -233,7 +227,7 @@ start = floor(d * bound(1));
 % hold off;
 
 % define stop based on sweep duration and sample rate
-stop = start + dur*hdr.sampling_rate;
+stop = start + dur*hdr.sampling_rate - 1;
 xline(stop/d, 'LineWidth', 2, 'color', 'red');
 hold off;
 
@@ -254,7 +248,7 @@ grid on;
 %axis([min(min(time)) max(max(time)) -5.1 5.1]);
 
 %% Calc spectrum of vout/vin
-% choosing appropriate fft_size is ????
+% choosing appropriate fft_size is a balance
 % want good resolution at low frequencies without a lot of 'noise' at the
 % higher frequencies where things are flatter so run process at two
 % resolutions and combine them
@@ -262,8 +256,9 @@ grid on;
 % low freq (up to 2 kHz and close to Nyquist)
 fft_sizeLow = 2^nextpow2(hdr.sampling_rate/fResLow);
 overlapLow = fft_sizeLow-(fft_sizeLow/4);
-%window = rectwin(fft_size);
 windowLow = hamming(fft_sizeLow)*1.59; %multiply energy correction
+% alternative window options
+%window = rectwin(fft_size);
 %window = hann(fft_size)*1.63;
 fs = hdr.sampling_rate;
 [specLow, fLow] = cal_spec(vout/vin, fs, windowLow, overlapLow, time(1));
@@ -311,7 +306,7 @@ hold off;
 %% set up output filenames
 
 % define file name string for each output
-if out_file_name == "default"
+if any(strcmp(out_file_name, "default")) || isempty(out_file_name)
     out_file_name = sprintf('%s_preamp_gain_mixedResolution_%s', ...
         sn, datetime('now', 'Format', 'yyyy-MM-dd'));
 end
@@ -327,7 +322,7 @@ save(mat_file, 'vout', 'vin', 'fs', 'paFreq', 'paGain');
 
 % plot spectrum
 fig3 = figure(3); clf;
-set(fig2, 'Position', [50 50 950 450]);
+set(fig3, 'Position', [70 70 950 450]);
 hold on;
 plot(paFreq/1000, paGain, '.-', 'Color', [0 0 0.5], 'LineWidth', 2); %normalize the power spec
 grid(gca,'minor');

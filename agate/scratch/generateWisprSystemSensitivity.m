@@ -2,13 +2,13 @@ function sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange
 % WISPRSENSITIVITY  Generate overall system sensitivity for WISPR
 %
 %   Syntax:
-%       SR = GENERATEWISPRSYSTEMSENSITIVITY(PATH_CALS, METADATA, PATH_OUT, OUTTYPE, FRANGE)
+%       SR = GENERATEWISPRSYSTEMSENSITIVITY(METADATA, PATH_OUT, OUTTYPE, FRANGE)
 %
 %   Description:
 %       Generate netCDF and/or CSV files and summary plots of WISPR system
 %       calibration metadata including hydrophone and preamp sensitivities,
 %       user-defined system gain, and anti-aliasing filters. The netCDF
-%       files are used by PyPAM Based Processin (PBP) when creating daily
+%       files are used by PyPAM Based Processing (PBP) when creating daily
 %       files of hybrid millidecade spectra.
 %
 %	Notes
@@ -24,9 +24,6 @@ function sr = generateWisprSystemSensitivity(metadata, path_out, outType, fRange
 %       utils/martin_et_al_2021
 %
 %   Inputs:
-%       path_cals  [char] fullfile path to folder containing input
-%                  calibration files (e.g., hydrophone calibration curves,
-%                  preamp gain curves)
 %       metadata   [char] fullfile path to text file with relevant WISPR
 %                  metadata for this mission. Set to blank ([]) to prompt
 %                  to select file. See XXXX for example and additional
@@ -293,7 +290,7 @@ paCol = '#003087'; % NMFS Oceans blue
 aaCol = '#4B8320'; % NMFS SE Seagrass
 
 % plot
-figure(8);
+figure(9);
 clf;
 set(gcf, 'position', [100 100 900 450], 'color', 'w');
 hold on;
@@ -307,10 +304,11 @@ plot(freq, sysResp, 'ks', 'MarkerSize', 10, 'DisplayName', ...
 plot(bcf, R, 'k', 'LineWidth', 1.5, 'DisplayName', ...
     'System response - interpolated'); % interpolated
 xline(fRange(2), 'k-.', 'DisplayName', 'Upper limit for valid data');
-set(gca, 'XScale', 'log', 'FontSize', 12)
+% set(gca, 'XScale', 'log', 'FontSize', 12)
+set(gca, 'FontSize', 12);
 grid on;
 axis tight;
-xlim([0 max(freq)/2]); % xlim([0 max(freq)]; % only plot to nyquist
+xlim([0 max(freq)]); % only plot to nyquist
 % ylim([min([paGain; aaFilt; sysResp; sysGain; hSens])-2, ...
 %     max([paGain; aaFilt; sysResp; sysGain; hSens])]+2)
 ylabel('sensitivity [dB]');
