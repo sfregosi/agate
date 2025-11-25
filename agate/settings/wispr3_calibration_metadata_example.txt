@@ -1,0 +1,17 @@
+% Example Mission WISPR3 metadata
+% info complied from hardware config, pilot-set values, or from WISPR data file headers
+
+glider = 'sgXXX'; 				% glider serial number
+mission = 'Location_MonYYYY'; 	% mission identifier from sg_calib_constants.m 
+wisprVer = 3; 					% WISPR version (should only be 2 or 3)
+wisprSN = 'no4'; 				% serial number from WISPR DAT file header (either sensor_id or instrument_id)
+firmwareVer = '1.3.0'; 			% firmware version from WISPR DAT file header
+sampling_rate = 180000; 		% sample rate, from WISPR DAT file	header
+sample_size = 3;				% bits per sample, from WISPR DAT file header
+adc_vref = 5; 					% reference voltage, from WISPR DAT file header
+adc_df = 4; 					% decimation factor, from WISPR DAT file header
+gain = 0; 						% system gain, from WISPR DAT file header 
+hpType = 'HTI92WB';				% hydrophone type
+hpSN = 653007; 					% hydrophone serial number
+hpSens = -162.5; 				% hydrophone nominal sensitivity from manufacturer; if calibration curve is available set to full file path and filename to calibration file (e.g., 'C:\653007HTI92WB_manualSensitivity_2025-06-30.xlsx' or set to 'hpFile' to prompt and select hydrophone high pass filter frequency, from manufacturer
+paFile = 'C:\preamp_WISPR3_no4_2025-07-03.csv'; 	% optionally set full file path to preamp gain curve file, skip to prompt and select

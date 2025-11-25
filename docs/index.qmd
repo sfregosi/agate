@@ -45,12 +45,13 @@ NOAA's [Uncrewed Systems Operations Center (UxSOC)](https://www.omao.noaa.gov/un
 
 ## Dependencies
 
-This code was either developed or most recently updated and tested with MATLAB version 2022b, but has undergone some testing with 2020b.  
+This code was either developed or most recently updated and tested with MATLAB version 2024b, but has undergone some testing with 2020b.  
 
 #### MATLAB toolboxes
 
+- Signal Processing Toolbox
 - Mapping Toolbox  
-__*agate*__ requires the MATLAB Mapping toolbox. In the future, we may try modify the mapping tools to work with the freely available `m_map` package to make it more accessible, but are not there yet!
+Currently __*agate*__ requires the MATLAB Mapping toolbox. In the future, we may try modify the mapping tools to work with the freely available `m_map` package to make it more accessible, but are not there yet!
 
 #### MATLAB File Exchange
 
@@ -66,6 +67,12 @@ This package requires a few resources from MATLAB File Exchange. They come packa
 - [seawater_density](https://www.mathworks.com/matlabcentral/fileexchange/85900-seawater-density-from-salinity-temperature-and-pressure)  
 <sub>*Gabriel Ruiz-Martinez (2023). Seawater density from salinity, temperature and pressure, MATLAB Central File Exchange. Retrieved April 24, 2023.* </sub>
 
+#### Other MATLAB tools
+
+Some of the acoustic processing functionality relies on a few open-access MATLAB tools. For convenience these have also been included within __*agate*__. They include the following folders within the `utils` folder: 
+
+- `eos-wispr3` contains a modified version of the `read_wispr_file` function created by the WISPR developer, Embedded Ocean Systems, and available on GitHub:  [wispr3](https://github.com/embeddedocean/wispr3). Modifications can be tracked on a fork of this repository: [sfregosi-noaa/wispr3 - sf branch](https://github.com/sfregosi-noaa/wispr3/tree/sf).
+- `martin_et_al_2021` contains functions for calculating hybrid millidecade frequency bands. These functions were copied from the supplementary materials from Martin et al. (2021) Erratum: Hybrid millidecade spectra: A practical format for exchange of long-term ambient sound data, *JASA Express Letters* 1, 081201 doi: [10.1121/10.0005818](https://doi.org/10.1121/10.0005818).
 
 #### Basemap rasters
 

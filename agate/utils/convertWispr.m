@@ -1,15 +1,16 @@
-function convertWispr(CONFIG, varargin)
+function convertWispr(varargin)
 %CONVERTWISPR    Convert WISPR .dat soundfiles to FLAC (.flac) or WAV (.wav) format
 %
 %   Syntax:
-%       CONVERTWISPR(CONFIG)
+%       CONVERTWISPR(VARARGIN)
 %
 %   Description:
 %       Converts .dat soundfiles recorded by the WISPR acoustic recording
 %       system on a Seaglider to FLAC (.flac) or WAV (.wav) files (default
 %       is .flac). This operates on a directory, full of subdirectories
 %       where each subdirectory is named with the date using the format
-%       'YYMMDD', (e.g., 230504 for 4 May 2023).
+%       'YYMMDD', (e.g., 230504 for 4 May 2023). Subdirectories MUST follow
+%       this format. 
 %
 %       Also creates a fileheaders.txt file in the output directory with a
 %       copy of the header portion of each .dat file, which is text.
@@ -25,7 +26,9 @@ function convertWispr(CONFIG, varargin)
 %       file_duration = (file_size*512)/sample_size/sampling_rate
 %
 %   Inputs:
-%       CONFIG        [struct] mission/agate configuration variable.
+%       CONFIG        [struct] mission/agate configuration variable. This
+%                     is optional but can be used to specify paths rather
+%                     than being prompted to select input/output dirs 
 %                     Suggested fields: CONFIG.ws.inDir, CONFIG.ws.outDir
 %                     CONFIG.ws.inDir must be a directory with
 %                     subdirectories where each subdirectory is named with
@@ -35,20 +38,35 @@ function convertWispr(CONFIG, varargin)
 %
 %       all varargins are specified using name-value pairs
 %                 e.g., 'showProgress', true
-%       showProgres   [true or false] set to true to print progress in the
-%                     Command Window
+%       showProgress  [true or false] set to true to print progress in the
+%                     Command Window. Default is true
 %       restartDir    [string] specifies a subfolder (named by day
 %                     typically) to restart processing. E.g., '20241030'
-%       inExt         [string] to specify input file extension. Default is
-%                     '.dat'
 %       outExt        [string] to specify output file extension/format
 %                     (e.g., '.flac' or '.wav'). Default is '.flac'
+%       inDir         [string] fullfile path to folder containing raw .dat
+%                     files or subdirectories of .dat files (named by date)
+%       outDir        [string[ fullfile path to desired output folder. All
+%                     files will be output to single folder (not by date)
 %
 %
 %   Outputs:
 %       None. Generates sound files
 %
 %   Examples:
+%       % use all defaults, will prompt to select input/output dirs
+%       convertWispr;
+%
+%       % write to wav and do not display progress, prompt for dirs
+%       convertWispr('outExt', '.wav', 'showProgress', false);
+% 
+%       % run with empty CONFIG will prompt to select in/out directories
+%       convertWispr(CONFIG);
+%
+%       % use a configuration file to specify directories and restart at a
+%       % specified subdirectory
+%       CONFIG = agate('agate_mission_config.cnf');
+%       convertWispr(CONFIG, 'outExt', '.wav', 'restartDir', '20240201);
 %
 %   See also CONVERTPMAR
 %
@@ -56,22 +74,29 @@ function convertWispr(CONFIG, varargin)
 %       Dave Mellinger Oregon State University
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:      06 February 2025
+%   Updated:      2025 July 23
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % argument checks
-narginchk(1, inf)
+% narginchk(1, inf)
 
 % set some defaults
+CONFIG = struct();
 showProgress = true;        % true or false
 restartDir = '';            % string for restart subdirectory
-inExt = '.dat';             % input extension
+inExt = '.dat';             % input extension - always .dat
 outExt = '.flac';           % output extension
 inDir = [];                 % input directory
 outDir = [];                % output directory
+
+% Check if first argument is CONFIG
+if ~isempty(varargin) && isstruct(varargin{1})
+    CONFIG = varargin{1};
+    varargin(1) = [];  % remove CONFIG from varargin
+end
 
 % parse arguments
 vIdx = 1;
@@ -83,11 +108,17 @@ while vIdx <= length(varargin)
         case 'restartDir' % start at a different subdirectory
             restartDir = varargin{vIdx+1};
             vIdx = vIdx+2;
-        case 'inExt' % input format
-            inExt = varargin{vIdx+1};
-            vIdx = vIdx+2;
+            % case 'inExt' % input format
+            %     inExt = varargin{vIdx+1};
+            %     vIdx = vIdx+2;
         case 'outExt' % output format
             outExt = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'inDir' % input directory
+            inDir = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'outDir' % output directory
+            outDir = varargin{vIdx+1};
             vIdx = vIdx+2;
         otherwise
             error('Incorrect argument. Check inputs.');
@@ -111,8 +142,8 @@ if isfield(CONFIG, 'ws')
         inDir = CONFIG.ws.inDir;
     end
 end
-if isempty(inDir)
-    if isfield(CONFIG.path, 'mission')
+if isempty(inDir) || ~exist(inDir, 'dir')
+    if isfield(CONFIG, 'path') && isfield(CONFIG.path, 'mission')
         inDir = uigetdir(CONFIG.path.mission, 'Select raw data folder');
     else
         inDir = uigetdir('C:\', 'Select raw data folder');
@@ -142,8 +173,8 @@ if isfield(CONFIG, 'ws')
         outDir = CONFIG.ws.outDir;
     end
 end
-if isempty(outDir)
-    if isfield(CONFIG.path, 'mission')
+if isempty(outDir) % || ~exist(outDir, 'dir') will get made below
+    if isfield(CONFIG, 'path') && isfield(CONFIG.path, 'mission')
         outDir = uigetdir(CONFIG.path.mission, 'Select output folder');
     else
         outDir = uigetdir('C:\', 'Select output folder');
@@ -227,7 +258,8 @@ for di = 1 : length(inDir) % inDir is a cell array
     for dj = 1:length(datDirs)
 
         % Find all .dat files in this directory and process each one.
-        datFiles = dir(fullfile(datDirs{dj}, 'WISPR*.dat'));
+        % datFiles = dir(fullfile(datDirs{dj}, 'WISPR*.dat')); % does this always apply??
+        datFiles = dir(fullfile(datDirs{dj}, '*.dat'));
         for fi = 1 : length(datFiles)
 
             % get file name and parts
@@ -247,7 +279,7 @@ for di = 1 : length(inDir) % inDir is a cell array
                 % read_wispr_file originally by C. Jones
                 % https://github.com/sfregosi/wispr3)
                 [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
-                % this scales to 
+                % this scales to
 
                 % Produce an output file in each output directory.
                 for dk = 1:length(outDir)

@@ -1,0 +1,129 @@
+---
+title: "WISPR calibration"
+subtitle: 'Guide for measuring and formatting WISPR system sensitivity'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
+
+*This page was assembled from a more chaotic but possibly more detailed Google Doc [WISPR Sensitivity Measurement](https://docs.google.com/document/d/1Rx4ZI_vU_zIv3D66HPnFLJdk0iMx67Wh25fIO6qGQ50/edit?tab=t.0#heading=h.p6aqnfpw5pme)*
+
+### Goals:
+
+1. Measure frequency-dependent sensitivity of a Seaglider-type WISPR3 and integrated preamplifier (preamp gain curve)
+2. Combine the preamp gain curve with other system calibration info (hydrophone sensitivity, system gain) to produce an overall system response curve that can be used to produce calibrated noise measurements and be uploaded with raw data to NCEI, in a format that is compatibile with noise and soundscape analyses
+
+Ideally this process is conducted before and after each deployment to track any possible changes in preamplifier sensitivity over time as the WISPR3 system sits on the shelf or is out on a mission. 
+
+### Equipment
+
+- Laptop
+  - Needs to have at least 2 USB-B ports and 1 USB-C port or a hub
+  - Install Waveforms software from Digilent ([Download here](https://digilent.com/reference/software/waveforms/waveforms-3/start?srsltid=AfmBOoqQFAVA5bOYY3qVcSi-L1BjduXonW3feLVdlmE9vslEZtLLzPh3))
+- Digilent Analog Discovery 3
+- Bench power supply (for powering WISPR)
+- Homemade cables
+  - Power cable to power WISPR3. Requires three wires - ground, power, and 'enable' that is used by the glider to turn WISPR on and off
+  - Two UART (univeral asynchronous receiver transmitter) cables
+    - Built from WISPR3 docs section 1.2.3 but skipped wire 6 - PWR out to hydrophone because not needed here. Far right, square is pin 1/ground
+    - Both use a USB to TTL/CMOS (purchased from digikey) that reduces the USB voltage to the CMOS (transistor) level that the WISPR3 board can accept. **Set Power Supply swithch to 3.3 v to talk WISPR3**
+    - UART0 cable has ground, UART0 transmit, UART0 receive
+    - UART1 cable has ground, UART1 transmit, UART1 receive
+  - Hydrophone cable to receive the calibration signal. Requires three wires - ground, positive, and negative inputs
+  - Digilent BNC connector (purchased) and BNC cables (two - one for positive and one for negative inputs on hydrophone cable)
+- 20 dB attenuators 
+
+
+## Set up
+
+![](full-set-up.png)
+
+## Procedure
+
+### Record calibration signals
+
+### Process calibration sweep recordings
+
+Use `agate` to measure the WISPR3 board and preamp sensitivity from the recorded calibration sweep signals. See `workflow_wisprSystemSensitivity.m` in the `agate/example_workflows` folder for an example or follow the below steps. 
+
+```{matlab}
+% make sure agate is on the path
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
+```
+
+To preview or browse through the recordings in your preferred analysis software, convert the recorded `.dat` files to `.flac` or `.wav`. This can be useful to pick which file has a full calibration signal that you will want to select in the measurement step. 
+
+```{matlab}
+convertWispr;
+
+% this call with no input arguments will prompt to select raw file location
+% and output file location and will default to writing flac. Alternatively,
+% specify input arguments to avoid prompts and write to .wav. E.g.,
+% convertWispr('inDir', 'E:/wisprFiles', 'outDir', 'E:/wav', 'outExt', '.wav')
+```
+
+Review the files and find one that has a nice complete calibration signal.
+
+![Example showing three 20 second sweeps from 0 to 100 kHz. ](images/wispr_calibration/wispr_calibration_signal_20sec.png){width=60%}
+
+Define the input arguments needed for the measurement step.
+
+```{matlab}
+% serial number of the WISPR preamp/adc board - must be a string < 16 chars
+% used for filename generation and output file header info
+sn = 'WISPR3_no#';
+
+% fullfile path of calibration recording (as raw .dat file)
+sweep_file = []; % set to [] to be prompted to select file OR define
+% sweep_file = "E:\wispr_calibration\wispr_no2\250514\WISPR_250514_213247.dat"; 
+
+% define hydrophone sensitivity, not required, used in output file header
+hydro_sens = -164.5;
+
+% define the amplitude of sine wave sweep (in volts) and sweep duration
+% typically 10 mV and 20 or 60 seconds
+amp = 0.010;
+dur = 20; % in seconds
+
+% was a 20 dB attenuator used?
+attenuator = true;
+
+% path to save output calibration files
+path_out = 'C:\Users\User.Name\calibration\wispr\preamps';
+
+% OPTIONAL
+% specify an output filename. Default is SN_preamp_gain_YYYY-MM-DD
+% where the timestamp is the date of creation. Do not specify an extension.
+out_file_name = []; % set to [] to use default
+% out_file_name = 'testFile';
+```
+
+Run the measurement function. 
+
+```{matlab}
+% this function will plot the waveform of the specified calibration sweep
+% file, prompt the user to select the start of one complete sweep,
+% calculate the spectrum over the duration of one sweep, save the
+% frequency-dependent gain curve as a .mat and .txt and the plot as .png
+
+[paFreq, paGain] = measureWisprPreampSensitivity(sn, sweep_file, ...
+    hydro_sens, amp, dur, attenuator, path_out, out_file_name);
+```
+
+This will plot the waveform of the selected sweep file and prompt the user to select the start of a single sweep. This should be the initial increase in the waveform. A single sweep will be extracted from this point and based on the specified sweep duration.
+
+![Example showing selection of a single 20 second sweep from the waveform.](images/wispr_calibration/wispr_calibration_select_sweep_20sec.png){width=60%}
+
+The spectrum of the single sweep will then be calculated and a frequency-dependent sensitivity gain curve will be plotted and saved. The plot will be saved as a .png and the gain curve frequency and gain values will be saved as a .mat file and a .txt file. The .txt file will contain some header information:
+
+
+![Example sensitivity gain curve output. This curve shape is typical for a WISPR3 sampling at 200 kHz with decimation factor 4. Sensitivity reduced below 10 kHz and then is relatively flat from 10 to 70 kHz after which the anti-aliasing filter causes a steep drop-off in sensitivity to about 90 kHz.](images/wispr_calibration/wispr_calibration_output_gain_curve.png){width=50%}
+
+
+### Assemble system sensitivity curve
+
