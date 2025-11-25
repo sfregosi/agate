@@ -89,6 +89,14 @@ Within that, should be a `flightStatus` and a `basestationFiles` folder; `flight
 
 Additionally there should be a `profiles` folder that will house output tables and plots created during post-mission processing.
 
+```default
+├── sgXXX_XXX_LocYEAR (mission folder)
+  ├── piloting (optional subdir)
+    ├── flightStatus
+    ├── basestationFiles
+    └── profiles
+```
+
 These folders can be set up manually, or created in MATLAB: 
 
 ```matlab

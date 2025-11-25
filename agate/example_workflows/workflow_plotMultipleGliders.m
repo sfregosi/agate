@@ -26,6 +26,7 @@
 % set some colors
 col_sg = [1 1 0; % yellow
 	1 0.4 0];    % orange  
+col_tgt = [0 0 0]; % black
 
 % what should each glider be called?
 gliders = {'sg001', 'sg002'};
@@ -51,11 +52,19 @@ baseFig.Position = [20    80    1200    700]; % set position on screen
 
 %% (3) Plot first glider's surface positions
 
+% optionally plot the targets in the background
+[targets, ~] = readTargetsFile(CONFIG, fullfile(CONFIG.path.mission, 'targets'));
+plotm(targets.lat, targets.lon, 'Marker', 'o', 'MarkerSize', 2, ...
+    'MarkerEdgeColor', col_tgt, 'MarkerFaceColor', col_tgt, 'Color', col_tgt, ...
+    'HandleVisibility', 'off');
+% may need to adjust offset of target labels depending on zoom level
+text(targets.lon-0.1, targets.lat+0.1, targets.name, 'FontSize', 6)
+
 % load gpsSurf table created with extractPositionalData
 load(fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.gmStr '_gpsSurfaceTable.mat']));
 % plot
-h(1) = plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, ...
+plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, ...
 	'Color', col_sg(1,:), 'LineWidth', 1.5, 'DisplayName', gliders{1});
 
 
@@ -68,7 +77,7 @@ CONFIG = agate('agate_mission_config_sg002.cnf');
 load(fullfile(CONFIG.path.mission, 'profiles', ...
 	[CONFIG.gmStr '_gpsSurfaceTable.mat']));
 % plot
-h(2) = plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, ...
+plotm(gpsSurfT.startLatitude, gpsSurfT.startLongitude, ...
 	'Color', col_sg(2,:), 'LineWidth', 1.5, 'DisplayName', gliders{2});
 
 % this could be repeated for as many gliders as exist

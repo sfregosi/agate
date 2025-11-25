@@ -3,7 +3,9 @@ function [rho_min, rho_max, dt] = calcDensityRangeFromHYCOM(CONFIG, HYCOMFileNam
 %
 %   Syntax:
 %       [rho_min, rho_max, dt] = CALCDENSITYRANGEFROMHYCOM(CONFIG, HYCOMFileName, plotOn)
-%
+%       [rho_min, rho_max, dt] = CALCDENSITYRANGEFROMHYCOM(HYCOMFileName, plotOn)
+%       [rho_min, rho_max, dt] = CALCDENSITYRANGEFROMHYCOM(HYCOMFileName)
+
 %   Description:
 %       Calculate minimum and maximum seawater density (at atmospheric
 %       pressure, as is used for glider ballasting) from an input .nc data
@@ -42,17 +44,57 @@ function [rho_min, rho_max, dt] = calcDensityRangeFromHYCOM(CONFIG, HYCOMFileNam
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-global CONFIG
+% global CONFIG
 
-if nargin < 3
-    plotOn = 0;
-end
+    % Handle input arguments
+    if nargin < 1
+        CONFIG = [];
+        HYCOMFileName = '';
+        plotOn = 0;
+    elseif nargin < 2
+        if isstruct(CONFIG)
+            % case: calcDensityRangeFromHYCOM(CONFIG)
+            HYCOMFileName = '';
+            plotOn = 0;
+        else
+            % case: calcDensityRangeFromHYCOM(HYCOMFileName)
+            HYCOMFileName = CONFIG;
+            CONFIG = [];
+            plotOn = 0;
+        end
+    elseif nargin < 3
+        if isstruct(CONFIG)
+            % case: calcDensityRangeFromHYCOM(CONFIG, HYCOMFileName)
+            plotOn = 0;
+        else
+            % case: calcDensityRangeFromHYCOM(HYCOMFileName, plotOn)
+            plotOn = HYCOMFileName;
+            HYCOMFileName = CONFIG;
+            CONFIG = [];
+        end
+    end
 
-if nargin < 2 % no file specified
-    [fileName, filePath] = uigetfile([CONFIG.path.mission, '*.nc;*.nc4'], ...
-        'Select .nc file downloaded from HYCOM');
-    HYCOMFileName = fullfile(filePath, fileName);
-end
+    % If no file specified, prompt user
+    if isempty(HYCOMFileName)
+        if ~isempty(CONFIG) && isfield(CONFIG, 'path') && isfield(CONFIG.path, 'mission')
+            startPath = CONFIG.path.mission;
+        else
+            startPath = pwd;
+        end
+        [fileName, filePath] = uigetfile(fullfile(startPath, '*.nc;*.nc4'), ...
+            'Select .nc file downloaded from HYCOM');
+        HYCOMFileName = fullfile(filePath, fileName);
+    end
+
+% if nargin < 3
+%     plotOn = 0;
+% end
+% 
+% if nargin < 2 % no file specified
+%     [fileName, filePath] = uigetfile([CONFIG.path.mission, '*.nc;*.nc4'], ...
+%         'Select .nc file downloaded from HYCOM');
+%     HYCOMFileName = fullfile(filePath, fileName);
+% end
 
 % for exploring datafile
 % info = ncinfo(HYCOMFileName);

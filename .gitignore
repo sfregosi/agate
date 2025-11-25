@@ -36,8 +36,10 @@ agate/settings/secret/*
 .Rhistory
 .RData
 .Ruserdata
-/.quarto/
-/_site/
+.quarto/
+_site/
+docs/.quarto/
+docs/_site/
 *.rda
 *.rdata
 
