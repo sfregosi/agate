@@ -93,7 +93,7 @@ if fid == -1
 	fprintf(1, 'No file selected. Exiting.\n')
 	return
 end
-al = textscan(fid,'%s','delimiter','\n');
+al = textscan(fid, '%s', 'delimiter', '\n');
 nl = length(al{1});
 if nl < 1
 	fprintf(1, 'Warning: no data in configuration file. Only default paths set.\n')
