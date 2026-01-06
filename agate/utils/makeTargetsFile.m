@@ -90,8 +90,12 @@ if isempty(kmlFile) || ~exist(kmlFile, 'file')
         startDir = CONFIG.path.mission;
     end
     % Select .kml file
-    [name, path] = uigetfile([startDir, '\*.kml'], ...
+    [name, path] = uigetfile(fullfile(startDir, '*.kml'), ...
         'Select .kml track');
+    % handle user cancel
+    if isequal(name, 0)
+        error('No .kml file selected. Operation cancelled.');
+    end
     kmlFile = fullfile(path, name);
     fprintf('kml file selected: %s\n', kmlFile);
 end
