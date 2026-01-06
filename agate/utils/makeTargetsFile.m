@@ -54,13 +54,18 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:   8 January 2025
+%   Updated:   2026 January 06
 %
 %   Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % argument checks
-narginchk(2, inf)
+narginchk(1, inf)
+
+% make kmlFile optional
+if nargin < 2
+    kmlFile = [];
+end
 
 % set defaults/empties
 method = 'WP';
@@ -86,7 +91,7 @@ end
 % if no .kml specified or path/name is invalid
 if isempty(kmlFile) || ~exist(kmlFile, 'file')
     startDir = pwd;
-    if isstruct(CONFIG) && isfield(CONFIG, 'path') && isfield(CONFIG, 'mission')
+    if isstruct(CONFIG) && isfield(CONFIG, 'path') && isfield(CONFIG.path, 'mission')
         startDir = CONFIG.path.mission;
     end
     % Select .kml file
@@ -186,7 +191,7 @@ switch method
         elseif length(alphaRaw) == 3
             wpNames{f + 1} = 'RECOV';
         elseif length(alphaRaw) >= 4
-            wpNames{f+1} = 'RECOVERY';a
+            wpNames{f+1} = 'RECOVERY';
         end
 end
 
