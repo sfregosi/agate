@@ -15,8 +15,9 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %
 %   Inputs:
 %       CONFIG     [struct] agate mission configuration settings, loaded
-%                  during agate initialization. Minimum fields are
-%                  CONFIG.glider, CONFIG.mission, CONFIG.path.mission
+%                  during agate initialization. Should include fields
+%                  CONFIG.glider, CONFIG.mission, CONFIG.path.mission but
+%                  if they do not exist, will use default "UNKNOWN" values
 %       kmlFile    [char] Fullfile path to kml path file to be read in,
 %                  if empty, will prompt to select file
 %
@@ -64,8 +65,10 @@ narginchk(2, inf)
 % set defaults/empties
 method = 'WP';
 radius = 2000;
+glider = 'UNKNOWN_GLIDER';
+mission = 'UNKNOWN_MISSION';
 
-% parse arguments
+% parse name-value arguments
 vIdx = 1;
 while vIdx <= length(varargin)
     switch varargin{vIdx}
@@ -82,8 +85,12 @@ end
 
 % if no .kml specified or path/name is invalid
 if isempty(kmlFile) || ~exist(kmlFile, 'file')
+    startDir = pwd;
+    if isstruct(CONFIG) && isfield(CONFIG, 'path') && isfield(CONFIG, 'mission')
+        startDir = CONFIG.path.mission;
+    end
     % Select .kml file
-    [name, path] = uigetfile([CONFIG.path.mission '\*.kml'], ...
+    [name, path] = uigetfile([startDir, '\*.kml'], ...
         'Select .kml track');
     kmlFile = fullfile(path, name);
     fprintf('kml file selected: %s\n', kmlFile);
@@ -96,6 +103,27 @@ fid = fopen(kmlFile);
 kmlStr = textscan(fid, '%s');
 fclose(fid);
 kmlStr = kmlStr{:};
+
+% check CONFIG fields
+if ~isstruct(CONFIG)
+    error('CONFIG must be a struct.');
+end
+
+if isfield(CONFIG, 'glider') && ~isempty(CONFIG.glider)
+    glider = CONFIG.glider;
+end
+
+if isfield(CONFIG, 'mission') && ~isempty(CONFIG.mission)
+    mission = CONFIG.mission;
+end
+
+if isfield(CONFIG, 'path') && isfield(CONFIG.path, 'mission') ...
+        && ~isempty(CONFIG.path.mission)
+    missionPath = CONFIG.path.mission;
+else
+    missionPath = kmlPath; % use KML path
+end
+
 
 % find start and end of coordinates section
 scIdx = find(strcmp(kmlStr, '<coordinates>'));
@@ -123,7 +151,7 @@ degMinLons = decdeg2degmin(lons);
 
 switch method
     case 'file'  % (1) Select .txt file of waypoint names
-        [wpFileName, wpPath] = uigetfile([CONFIG.path.mission '\*.txt'], ...
+        [wpFileName, wpPath] = uigetfile([missionPath '\*.txt'], ...
             'Select waypoint names text file');
         wpFile = fullfile(wpPath, wpFileName);
 
@@ -147,7 +175,7 @@ switch method
             wpNames(f) = {sprintf('%s%02.f', alphaRaw, wpSeq(f))};
         end
         % check for length...typically 4 - 6 characters
-        if length(alphaRaw) == 1
+        if isscalar(alphaRaw)
             wpNames{f + 1} = 'REC';
         elseif length(alphaRaw) == 2
             wpNames{f + 1} = 'RECV';
@@ -168,8 +196,8 @@ end
 targetsOut = fullfile(kmlPath, ['targets_' kmlName]);
 fid = fopen(targetsOut, 'w');
 
-fprintf(fid, '%s %s_%s\n', '/ Targets file for mission', CONFIG.glider, ...
-    CONFIG.mission);
+fprintf(fid, '%s %s_%s\n', '/ Targets file for mission', glider, ...
+    mission);
 fprintf(fid, '%s %s %s\n', '/ Created on', string(datetime('now', ...
     'TimeZone', 'UTC', 'Format', 'yyyy-MM-dd HH:mm')), 'UTC');
 fprintf(fid, '%s %s%s %s\n', '/ Deployment will take place at', wpNames{1}, ...
