@@ -20,8 +20,10 @@ function profileT = splitProfiles(gpsSurfT, locCalcT)
 %       This function was inspired by spilt_sg_profile.py by J. Marquardt.
 %
 %   Inputs:
-%       threshold  [double] depth change rate (m/s) below which triggers a
-%                  profile change. Default is 0.07
+%       gpsSurfT   [table] glider surface locations exported from
+%                  extractPositionalData
+%       locCalcT   [table] glider fine scale locations exported from
+%                  extractPositionalData
 %
 %	Outputs:
 %       profilesT  [table] Start and end times and locations of each
@@ -34,7 +36,7 @@ function profileT = splitProfiles(gpsSurfT, locCalcT)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:   30 December 2025
+%   Updated:   2026 January 15
 %
 %   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
