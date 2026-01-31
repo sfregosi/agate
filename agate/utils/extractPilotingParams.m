@@ -104,19 +104,20 @@ if preload
 	end
 end
 
+warning('off','MATLAB:table:RowsAddedNewVars');
 if preload
 	pptmp = load(preloadFile);
 	fieldNames = fields(pptmp);
 	pp = pptmp.(fieldNames{1}); %pp(148:150,:) = [];
 	% which dives need to be newly processed?
-	loopNums = [max(pp.diveNum)+1:numDives];
+	loopNums = max(pp.diveNum)+1:numDives;
 	% any need to be reprocessed?
 	loopNums = [loopNums find(isnat(pp.diveStartTime))'];
 	pp.diveNum(loopNums) = diveList(loopNums);
 elseif ~preload % if not, start fresh
 	pp = table;
 	pp.diveNum = [1:numDives]';
-	loopNums = [1:numDives];
+	loopNums = 1:numDives;
 end
 
 %% loop through the dives that need to be updated
@@ -268,11 +269,16 @@ for d = loopNums
 	end
 
 	%% pressure and humidity
-	safetyList = {'$HUMID', '$INTERNAL_PRESSURE'};
-	for c = 1:length(safetyList)
-		pp.(safetyList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
-			safetyList{c}));
-	end
+    safetyList = {'$HUMID'};
+    for c = 1:length(safetyList)
+        pp.(safetyList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
+            safetyList{c}));
+    end
+
+    % internal pressure gives two values, just get second
+    vals = parseLogNValues(x, '$INTERNAL_PRESSURE', 2);
+    pp.('INTERNAL_PRESSURE')(d) = vals(2);
+
 
 	%% pmar outputs
 	if isfield(CONFIG, 'pm') && CONFIG.pm.loggers == 1 % pam system is active
@@ -459,15 +465,15 @@ for d = loopNums
 		% order of devices = VBD, pitch, roll
 		idx = strfind(x, '$DEVICE_SECS');
 		idxComma = regexp(x(idx:end), '\,');
-		vSec    = str2num(x(idx+idxComma(1):idx+idxComma(2)-2));
-		pSec    = str2num(x(idx+idxComma(2):idx+idxComma(3)-2));
-		rSec    = str2num(x(idx+idxComma(3):idx+idxComma(4)-2));
+		vSec    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
+		pSec    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
+		rSec    = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
 
 		idx = strfind(x, '$DEVICE_MAMPS');
 		idxComma = regexp(x(idx:end), '\,');
-		vMamps    = str2num(x(idx+idxComma(1):idx+idxComma(2)-2));
-		pMamps    = str2num(x(idx+idxComma(2):idx+idxComma(3)-2));
-		rMamps    = str2num(x(idx+idxComma(3):idx+idxComma(4)-2));
+		vMamps    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
+		pMamps    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
+		rMamps    = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
 
 		pp.pkJ(d,1) = pSec*pMamps*15/1000000;
 		pp.rkJ(d,1) = rSec*rMamps*15/1000000;
