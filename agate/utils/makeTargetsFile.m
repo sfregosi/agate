@@ -48,8 +48,12 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %      % Prompt to select a kml file and a waypoint names file
 %      targetsOut = makeTargetsFile(CONFIG, [], 'method', 'file');
 %      % Use specified kmlFile, manually name waypoints, radius of 1000 m
-%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual,
+%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual, ...
 %           'radius', 1000);
+%      % Use specified kmlFile, manually name waypoints, radius of 2000 m,
+%      % and create midpoints every 20 km
+%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual, ...
+%           'radius', 2000, spacing, 20);
 %
 %   See also MAPPLANNEDTRACK
 %
@@ -226,5 +230,8 @@ fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=%4.f goto=%s', ...
     wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), ...
     degMinLons(f,2), radius, wpNames{f});
 fclose(fid);
+
+% display the total number of points
+fprintf(1, 'Generated %i waypoints.\nSaved as %s\n', length(wpNames), targetsOut);
 
 end
