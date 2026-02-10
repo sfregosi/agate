@@ -2,7 +2,7 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %MAKETARGETSFILE Create properly formatted targets text file from kml
 %
 %   Syntax:
-%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, method, radius)
+%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, varargin)
 %
 %   Description:
 %       Create a text file properly formatted as a Seaglider targets file,
@@ -35,6 +35,9 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %                                etc and will end with RECV
 %       radius     [double] radius around waypoint that the glider must
 %                  reach before moving on to next waypoint. Default is 2000
+%       spacing    [double] spacing to create interploated midpoints along
+%                  long transects, in km. Default is no spacing.
+%                  Recommended for operations is 20 km
 %
 %   Outputs:
 %       targetsOut Fullpath filename of newly created targets file
@@ -64,6 +67,7 @@ narginchk(2, inf)
 % set defaults/empties
 method = 'WP';
 radius = 2000;
+spacing = [];
 
 % parse arguments
 vIdx = 1;
@@ -75,6 +79,9 @@ while vIdx <= length(varargin)
         case 'method'
             method = varargin{vIdx+1};
             vIdx = vIdx + 2;
+            case 'spacing'
+    spacing = varargin{vIdx+1};
+    vIdx = vIdx + 2;
         otherwise
             error ('Incorrect argument. Check inputs.')
     end
@@ -109,6 +116,39 @@ for f = 1:length(coordsOnly)
     C = strsplit(coordsOnly{f},',');
     lats(f) = str2double(C{2});
     lons(f) = str2double(C{1});
+end
+
+% interpoalte midpoints if specified
+if ~isempty(spacing)
+
+    lat_i = [];
+    lon_i = [];
+
+    for f = 1:length(lats)-1
+        segDist_km = distance( ...
+            lats(f), lons(f), ...
+            lats(f+1), lons(f+1), ...
+            referenceEllipsoid('wgs 84')) / 1000;
+
+        npts = max(2, round(segDist_km / spacing) + 1);
+
+        % great-circle interpolation
+        tt = track2( ...
+            lats(f), lons(f), ...
+            lats(f+1), lons(f+1), ...
+            [1 0], 'degrees', npts);
+
+        % drop last point to avoid duplicates
+        lat_i = [lat_i; tt(1:end-1,1)];
+        lon_i = [lon_i; tt(1:end-1,2)];
+    end
+
+    % add final endpoint
+    lat_i = [lat_i; lats(end)];
+    lon_i = [lon_i; lons(end)];
+
+    lats = lat_i;
+    lons = lon_i;
 end
 
 % convert to deg decmins
