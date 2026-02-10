@@ -111,9 +111,9 @@ if isempty(targetsFile) || ~exist(targetsFile, 'file')
 end
 
 % get file name for output argument for titling/saving
-if nargout > 0
+% if nargout > 0
     [~, targetsName, ~] = fileparts(targetsFile);
-end
+% end
 
 % create basemap
 % by default, don't include contours. Include bathymetry if specified.
@@ -134,7 +134,7 @@ legend(h, {trackName}, 'Location', 'southeast', 'FontSize', 14)
 
 % add title
 title(sprintf('%s %s: %s', CONFIG.glider, CONFIG.mission, targetsName), ...
-    'Interpreter', 'none')
+    'Interpreter', 'none');
 
 end
 
