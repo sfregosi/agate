@@ -52,7 +52,7 @@ switch nargin
             end
             targetsFile = fullfile(filePath, fileName);
             fprintf('targets file selected: %s\n', fileName);
-        elseif isstring(CONFIG)
+        elseif isstring(CONFIG) || ischar(CONFIG)
             targetsFile = CONFIG;
         end
 end

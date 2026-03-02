@@ -24,8 +24,9 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %                 e.g., 'bathy', 1, 'figNum', 12
 %
 %       method     [char] Method to define waypoint names, either
-%                     'file'     = load text file with names, will prompt
-%                                to select file
+%                     'file'     = load text file with names, either
+%                                specify fullfile path in optional 'wpFile'
+%                                argument or it will prompt to select fiel
 %                     'manual'   = manually type in all waypoints in
 %                                command window
 %                     'alphaNum' = will automatically generate
@@ -38,6 +39,9 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %       spacing    [double] spacing to create interploated midpoints along
 %                  long transects, in km. Default is no spacing.
 %                  Recommended for operations is 20 km
+%       wpFile     [string] fullfile path to text file containing list of
+%                  waypoint names if using method 'file'. If not specified,
+%                  will prompt to select file
 %
 %   Outputs:
 %       targetsOut Fullpath filename of newly created targets file
@@ -71,21 +75,25 @@ narginchk(2, inf)
 % set defaults/empties
 method = 'WP';
 radius = 2000;
-spacing = [];
+spacing = [];   % interolate waypoints, km
+wpFile = '';    % name of waypoint names file (optional)
 
 % parse arguments
 vIdx = 1;
 while vIdx <= length(varargin)
     switch varargin{vIdx}
         case 'radius'
-            radius = varargin{vIdx+1};
+            radius = varargin{vIdx + 1};
             vIdx = vIdx + 2;
         case 'method'
-            method = varargin{vIdx+1};
+            method = varargin{vIdx + 1};
             vIdx = vIdx + 2;
             case 'spacing'
-    spacing = varargin{vIdx+1};
+    spacing = varargin{vIdx + 1};
     vIdx = vIdx + 2;
+        case 'wpFile'
+            wpFile = varargin{vIdx + 1};
+            vIdx = vIdx + 2;
         otherwise
             error ('Incorrect argument. Check inputs.')
     end
@@ -159,48 +167,7 @@ end
 degMinLats = decdeg2degmin(lats);
 degMinLons = decdeg2degmin(lons);
 
-% define waypoint names - 3 options
-% (1) 'file', load text file with names
-% (2) 'manual', prompted to manually type in command window
-% (3) 'alphaNum', use alpha string specified in function call (e.g., 'WP')
-%      and add numbers in order after (e.g., WP01, WP02, RECV)
-
-switch method
-    case 'file'  % (1) Select .txt file of waypoint names
-        [wpFileName, wpPath] = uigetfile([CONFIG.path.mission '\*.txt'], ...
-            'Select waypoint names text file');
-        wpFile = fullfile(wpPath, wpFileName);
-
-        fid = fopen(wpFile);
-        wpNames = textscan(fid, '%s');
-        fclose(fid);
-        wpNames = wpNames{:};
-    case 'manual' % (2) manually type in command window
-        wpsRaw = input(['Type in ' num2str(length(degMinLats)) ...
-            ' waypoint names, separated by commas, no spaces:'], 's');
-        wpNames = strsplit(wpsRaw, ',');
-        wpNames = strtrim(wpNames);
-        wpNames = wpNames';
-    otherwise
-        %         case 'prefix'
-        %         prefixRaw = input('Specify waypoint alpha prefix:', 's');
-        alphaRaw = method;
-        wpNames = cell(length(degMinLats), 1);
-        wpSeq = 1:length(degMinLats) - 1; % -1 so last is RECV
-        for f = 1:length(wpSeq)
-            wpNames(f) = {sprintf('%s%02.f', alphaRaw, wpSeq(f))};
-        end
-        % check for length...typically 4 - 6 characters
-        if length(alphaRaw) == 1
-            wpNames{f + 1} = 'REC';
-        elseif length(alphaRaw) == 2
-            wpNames{f + 1} = 'RECV';
-        elseif length(alphaRaw) == 3
-            wpNames{f + 1} = 'RECOV';
-        elseif length(alphaRaw) >= 4
-            wpNames{f+1} = 'RECOVERY';a
-        end
-end
+wpNames = getWaypointNames(CONFIG, method, length(degMinLats), 'wpFile', wpFile);
 
 % now write it into a targets file
 % example header text
