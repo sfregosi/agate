@@ -154,11 +154,13 @@ for d = loopNums
     idxPer = regexp(sLatDM, '\.', 'once');
     sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), ...
         str2double(sLatDM(idxPer-2:end))]);
+     pp.startLatitude(d,1) = sLatDD;
     sLonDM = x(idxST + idxComma(4):idxST + idxComma(5) - 2);
     idxPer = regexp(x(idxST + idxComma(4):idxBreak), '\.', 'once');
     sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), ...
         str2double(sLonDM(idxPer-2:end))]);
-    pp.startGPS{d} = [sLatDD sLonDD];
+    pp.startLongitude(d,1) = sLonDD;
+	% pp.startGPS{d} = [sLatDD sLonDD];
 
     % end lat/lon
     idxComma = regexp(x(idxET:end), '\,');
@@ -166,11 +168,13 @@ for d = loopNums
     idxPer = regexp(eLatDM, '\.', 'once');
     eLatDD = degmin2decdeg([str2double(eLatDM(1:idxPer-3)), ...
         str2double(eLatDM(idxPer-2:end))]);
+    pp.endLatitude(d,1) = eLatDD;
     eLonDM = x(idxET + idxComma(4):idxET + idxComma(5) - 2);
     idxPer = regexp(x(idxET + idxComma(4):end), '\.', 'once');
     eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), ...
         str2double(eLonDM(idxPer-2:end))]);
-    pp.endGPS{d} = [eLatDD eLonDD];
+    pp.endLongitude(d,1) = eLonDD;
+	% pp.endGPS{d} = [eLatDD eLonDD];
 
     % actual start and end locations
     % can also get info from nc file but nc files don't always exist
@@ -178,8 +182,12 @@ for d = loopNums
         latgps = ncread(ncFileName,'log_gps_lat');
         longps = ncread(ncFileName,'log_gps_lon');
         %     timegps = ncread(ncFileName,'log_gps_time');
-        pp.startGPS{d} = [latgps(2) longps(2)];
-        pp.endGPS{d} = [latgps(3) longps(3)];
+        startLatitude(d,1) = latgps(2);
+        startLongitude(d,1) = longps(2);
+        endLatitude(d,1) = latgps(3);
+        endLongitude(d,1) = longps(3);
+		% pp.startGPS{d} = [latgps(2) longps(2)];
+		% pp.endGPS{d} = [latgps(3) longps(3)];
     end
 
     % target name
@@ -216,9 +224,11 @@ for d = loopNums
     end
     pp.maxDepth_m(d,1) = round(max(depth)/100);
     % actual distance over ground
-    [~, pp.dog_km(d)] = lldistkm(pp.startGPS{d}, pp.endGPS{d});
-    % distance to next target
-    [~, pp.distTGT_km(d)] = lldistkm(pp.endGPS{d}, [tgtLat tgtLon]);
+	[~, pp.dog_km(d)] = lldistkm([pp.startLatitude(d) pp.startLongitude(d)], ...
+        [pp.endLatitude(d) pp.endLongitude(d)]);
+	% distance to next target
+	[~, pp.distTGT_km(d)] = lldistkm([pp.endLatitude(d) pp.endLongitude(d)], ...
+        [tgtLat tgtLon]);
 
     %% dive flight parameter settings
     % target dive duration, depth, max slope and buoy
