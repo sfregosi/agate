@@ -94,9 +94,9 @@ else
 end
 
 % Make sure local directory for downloading files exists.
-if (~mkdir(CONFIG.path.bsLocal))
-    error('downloadBasestationFiles:CantMakeDir', "Unable to create or access %s", ...
-        CONFIG.path.bsLocal);
+if ~isfolder(CONFIG.path.bsLocal) && ~mkdir(CONFIG.path.bsLocal)
+    error('downloadBasestationFiles:CantMakeDir', ...
+          "Unable to create or access %s", CONFIG.path.bsLocal);
 end
 
 % Download the files.

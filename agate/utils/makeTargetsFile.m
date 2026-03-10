@@ -2,7 +2,7 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %MAKETARGETSFILE Create properly formatted targets text file from kml
 %
 %   Syntax:
-%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, method, radius)
+%       targetsOut = MAKETARGETSFILE(CONFIG, kmlFile, varargin)
 %
 %   Description:
 %       Create a text file properly formatted as a Seaglider targets file,
@@ -25,8 +25,9 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %                 e.g., 'bathy', 1, 'figNum', 12
 %
 %       method     [char] Method to define waypoint names, either
-%                     'file'     = load text file with names, will prompt
-%                                to select file
+%                     'file'     = load text file with names, either
+%                                specify fullfile path in optional 'wpFile'
+%                                argument or it will prompt to select fiel
 %                     'manual'   = manually type in all waypoints in
 %                                command window
 %                     'alphaNum' = will automatically generate
@@ -36,6 +37,12 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %                                etc and will end with RECV
 %       radius     [double] radius around waypoint that the glider must
 %                  reach before moving on to next waypoint. Default is 2000
+%       spacing    [double] spacing to create interploated midpoints along
+%                  long transects, in km. Default is no spacing.
+%                  Recommended for operations is 20 km
+%       wpFile     [string] fullfile path to text file containing list of
+%                  waypoint names if using method 'file'. If not specified,
+%                  will prompt to select file
 %
 %   Outputs:
 %       targetsOut Fullpath filename of newly created targets file
@@ -46,8 +53,12 @@ function targetsOut = makeTargetsFile(CONFIG, kmlFile, varargin)
 %      % Prompt to select a kml file and a waypoint names file
 %      targetsOut = makeTargetsFile(CONFIG, [], 'method', 'file');
 %      % Use specified kmlFile, manually name waypoints, radius of 1000 m
-%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual,
+%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual, ...
 %           'radius', 1000);
+%      % Use specified kmlFile, manually name waypoints, radius of 2000 m,
+%      % and create midpoints every 20 km
+%      targetsOut = makeTargetsFile(CONFIG, kmlFile, 'method', manual, ...
+%           'radius', 2000, spacing, 20);
 %
 %   See also MAPPLANNEDTRACK
 %
@@ -70,6 +81,8 @@ end
 % set defaults/empties
 method = 'WP';
 radius = 2000;
+spacing = [];   % interolate waypoints, km
+wpFile = '';    % name of waypoint names file (optional)
 glider = 'UNKNOWN_GLIDER';
 mission = 'UNKNOWN_MISSION';
 
@@ -78,10 +91,16 @@ vIdx = 1;
 while vIdx <= length(varargin)
     switch varargin{vIdx}
         case 'radius'
-            radius = varargin{vIdx+1};
+            radius = varargin{vIdx + 1};
             vIdx = vIdx + 2;
         case 'method'
-            method = varargin{vIdx+1};
+            method = varargin{vIdx + 1};
+            vIdx = vIdx + 2;
+            case 'spacing'
+    spacing = varargin{vIdx + 1};
+    vIdx = vIdx + 2;
+        case 'wpFile'
+            wpFile = varargin{vIdx + 1};
             vIdx = vIdx + 2;
         otherwise
             error ('Incorrect argument. Check inputs.')
@@ -148,52 +167,44 @@ for f = 1:length(coordsOnly)
     lons(f) = str2double(C{1});
 end
 
+% interpoalte midpoints if specified
+if ~isempty(spacing)
+
+    lat_i = [];
+    lon_i = [];
+
+    for f = 1:length(lats)-1
+        segDist_km = distance( ...
+            lats(f), lons(f), ...
+            lats(f+1), lons(f+1), ...
+            referenceEllipsoid('wgs 84')) / 1000;
+
+        npts = max(2, round(segDist_km / spacing) + 1);
+
+        % great-circle interpolation
+        tt = track2( ...
+            lats(f), lons(f), ...
+            lats(f+1), lons(f+1), ...
+            [1 0], 'degrees', npts);
+
+        % drop last point to avoid duplicates
+        lat_i = [lat_i; tt(1:end-1,1)];
+        lon_i = [lon_i; tt(1:end-1,2)];
+    end
+
+    % add final endpoint
+    lat_i = [lat_i; lats(end)];
+    lon_i = [lon_i; lons(end)];
+
+    lats = lat_i;
+    lons = lon_i;
+end
+
 % convert to deg decmins
 degMinLats = decdeg2degmin(lats);
 degMinLons = decdeg2degmin(lons);
 
-% define waypoint names - 3 options
-% (1) 'file', load text file with names
-% (2) 'manual', prompted to manually type in command window
-% (3) 'alphaNum', use alpha string specified in function call (e.g., 'WP')
-%      and add numbers in order after (e.g., WP01, WP02, RECV)
-
-switch method
-    case 'file'  % (1) Select .txt file of waypoint names
-        [wpFileName, wpPath] = uigetfile([missionPath '\*.txt'], ...
-            'Select waypoint names text file');
-        wpFile = fullfile(wpPath, wpFileName);
-
-        fid = fopen(wpFile);
-        wpNames = textscan(fid, '%s');
-        fclose(fid);
-        wpNames = wpNames{:};
-    case 'manual' % (2) manually type in command window
-        wpsRaw = input(['Type in ' num2str(length(degMinLats)) ...
-            ' waypoint names, separated by commas, no spaces:'], 's');
-        wpNames = strsplit(wpsRaw, ',');
-        wpNames = strtrim(wpNames);
-        wpNames = wpNames';
-    otherwise
-        %         case 'prefix'
-        %         prefixRaw = input('Specify waypoint alpha prefix:', 's');
-        alphaRaw = method;
-        wpNames = cell(length(degMinLats), 1);
-        wpSeq = 1:length(degMinLats) - 1; % -1 so last is RECV
-        for f = 1:length(wpSeq)
-            wpNames(f) = {sprintf('%s%02.f', alphaRaw, wpSeq(f))};
-        end
-        % check for length...typically 4 - 6 characters
-        if isscalar(alphaRaw)
-            wpNames{f + 1} = 'REC';
-        elseif length(alphaRaw) == 2
-            wpNames{f + 1} = 'RECV';
-        elseif length(alphaRaw) == 3
-            wpNames{f + 1} = 'RECOV';
-        elseif length(alphaRaw) >= 4
-            wpNames{f+1} = 'RECOVERY';
-        end
-end
+wpNames = getWaypointNames(CONFIG, method, length(degMinLats), 'wpFile', wpFile);
 
 % now write it into a targets file
 % example header text
@@ -223,5 +234,8 @@ fprintf(fid, '%s lat=%d%07.4f lon=%d%07.4f radius=%4.f goto=%s', ...
     wpNames{f}, degMinLats(f,1), degMinLats(f,2), degMinLons(f,1), ...
     degMinLons(f,2), radius, wpNames{f});
 fclose(fid);
+
+% display the total number of points
+fprintf(1, 'Generated %i waypoints.\nSaved as %s\n', length(wpNames), targetsOut);
 
 end

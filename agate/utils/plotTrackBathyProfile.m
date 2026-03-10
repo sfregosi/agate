@@ -29,10 +29,10 @@ function plotTrackBathyProfile(CONFIG, varargin)
 %
 %   Inputs:
 %       CONFIG      [struct] mission/agate configuration variable.
-%                   Required fields: CONFIG.glider, CONFIG.mission, 
+%                   Required fields: CONFIG.glider, CONFIG.mission,
 %                   CONFIG.path.mission
 %
-%       all varargins are specified using name-value pairs 
+%       all varargins are specified using name-value pairs
 %                 e.g., 'targetsFile', targetsFile, 'yLine', 800
 %
 %       targetsFile   [char] optional argument to targets file. If no file
@@ -65,7 +65,7 @@ function plotTrackBathyProfile(CONFIG, varargin)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:   17 January 2025
+%   Updated:   2026 February 25
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,85 +82,87 @@ figNum = [];
 % parse arguments
 vIdx = 1;
 while vIdx <= length(varargin)
-	switch varargin{vIdx}
-		case 'targetsFile'
-			targetsFile = varargin{vIdx+1};
-			vIdx = vIdx+2;
-		case 'bathyFile'
-			bathyFile = varargin{vIdx+1};
-			vIdx = vIdx+2;
-		case 'yLine'
-			yLine = varargin{vIdx+1};
-			vIdx = vIdx+2;
-		case 'figNum'
-			figNum = varargin{vIdx+1};
-			vIdx = vIdx+2;
-	end
+    switch varargin{vIdx}
+        case 'targetsFile'
+            targetsFile = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'bathyFile'
+            bathyFile = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'yLine'
+            yLine = varargin{vIdx+1};
+            vIdx = vIdx+2;
+        case 'figNum'
+            figNum = varargin{vIdx+1};
+            vIdx = vIdx+2;
+    end
 end
 
 % select targetsFile if none specified
 if isempty(targetsFile)
-	[fn, path] = uigetfile(CONFIG.path.mission, '*.*', ...
-		'Select targets file');
-	targetsFile = fullfile(path, fn);
-	fprintf('targets file selected: %s\n', fn);
+    [fn, path] = uigetfile(CONFIG.path.mission, '*.*', ...
+        'Select targets file');
+    targetsFile = fullfile(path, fn);
+    fprintf('targets file selected: %s\n', fn);
 end
+% get just targets file name
+[~, targetsName, ~] = fileparts(targetsFile);
 
 % check that targetsFile exists if specified, otherwise prompt to select
 if isstring(targetsFile)
-	targetsFile = convertStringsToChars(targetsFile);
+    targetsFile = convertStringsToChars(targetsFile);
 end
 
 if ischar(targetsFile)
-	if ~exist(targetsFile, 'file')
-		fprintf(1, ['Specified targetsFile does not exist. Select' ...
-			' targets file to continue.\n']);
-		[fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
-			'Select targets file');
-		targetsFile = fullfile(path, fn);
-		fprintf('targets file selected: %s\n', fn);
-	end
-	% read in targets file
-	[targets, ~] = readTargetsFile(CONFIG, targetsFile);
+    if ~exist(targetsFile, 'file')
+        fprintf(1, ['Specified targetsFile does not exist. Select' ...
+            ' targets file to continue.\n']);
+        [fn, path] = uigetfile([CONFIG.path.mission, '*.*'], ...
+            'Select targets file');
+        targetsFile = fullfile(path, fn);
+        fprintf('targets file selected: %s\n', fn);
+    end
+    % read in targets file
+    [targets, ~] = readTargetsFile(CONFIG, targetsFile);
 elseif istable(targetsFile)
-	targets = targetsFile;
+    targets = targetsFile;
 end
 
 % check for bathy file if none specified - first check config, then prompt
 if isempty(bathyFile)
-	if isfield(CONFIG.map, 'bathyFile')
-		bathyFile = CONFIG.map.bathyFile;
-	elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file')
-		if isfield(CONFIG.path, 'shp')
-			shpDir = CONFIG.path.shp;
-		else
-			shpDir = 'C:\';
-		end
-		[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
-			'Select bathymetry raster file');
-		bathyFile = fullfile(path, fn);
-	fprintf('bathymetry raster file selected: %s\n', fn);
-	end
+    if isfield(CONFIG.map, 'bathyFile')
+        bathyFile = CONFIG.map.bathyFile;
+    elseif ~isfield(CONFIG.map, 'bathyFile') || ~exist(bathyFile, 'file')
+        if isfield(CONFIG.path, 'shp')
+            shpDir = CONFIG.path.shp;
+        else
+            shpDir = 'C:\';
+        end
+        [fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+            'Select bathymetry raster file');
+        bathyFile = fullfile(path, fn);
+        fprintf('bathymetry raster file selected: %s\n', fn);
+    end
 end
 
 % check that bathyFile eists if specified, otherwise prompt to select
 if ~exist(bathyFile, 'file')
-	fprintf(1, ['Specified bathyFile does not exist. Select' ...
-		' bathymetry raster file to continue.\n']);
-	if isfield(CONFIG.path, 'shp')
-		shpDir = CONFIG.path.shp;
-	else
-		shpDir = 'C:\';
-	end
-	[fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
-		'Select bathymetry raster file');
-	bathyFile = fullfile(path, fn);
-	fprintf('bathymetry raster file selected: %s\n', fn);
+    fprintf(1, ['Specified bathyFile does not exist. Select' ...
+        ' bathymetry raster file to continue.\n']);
+    if isfield(CONFIG.path, 'shp')
+        shpDir = CONFIG.path.shp;
+    else
+        shpDir = 'C:\';
+    end
+    [fn, path] = uigetfile(fullfile(shpDir, '*.tif;*.tiff'), ...
+        'Select bathymetry raster file');
+    bathyFile = fullfile(path, fn);
+    fprintf('bathymetry raster file selected: %s\n', fn);
 end
 
 % read in bathymetry data
 [Z, refvec] = readgeoraster(bathyFile, 'OutputType', 'double', ...
-	'CoordinateSystemType', 'geographic');
+    'CoordinateSystemType', 'geographic');
 
 % interpolate locations/depths
 [zq, distq, latq, lonq] = mapprofile(Z, refvec, targets.lat, targets.lon);
@@ -170,19 +172,19 @@ distq_km = distq/1000;
 targets.dist_km = zeros(height(targets), 1);
 targets.depth_m = nan(height(targets), 1);
 for f = 1:height(targets)
-	wpIdx = find(latq == targets.lat(f) & lonq == targets.lon(f));
+    wpIdx = find(latq == targets.lat(f) & lonq == targets.lon(f));
     % if the recovery is back at deployment, may have two indices
     if f == 1 && length(wpIdx) > 1; wpIdx = wpIdx(1); end
     if f == height(targets) && length(wpIdx) > 1; wpIdx = wpIdx(end); end
-	targets.dist_km(f) = distq_km(wpIdx);
-	targets.depth_m(f) = zq(wpIdx);
+    targets.dist_km(f) = distq_km(wpIdx);
+    targets.depth_m(f) = zq(wpIdx);
 end
 
 % set up figure
 if isempty(figNum)
-	figure;
+    figure;
 else
-	figure(figNum);
+    figure(figNum);
 end
 fig = gcf;
 fig.Position = [100   50   900    300];
@@ -198,7 +200,7 @@ scatter(targets.dist_km, targets.depth_m, 10, 'k', 'filled')
 % offset the text by a 5% of the y axis
 yOffset = round((min(zq) + min(zq)*.1)*.05);
 text(targets.dist_km + max(targets.dist_km)*.006, targets.depth_m + yOffset, ...
-	targets.name, 'FontSize', 10);
+    targets.name, 'FontSize', 10);
 yline(yLine, '--', 'Color', '#900C3F');
 grid on;
 hold off;
@@ -209,58 +211,7 @@ xlim([0 round(targets.dist_km(end) + targets.dist_km(end)*.05)])
 ylabel('depth [m]')
 set(gca, 'FontSize', 12)
 title(sprintf('%s %s %s', CONFIG.glider, CONFIG.mission, ...
-	'Targets Bathymetry Profile'), 'Interpreter', 'none')
-
-
-
-
-% OLD MANUAL METHOD
-% [Z, refvec] = geocrop(Z, refvec, CONFIG.map.latLim, CONFIG.map.lonLim);
-
-% % Pull out lat/lon vectors from refvec
-% % use 0.5*cell extent to get midpoints of each cell
-% Zlat = [refvec.LatitudeLimits(1)+0.5*refvec.CellExtentInLatitude: ...
-% 	refvec.CellExtentInLatitude:refvec.LatitudeLimits(2)]';
-% Zlat = flipud(Zlat); % have to flip bc small latitudes are at poles
-% Zlon = [refvec.LongitudeLimits(1)+0.5*refvec.CellExtentInLongitude: ...
-% 	refvec.CellExtentInLongitude:refvec.LongitudeLimits(2)]';
-%
-% % estimate cumulative track length
-% targets.cumDist_km = zeros(height(targets), 1);
-% for f = 2:height(targets)
-% 	targets.cumDist_km(f) = targets.cumDist_km(f-1) + ...
-% 		lldistkm([targets.lat(f-1) targets.lon(f-1)], [targets.lat(f) targets.lon(f)]);
-% end
-%
-% % interpolate between targets at 0.1 dec deg resolution
-% ti = table;
-% ti.lat = interp1(targets.lat, 1:0.1:length(targets.lat))';
-% ti.lon = interp1(targets.lon, (1:0.1:length(targets.lon))');
-% ti.cumDist_km = interp1(targets.cumDist_km, 1:0.1:length(targets.lat))';
-% ti.depth = nan(height(ti), 1);
-%
-%
-% % loop through interpolated lat/lons and pull depth at closest Z cell
-% for f = 1:height(ti)
-% 	[mLat, idxLat] = min(abs(Zlat-ti.lat(f)));
-% 	[mLon, idxLon] = min(abs(Zlon-ti.lon(f)));
-% 	% make sure the mins are below the cell extent
-% 	if mLat <= refvec.CellExtentInLatitude && mLon <= refvec.CellExtentInLongitude
-% 		ti.depth(f) = Z(idxLat, idxLon);
-% 	end
-% end
-%
-% % repeat for just the waypoints
-% targets.depth = nan(height(targets), 1);
-% for f = 1:height(targets)
-% 	[mLat, idxLat] = min(abs(Zlat-targets.lat(f)));
-% 	[mLon, idxLon] = min(abs(Zlon-targets.lon(f)));
-% 	% make sure the mins are below the cell extent
-% 	if mLat <= refvec.CellExtentInLatitude && mLon <= refvec.CellExtentInLongitude
-% 		targets.depth(f) = Z(idxLat, idxLon);
-% 	end
-% end
-
-
+    'Targets Bathymetry Profile'), 'Interpreter', 'none')
+subtitle(targetsName, 'Interpreter', 'none');
 
 end
