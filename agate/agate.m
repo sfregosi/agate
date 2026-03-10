@@ -25,7 +25,7 @@ function CONFIG = agate(missionCnf)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:      2026 March 02
+%   Updated:      2026 March 10
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +35,7 @@ clear CONFIG;
 
 CONFIG = struct;
 
-CONFIG.ver = '1.1.20250707   https://github.com/sfregosi/agate branch:whiceas';
+CONFIG.ver = '1.2.20260310   https://github.com/sfregosi/agate';
 fprintf('      agate   version %s\n', CONFIG.ver)
 
 if nargin < 1

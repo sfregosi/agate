@@ -10,7 +10,10 @@ function convertWispr(varargin)
 %       is .flac). This operates on a directory, full of subdirectories
 %       where each subdirectory is named with the date using the format
 %       'YYMMDD', (e.g., 230504 for 4 May 2023). Subdirectories MUST follow
-%       this format. 
+%       this format.
+%
+%       Output files will have the identical name to the input .dat files
+%       except with the new extension.
 %
 %       Also creates a fileheaders.txt file in the output directory with a
 %       copy of the header portion of each .dat file, which is text.
@@ -28,13 +31,15 @@ function convertWispr(varargin)
 %   Inputs:
 %       CONFIG        [struct] mission/agate configuration variable. This
 %                     is optional but can be used to specify paths rather
-%                     than being prompted to select input/output dirs 
-%                     Suggested fields: CONFIG.ws.inDir, CONFIG.ws.outDir
+%                     than being prompted to select input/output dirs
+%                     Suggested fields: CONFIG.ws.inDir, CONFIG.ws.outDir,
+%                     CONFIG.ws.outExt
 %                     CONFIG.ws.inDir must be a directory with
 %                     subdirectories where each subdirectory is named with
 %                     the date using the format 'YYMMDD' (e.g., 230504 for
 %                     4 May 2023) and each subdirectory contains all sound
 %                     files for that day.
+%                     Settings specified in CONFIG will overwrite varargins
 %
 %       all varargins are specified using name-value pairs
 %                 e.g., 'showProgress', true
@@ -59,7 +64,7 @@ function convertWispr(varargin)
 %
 %       % write to wav and do not display progress, prompt for dirs
 %       convertWispr('outExt', '.wav', 'showProgress', false);
-% 
+%
 %       % run with empty CONFIG will prompt to select in/out directories
 %       convertWispr(CONFIG);
 %
@@ -74,7 +79,7 @@ function convertWispr(varargin)
 %       Dave Mellinger Oregon State University
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:      2025 July 23
+%   Updated:      2025 December 29
 %
 %	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,7 +155,6 @@ if isempty(inDir) || ~exist(inDir, 'dir')
     end
 end
 
-
 % outDir specifies the directory to put the .wav files in. It can be a
 % string (one output directory name) or a cell array of strings
 % (multiple output directory names); copies of ALL of the output files
@@ -185,25 +189,42 @@ end
 if (~iscell(inDir)),   inDir = { inDir };  end
 if (~iscell(outDir)), outDir = { outDir }; end
 
+% check for output extension in config file
+if isfield(CONFIG, 'ws')
+    if isfield(CONFIG.ws, 'outExt') && ~isempty(CONFIG.ws.outExt)
+        outExt = CONFIG.ws.outExt;
+    end
+end
+
 %% Initialization.
 
 % Open fileheaders.txt files.
 hdrFp = nan(1, length(outDir));
-for dk = 1 : length(outDir)
+for dk = 1:length(outDir)
     if (~exist(outDir{dk}, 'dir'))
         mkdir(outDir{dk});
     end
     hdrFp(dk) = fopen(fullfile(outDir{dk}, 'fileheaders.txt'), 'a+'); % append
+    if hdrFp(dk) < 0
+        error('Failed to open fileheaders.txt in %s', outDir{dk});
+    end
 end
 
 % open conversionLog.txt
 logFp = nan(1, length(outDir));
-for dk = 1 : length(outDir)
+for dk = 1:length(outDir)
     if (~exist(outDir{dk}, 'dir'))
         mkdir(outDir{dk});
     end
     logFp(dk) = fopen(fullfile(outDir{dk}, 'conversionLog.txt'), 'a+'); % append
+    if logFp(dk) < 0
+        error('Failed to open conversionLog.txt in %s', outDir{dk});
+    end
 end
+
+% cleanup if any logging errors, or close at the end
+cleanupHdr = onCleanup(@() fclose(hdrFp(isfinite(hdrFp))));
+cleanupLog = onCleanup(@() fclose(logFp(isfinite(logFp))));
 
 % 'go' says whether we've gotten to restartDir yet. If restartDir is empty, it
 % means start from the beginning, so 'go' is true from the start.
@@ -278,8 +299,13 @@ for di = 1 : length(inDir) % inDir is a cell array
                 % read in using read_wispr_file_agate (modified copy of
                 % read_wispr_file originally by C. Jones
                 % https://github.com/sfregosi/wispr3)
-                [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
-                % this scales to
+                try
+                    [hdr, raw, ~, timestamp, hdrStrs] = read_wispr_file_agate(inFile, 1, 0);
+                catch ME
+                    fprintf(logFp(dk), 'ERROR reading file: %s\n', ME.message);
+                    skippedCount = skippedCount + 1;
+                    continue
+                end
 
                 % Produce an output file in each output directory.
                 for dk = 1:length(outDir)
@@ -319,11 +345,33 @@ for di = 1 : length(inDir) % inDir is a cell array
                     % write the file
                     % audiowrite expects sample values in the range of (-1,1].
                     if ~isempty(data)
+
+                        % check scaling by vref
+                        if hdr.adc_vref <= 0
+                            error('Invalid adc_vref value');
+                        end
+
+                        dataScaled = data/hdr.adc_vref;
+
+                        maxVal = max(abs(dataScaled), [], 'all');
+                        if maxVal > 1
+                            fprintf(logFp(dk), ...
+                                'WARNING: clipping occurred (max=%.2f)\n', maxVal);
+                            dataScaled = dataScaled/maxVal;
+                        end
+
                         % audiowrite(outFile, data / 2^(nOutputBits-1), hdr.sampling_rate, 'BitsPerSample', nOutputBits);
-                        audiowrite(outFile, data/hdr.adc_vref, hdr.sampling_rate, ...
-                            'BitsPerSample', nOutputBits);
-                        % update log
-                        fprintf(logFp(dk), '%s\n', outName);
+                        try
+                            audiowrite(outFile, dataScaled, hdr.sampling_rate, ...
+                                'BitsPerSample', nOutputBits);
+                            % update log
+                            fprintf(logFp(dk), '%s\n', outName);
+                        catch ME
+                            fprintf(logFp(dk), 'ERROR writing file: %s\n', ME.message);
+                            skippedCount = skippedCount + 1;
+                            continue
+                        end
+
                     elseif isempty(data)
                         fprintf(1, '\n   File is empty. File skipped.\n');
                     end
@@ -338,14 +386,10 @@ for di = 1 : length(inDir) % inDir is a cell array
 end
 
 % report skipped files
-fprintf(1, '%i files were skipped. Check log for more information\n', skippedCount);
+fprintf(1, '%i files were skipped. See log for more information.\n', skippedCount);
 % finalize the log
 fprintf(logFp(dk), '\n%i files were skipped\n', skippedCount);
 fprintf(logFp(dk), 'Stop time: %s\n', datestr(now, 0)); %#ok<TNOW1,DATST>
-
-% close header and log files
-fclose(hdrFp);
-fclose(logFp);
 
 end
 

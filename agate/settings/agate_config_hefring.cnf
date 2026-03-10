@@ -16,3 +16,4 @@ CONFIG.glider = 'osXXXX';   % glider serial number
 % WISPR settings
 CONFIG.ws.inDir = 'C:\Users\User.Name\Desktop\hefring_mission\raw';   % path to raw .dat files
 CONFIG.ws.outDir = 'C:\Users\User.Name\Desktop\hefring_mission\flac';   % path to save converted files
+CONFIG.ws.outExt = '.flac'; % output type '.flac' (default) or '.wav'

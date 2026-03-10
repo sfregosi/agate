@@ -48,14 +48,16 @@ function pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, preload)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   FirstVersion:   06 July 2017
-%   Updated:        10 September 2024
+%   Updated:        2025 July 07
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+origWarnState = warning;
+warning('off', 'MATLAB:table:RowsAddedExistingVars');
+
 if nargin < 4
-	preload = true;
+    preload = true;
 end
 
 %% Get file lists and dive numbers
@@ -65,7 +67,7 @@ logFileList = dir(fullfile(path_bsLocal, ['p' CONFIG.glider(3:end) '*.log']));
 logFileNames = {logFileList.name}';
 logFileNums = zeros(length(logFileNames),1);
 for f = 1:length(logFileNames)
-	logFileNums(f) = str2double(logFileNames{f}(5:8)); %p6390000.log
+    logFileNums(f) = str2double(logFileNames{f}(5:8)); %p6390000.log
 end
 
 % ncfiles - also get the dive numbers they are available for.
@@ -73,7 +75,7 @@ ncFileList = dir(fullfile(path_bsLocal, ['p' CONFIG.glider(3:end) '*.nc']));
 ncFileNames = {ncFileList.name}';
 ncFileNums = zeros(length(ncFileNames),1);
 for f = 1:length(ncFileNames)
-	ncFileNums(f) = str2double(ncFileNames{f}(5:8)); %p6390000.log
+    ncFileNums(f) = str2double(ncFileNames{f}(5:8)); %p6390000.log
 end
 % ncCompFile = dir([base_path 'sg' glider(3:end) '*.nc']);
 
@@ -84,202 +86,192 @@ end
 % may not if conversion/processing problems with one of the binaries
 % numDives = length(logFileList)-1; % minus the pre-launch test log files
 numDives = max([logFileNums; ncFileNums]); % get max of list of dive nums
-diveList = [1:numDives]';
+diveList = [1:numDives]'; %#ok<NBRAK1>
 
 % set up output table
 
 % try to preload an existing table to save processing time
 if preload
-	preloadFile = fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']);
-	% if file doesn't exist, prompt to choose one
-	if ~exist(preloadFile, 'file')
-		[fn, path] = uigetfile(fullfile(path_status, '*.mat*'), ...
-			'Select piloting params table');
-		if fn == 0 && path == 0
-			fprintf(1, '.mat selection canceled, skipping preload.\n')
-			preload = 0;
-		else
-			preloadFile = fullfile(path, fn);
-		end
-	end
+    preloadFile = fullfile(path_status, ['diveTracking_' CONFIG.glider '.mat']);
+    % if file doesn't exist, prompt to choose one
+    if ~exist(preloadFile, 'file')
+        [fn, path] = uigetfile(fullfile(path_status, '*.mat*'), ...
+            'Select piloting params table');
+        if fn == 0 && path == 0
+            fprintf(1, '.mat selection canceled, skipping preload.\n')
+            preload = 0;
+        else
+            preloadFile = fullfile(path, fn);
+        end
+    end
 end
 
 warning('off','MATLAB:table:RowsAddedNewVars');
 if preload
-	pptmp = load(preloadFile);
-	fieldNames = fields(pptmp);
-	pp = pptmp.(fieldNames{1}); %pp(148:150,:) = [];
-	% which dives need to be newly processed?
-	loopNums = max(pp.diveNum)+1:numDives;
-	% any need to be reprocessed?
-	loopNums = [loopNums find(isnat(pp.diveStartTime))'];
-	pp.diveNum(loopNums) = diveList(loopNums);
+    pptmp = load(preloadFile);
+    fieldNames = fields(pptmp);
+    pp = pptmp.(fieldNames{1});
+    % which dives need to be newly processed?
+    loopNums = max(pp.diveNum)+1:numDives;
+    % any need to be reprocessed?
+    loopNums = [loopNums find(isnat(pp.diveStartTime))'];
+    pp.diveNum(loopNums) = diveList(loopNums);
 elseif ~preload % if not, start fresh
-	pp = table;
-	pp.diveNum = [1:numDives]';
-	loopNums = 1:numDives;
+    pp = table;
+    pp.diveNum = [1:numDives]'; %#ok<NBRAK1>
+    loopNums = [1:numDives]; %#ok<NBRAK2>
 end
 
 %% loop through the dives that need to be updated
 for d = loopNums
 
-	% get the files for this loop
-	if any(logFileNums == d) && any(ncFileNums == d) % do these files exist?
-		x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
-		ncFileName = fullfile(path_bsLocal, ncFileNames{ncFileNums == d});
-	elseif any(logFileNums == d) % at least log file exists
-		x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
-		ncFileName = [];
-	else
-		continue % move on to next loopNum dive and leave this row empty
-	end
+    % get the files for this loop
+    if any(logFileNums == d) && any(ncFileNums == d) % do these files exist?
+        x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
+        ncFileName = fullfile(path_bsLocal, ncFileNames{ncFileNums == d});
+    elseif any(logFileNums == d) % at least log file exists
+        x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
+        ncFileName = [];
+    else
+        continue % move on to next loopNum dive and leave this row empty
+    end
 
 
-	%% times and location data
+    %% times and location data
 
-	% start and end time
-	idxST = strfind(x,'$GPS2');
-	pp.diveStartTime(d,1) = datetime(x(idxST+6:idxST+18), 'InputFormat', ...
-		'ddMMyy,HHmmss');
-	idxET = strfind(x,'$GPS,');
-	pp.diveEndTime(d,1) = datetime(x(idxET+5:idxET+17), 'InputFormat', ...
-		'ddMMyy,HHmmss');
+    % start and end time
+    idxST = strfind(x,'$GPS2');
+    pp.diveStartTime(d,1) = datetime(x(idxST+6:idxST+18), 'InputFormat', ...
+        'ddMMyy,HHmmss');
+    idxET = strfind(x,'$GPS,');
+    pp.diveEndTime(d,1) = datetime(x(idxET+5:idxET+17), 'InputFormat', ...
+        'ddMMyy,HHmmss');
 
-	% start lat/lon
-	idxBreak = regexp(x(idxST:end),'\n','once') + idxST;
-	idxComma = regexp(x(idxST:idxBreak), '\,');
-	sLatDM = x(idxST + idxComma(3):idxST + idxComma(4) - 2);
-	idxPer = regexp(sLatDM, '\.', 'once');
-	sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), ...
-		str2double(sLatDM(idxPer-2:end))]);
-    pp.startLatitude(d,1) = sLatDD;
-	sLonDM = x(idxST + idxComma(4):idxST + idxComma(5) - 2);
-	idxPer = regexp(x(idxST + idxComma(4):idxBreak), '\.', 'once');
-	sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), ...
-		str2double(sLonDM(idxPer-2:end))]);
-pp.startLongitude(d,1) = sLonDD;
-	% pp.startGPS{d} = [sLatDD sLonDD];
+    % start lat/lon
+    idxBreak = regexp(x(idxST:end),'\n','once') + idxST;
+    idxComma = regexp(x(idxST:idxBreak), '\,');
+    sLatDM = x(idxST + idxComma(3):idxST + idxComma(4) - 2);
+    idxPer = regexp(sLatDM, '\.', 'once');
+    sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), ...
+        str2double(sLatDM(idxPer-2:end))]);
+    sLonDM = x(idxST + idxComma(4):idxST + idxComma(5) - 2);
+    idxPer = regexp(x(idxST + idxComma(4):idxBreak), '\.', 'once');
+    sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), ...
+        str2double(sLonDM(idxPer-2:end))]);
+    pp.startGPS{d} = [sLatDD sLonDD];
 
-	% end lat/lon
-	idxComma = regexp(x(idxET:end), '\,');
-	eLatDM = x(idxET + idxComma(3):idxET + idxComma(4) - 2);
-	idxPer = regexp(eLatDM, '\.', 'once');
-	eLatDD = degmin2decdeg([str2double(eLatDM(1:idxPer-3)), ...
-		str2double(eLatDM(idxPer-2:end))]);
-    pp.endLatitude(d,1) = eLatDD;
-	eLonDM = x(idxET + idxComma(4):idxET + idxComma(5) - 2);
-	idxPer = regexp(x(idxET + idxComma(4):end), '\.', 'once');
-	eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), ...
-		str2double(eLonDM(idxPer-2:end))]);
-    pp.endLongitude(d,1) = eLonDD;
-	% pp.endGPS{d} = [eLatDD eLonDD];
+    % end lat/lon
+    idxComma = regexp(x(idxET:end), '\,');
+    eLatDM = x(idxET + idxComma(3):idxET + idxComma(4) - 2);
+    idxPer = regexp(eLatDM, '\.', 'once');
+    eLatDD = degmin2decdeg([str2double(eLatDM(1:idxPer-3)), ...
+        str2double(eLatDM(idxPer-2:end))]);
+    eLonDM = x(idxET + idxComma(4):idxET + idxComma(5) - 2);
+    idxPer = regexp(x(idxET + idxComma(4):end), '\.', 'once');
+    eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), ...
+        str2double(eLonDM(idxPer-2:end))]);
+    pp.endGPS{d} = [eLatDD eLonDD];
 
-	% actual start and end locations
-	% can also get info from nc file but nc files don't always exist
-	if ~isempty(ncFileName)
-		latgps = ncread(ncFileName,'log_gps_lat');
-		longps = ncread(ncFileName,'log_gps_lon');
-		%     timegps = ncread(ncFileName,'log_gps_time');
-        startLatitude(d,1) = latgps(2);
-        startLongitude(d,1) = longps(2);
-        endLatitude(d,1) = latgps(3);
-        endLongitude(d,1) = longps(3);
-		% pp.startGPS{d} = [latgps(2) longps(2)];
-		% pp.endGPS{d} = [latgps(3) longps(3)];
-	end
+    % actual start and end locations
+    % can also get info from nc file but nc files don't always exist
+    if ~isempty(ncFileName)
+        latgps = ncread(ncFileName,'log_gps_lat');
+        longps = ncread(ncFileName,'log_gps_lon');
+        %     timegps = ncread(ncFileName,'log_gps_time');
+        pp.startGPS{d} = [latgps(2) longps(2)];
+        pp.endGPS{d} = [latgps(3) longps(3)];
+    end
 
-	% target name
-	pp.tgtName{d} = parseLogToBreak(x, '$TGT_NAME') ;
-	if strcmp(pp.tgtName(d), 'HEADING')
-		val = parseLogToBreak(x, '$HEADING');
-		pp.tgtName{d} = [pp.tgtName{d} ',' val];
-	end
+    % target name
+    pp.tgtName{d} = parseLogToBreak(x, '$TGT_NAME') ;
+    if strcmp(pp.tgtName(d), 'HEADING')
+        val = parseLogToBreak(x, '$HEADING');
+        pp.tgtName{d} = [pp.tgtName{d} ',' val];
+    end
 
-	% target location
-	idx = strfind(x, '$TGT_LATLONG');
-	idxComma = regexp(x(idx:end), '\,');
-	idxPer = regexp(x(idx:end), '\.');
-	idxBreak = regexp(x(idx:end),'\n','once') + idx;
+    % target location
+    idx = strfind(x, '$TGT_LATLONG');
+    idxComma = regexp(x(idx:end), '\,');
+    idxPer = regexp(x(idx:end), '\.');
+    idxBreak = regexp(x(idx:end),'\n','once') + idx;
 
-	tgtLat = str2double(x(idx+idxComma(1):idx+idxPer(1)-4)) + ...
-		str2double(x(idx+idxPer(1)-3:idx+idxComma(2)-2))/60;
-	tgtLon = str2double(x(idx+idxComma(2):idx+idxPer(2)-4)) - ...
-		str2double(x(idx+idxPer(2)-3:idxBreak-2))/60; % western hemisphere specific.
+    tgtLat = str2double(x(idx+idxComma(1):idx+idxPer(1)-4)) + ...
+        str2double(x(idx+idxPer(1)-3:idx+idxComma(2)-2))/60;
+    tgtLon = str2double(x(idx+idxComma(2):idx+idxPer(2)-4)) - ...
+        str2double(x(idx+idxPer(2)-3:idxBreak-2))/60; % western hemisphere specific.
 
-	pp.tgtLoc{d} = [tgtLat tgtLon];
-	% put placeholder here and calculate below
-	pp.distTGT_km(d) = nan;
+    pp.tgtLoc{d} = [tgtLat tgtLon];
+    % put placeholder here and calculate below
+    pp.distTGT_km(d) = nan;
 
-	%% actual depth, duration, distance traveled summaries
-	% actual duration
-	pp.diveDur_min(d,1) = round(minutes(pp.diveEndTime(d,1) - ...
-		pp.diveStartTime(d,1)));
-	% actual depth
-	if ~isempty(ncFileName)
-		depth = ncread(ncFileName, 'eng_depth');
-	else
-		depth = 0;
-	end
-	pp.maxDepth_m(d,1) = round(max(depth)/100);
-	% actual distance over ground
-	[~, pp.dog_km(d)] = lldistkm([pp.startLatitude(d) pp.startLongitude(d)], ...
-        [pp.endLatitude(d) pp.endLongitude(d)]);
-	% distance to next target
-	[~, pp.distTGT_km(d)] = lldistkm([pp.endLatitude(d) pp.endLongitude(d)], ...
-        [tgtLat tgtLon]);
+    %% actual depth, duration, distance traveled summaries
+    % actual duration
+    pp.diveDur_min(d,1) = round(minutes(pp.diveEndTime(d,1) - ...
+        pp.diveStartTime(d,1)));
+    % actual depth
+    if ~isempty(ncFileName)
+        depth = ncread(ncFileName, 'eng_depth');
+    else
+        depth = 0;
+    end
+    pp.maxDepth_m(d,1) = round(max(depth)/100);
+    % actual distance over ground
+    [~, pp.dog_km(d)] = lldistkm(pp.startGPS{d}, pp.endGPS{d});
+    % distance to next target
+    [~, pp.distTGT_km(d)] = lldistkm(pp.endGPS{d}, [tgtLat tgtLon]);
 
-	%% dive flight parameter settings
-	% target dive duration, depth, max slope and buoy
-	flightList = {'$T_DIVE', '$D_TGT', '$GLIDE_SLOPE', '$MAX_BUOY'};
-	for c = 1:length(flightList)
-		pp.(flightList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
-			flightList{c}));
-	end
+    %% dive flight parameter settings
+    % target dive duration, depth, max slope and buoy
+    flightList = {'$T_DIVE', '$D_TGT', '$GLIDE_SLOPE', '$MAX_BUOY'};
+    for c = 1:length(flightList)
+        pp.(flightList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
+            flightList{c}));
+    end
 
-	%% glider calculated target speed, pitch, and glide angle
+    %% glider calculated target speed, pitch, and glide angle
 
-	% pp.Wd(d,1) = 2*dTgt*100/(tDive*60);
-	% these are calculated based on $T_DIVE, $D_TGT, distance to next
-	% target, %GLIDE_ANGLE, %MAX_BUOY
-	idx = strfind(x, '$MHEAD_RNG_PITCHd_Wd');
-	idxComma = regexp(x(idx:end), '\,');
-	idxBreak = regexp(x(idx:end),'\n','once') + idx;
-	pp.desVertVel(d) = str2double(x(idxComma(4)+idx:idxComma(5)+idx-2));
-	pp.desPitch(d) = str2double(x(idxComma(3)+idx:idxComma(4)+idx-2));
-	if CONFIG.sgVer == 66.12
-		pp.desGlideAngle(d) = str2double(x(idxComma(5)+idx:idxComma(6)+idx-2));
-		pp.dBdW(d) = str2double(x(idxComma(6)+idx:idxBreak-2));
-		% could probably comment this out I don't actually know what it
-		% means
-	elseif CONFIG.sgVer == 67.00
-		pp.desGlideAngle(d) = str2double(x(idxComma(5)+idx:idxBreak-2));
-		%         pp.dBdW(d) = nan; %str2num(x(idxComma(6)+idx:idxBreak-2));
-	end
+    % pp.Wd(d,1) = 2*dTgt*100/(tDive*60);
+    % these are calculated based on $T_DIVE, $D_TGT, distance to next
+    % target, %GLIDE_ANGLE, %MAX_BUOY
+    idx = strfind(x, '$MHEAD_RNG_PITCHd_Wd');
+    idxComma = regexp(x(idx:end), '\,');
+    idxBreak = regexp(x(idx:end),'\n','once') + idx;
+    pp.desVertVel(d) = str2double(x(idxComma(4)+idx:idxComma(5)+idx-2));
+    pp.desPitch(d) = str2double(x(idxComma(3)+idx:idxComma(4)+idx-2));
+    if CONFIG.sgVer == 66.12
+        pp.desGlideAngle(d) = str2double(x(idxComma(5)+idx:idxComma(6)+idx-2));
+        pp.dBdW(d) = str2double(x(idxComma(6)+idx:idxBreak-2));
+        % could probably comment this out I don't actually know what it
+        % means
+    elseif CONFIG.sgVer == 67.00
+        pp.desGlideAngle(d) = str2double(x(idxComma(5)+idx:idxBreak-2));
+        %         pp.dBdW(d) = nan; %str2num(x(idxComma(6)+idx:idxBreak-2));
+    end
 
-	%% pitch and speed actual values
-	if ~isempty(ncFileName)
-		vert_speed_gsm = ncread(ncFileName, 'vert_speed_gsm');
-		pp.vertSpeedDive(d) = mean(vert_speed_gsm(vert_speed_gsm < 0));
-		pp.vertSpeedClimb(d) = mean(vert_speed_gsm(vert_speed_gsm > 0));
+    %% pitch and speed actual values
+    if ~isempty(ncFileName)
+        vert_speed_gsm = ncread(ncFileName, 'vert_speed_gsm');
+        pp.vertSpeedDive(d) = mean(vert_speed_gsm(vert_speed_gsm < 0));
+        pp.vertSpeedClimb(d) = mean(vert_speed_gsm(vert_speed_gsm > 0));
 
-		eng_pitchAng = ncread(ncFileName, 'eng_pitchAng');
-		pp.pitchDive(d) = mean(eng_pitchAng(eng_pitchAng < 0));
-		pp.pitchClimb(d) = mean(eng_pitchAng(eng_pitchAng > 0));
+        eng_pitchAng = ncread(ncFileName, 'eng_pitchAng');
+        pp.pitchDive(d) = mean(eng_pitchAng(eng_pitchAng < 0));
+        pp.pitchClimb(d) = mean(eng_pitchAng(eng_pitchAng > 0));
 
-		pp.stwDive(d) = abs(pp.vertSpeedDive(d))/sind(abs(pp.pitchDive(d)));
-		pp.stwClimb(d) = abs(pp.vertSpeedClimb(d))/sind(abs(pp.pitchClimb(d)));
-	end
+        pp.stwDive(d) = abs(pp.vertSpeedDive(d))/sind(abs(pp.pitchDive(d)));
+        pp.stwClimb(d) = abs(pp.vertSpeedClimb(d))/sind(abs(pp.pitchClimb(d)));
+    end
 
-	%% center parameters
-	centersList = {'$C_VBD', '$C_PITCH', '$PITCH_GAIN', ...
-		'$C_ROLL_DIVE', '$C_ROLL_CLIMB'};
-	for c = 1:length(centersList)
-		pp.(centersList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
-			centersList{c}));
-	end
+    %% center parameters
+    centersList = {'$C_VBD', '$C_PITCH', '$PITCH_GAIN', ...
+        '$C_ROLL_DIVE', '$C_ROLL_CLIMB'};
+    for c = 1:length(centersList)
+        pp.(centersList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
+            centersList{c}));
+    end
 
-	%% pressure and humidity
-    safetyList = {'$HUMID'};
+    %% pressure and humidity
+    safetyList = {'$HUMID', '$INTERNAL_PRESSURE'};
     for c = 1:length(safetyList)
         pp.(safetyList{c}(2:end))(d) = str2double(parseLogToBreak(x, ...
             safetyList{c}));
@@ -501,6 +493,8 @@ pp.startLongitude(d,1) = sLonDD;
 
 end % dives
 
+% return warnings to original state
+warning(origWarnState);
 end
 
 
