@@ -303,8 +303,8 @@ time = nan(height(pp)*2,1);
 per = nan(height(pp)*2,1);
 for d = 1:height(pp)
     try
-        lat((d*2-1):d*2) = [pp.startGPS{d}(1); pp.endGPS{d}(1)];
-        lon((d*2-1):d*2) = [pp.startGPS{d}(2); pp.endGPS{d}(2)];
+        lat((d*2-1):d*2) = [pp.startLatitude(d); pp.endLatitude(d)];
+        lon((d*2-1):d*2) = [pp.startLongitude(d); pp.endLongitude(d)];
         dive((d*2-1):d*2) = [d; d];
         time((d*2-1):d*2) = [datenum(pp.diveStartTime(d));
             datenum(pp.diveEndTime(d))];

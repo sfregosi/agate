@@ -15,8 +15,7 @@
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	14 March 2024
-%	Updated:        08 August 2024
+%	Updated:   2026 February 19
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,8 +36,6 @@ gliders = {'sg001', 'sg002'};
 % configure agate with one of the gliders to get map settings
 CONFIG = agate('agate_mission_config_sg001.cnf');
 
-% set bathymetry or contours on or off
-bathyOn = 1; contourOn = 0;
 % north arrow, scale bar or map limits can be defined in the CONFIG file
 % specified above or manually set here
 % e.g., to set north arrow location
@@ -46,7 +43,7 @@ CONFIG.map.naLat = 19.4;
 CONFIG.map.naLon = -159.6;
 
 % create basemap figure
-[baseFig] = createBasemap(CONFIG, bathyOn, contourOn);
+[baseFig] = createBasemap(CONFIG, 'bathyOn', 1, 'contourOn', 0);
 baseFig.Position = [20    80    1200    700]; % set position on screen
 
 

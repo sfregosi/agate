@@ -1,6 +1,6 @@
 ---
 title: "Convert raw WISPR files"
-subtitle: 'Guide for converting raw WISPR .dat files'
+subtitle: 'Guide for converting raw WISPR `.dat` files to `.wav` or `.flac`'
 ---
 
 ```{r, include = FALSE}
@@ -13,6 +13,16 @@ library(fontawesome)
 
 __*agate*__ includes utilities for converting raw acoustic files (`.dat`) recorded with the WISPR acoustic systems into a more easily readable `.wav` or `.flac` format. An example workflow `workflow_convertWISPR.m` is provided in the `agate\example_workflows` folder and detailed instructions are below.
 
+Currently, the input directory must either be a directory named with the date or a directory full of subdirectories where each subdirectory is named with the date using the format 'YYMMDD', (e.g., 230504 for 4 May 2023). This follows the default behavior of WISPR where sound files are written to subfolders by day. 
+
+Output files will have the identical name to the input `.dat` files except with the new extension. *Making the file prefix more flexible is a priority improvement and is under development.*
+
+:::{.callout-tip collapse="true"}
+## FLAC to WAV or WAV to FLAC conversion
+Note: There are many ways to convert between `.flac` and `.wav` files. This page does not describe that process. If you are looking for a simple option, use `wav2flac` and `flac2wav` in either MATLAB with [`myUtils`](https://github.com/sfregosi/myUtils) or in R with [`crputils`](https://github.com/PIFSC-Protected-Species-Division/crputils). 
+:::
+
+
 ::: {.callout-caution collapse="true"}
 
 ## WISPR2 gain bug
@@ -22,46 +32,75 @@ Following a Seaglider mission in Spring 2023, a bug in the WISPR2 firmware was d
 
 <sub>[Back to top](#)</sub>
 
-## Convert WISPR raw files
+## Example workflow
 
-### Example workflow
+See `workflow_convertWISPR.m` in the `example_workflows` folder for the basic steps needed to convert a directory (that can include subdirectories) of glider-collected WISPR `.dat` files into either `.flac` or `.wav` files. These steps are expanded on below. 
 
-See `workflow_convertWISPR.m` in the `example_workflows` folder for the basic steps needed to convert a directory (that can include subdirectories) of Seaglider-collected WISPR `.dat` files into either `.flac` or `.wav` files. 
+This example workflow provides two approaches: 
 
-:::{.callout-tip}
-## Oceanscout or Slocum gliders
+(1) Simple conversion without the need for a mission-level configuration file. The user will be prompted to specify input and output paths and optional arguments can be specified
 
-Use the `workflow_convertWISPR_hefring.m` script for a simplified example to convert WISPR data collected by a Hefring Oceanscout or TWR Slocum glider. This workflow uses a blank or very basic configuration file and ignores some Seaglider specific settings.
-:::
+(2) Batch conversion using a mission configuration file to specify paths and settings
 
-Like other example workflows, __*agate*__ must first be initialized with a mission-level configuration file (*e.g.*, [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)). For the task of converting WISPR files, this can be empty (use [`agate_config_empty.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_empty.cnf)). But, optionally the `CONFIG.ws.inDir` and `CONFIG.ws.outDir` settings in the `OPTIONAL - acoustics` sections can be set to streamline processing and avoid manual selection of the input and output folders.
+Regardless of approach, __*agate*__ first must be added to the MATLAB path: 
 
-Currently, the input directory must either be a directory named with the date or a directory full of subdirectories where each subdirectory is named with the date using the format 'YYMMDD', (e.g., 230504 for 4 May 2023). 
-
-```{default}
-% add agate to the path
+```matlab
 addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
+```
 
+### Approach 1 - No mission configuration file
+
+For an Oceanscout, Slocum, or other WISPR deployment or test, no configuration file is needed. 
+
+`convertWispr` can be run with no input arguments. The user will be prompted to select the input and output directories, the output type will default to `.flac` and each file name will be printed to the Command Window as it is processed. This information is automatically stored in a log file called `conversionLog.txt` that is saved in the output folder. The log tracks the processing start and end time and will record any files that have to be skipped due to being invalid/empty. 
+
+```matlab
+% no input arguments will prompt for directories, write to .flac
+convertWispr;
+```
+
+Optional arguments can be specified to make `.wav` the output type or to turn off the progress printing to the Command window.
+
+```matlab
+% write to .wav and do not print progress, will prompt for directories
+convertWispr('outExt', '.wav', 'showProgress', false)
+```
+
+Input and output directories can also be specified as optional arguments.
+
+```matlab
+% specify paths without CONFIG file, will write to .flac (default)
+convertWispr('inDir', 'C:\raw_files', 'outDir', 'C:\flac_files')
+```
+
+### Approach 2 - Use a mission configuration file
+
+For a Seaglider-based mission where an __*agate*__ mission-level configuration file already exists, it can be used to run the conversion. This streamlines processing; it is useful to keep a record of the directories used and avoids manual selection of input and output folders which is especially helpful if the process may get interupted for large datasets. 
+
+Configuration settings `CONFIG.ws.inDir`, `CONFIG.ws.outDir`, and `CONFIG.ws.outExt` in the `OPTIONAL - acoustics` sections of the configuration file (*.e.g.*, [`agate_config_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)) can be set.
+
+If using a configuration file, the approach is very similar to the above examples, except __*agate*__ is first initialized using that configuration file. Then the `convertWispr` function can be run with or without any input arguments. _Note that if input arguments for directories or output extension are specified in the `CONFIG` *and* in the function call, it will use the values in `CONFIG`._ 
+
+
+```matlab
 % initialize agate
 % use WISPR Settings section to set in and out paths
 CONFIG = agate('agate_mission_config.cnf');
 
+% process all the files! Will use default settings
+convertWispr(CONFIG);
+
+% optional argument to show/hide progress can be used
+convertWispr(CONFIG, 'showProgress', false)
 ```
 
-Use the `convertWispr` function to run the conversion. The output file type is set with the `'outExt'` argument; it can be either `'.flac'` or `'.wav'`. Set the `'showProgress'` argument to `true` to print each file name to the Command Window as it is processed. This information is automatically stored in a log file called `conversionLog.txt` that is saved in the output folder. The log tracks the processing start and end time and will record any files that have to be skipped due to being invalid/empty. 
+#### Restarting after interuptions
 
-```{default}
-% process all the files!
-convertWispr(CONFIG, 'showProgress', true, 'outExt', '.flac');
+If the process is interrupted at any point, it is possible to restart at a specified subdirectory.  WISPR typically saves raw `.dat` files in folders by date, named with date in the format `YYMMDD`, so enter the name of the dated subdirectory as a six digit string to restart there. It will start at the beginning of the directory so any already processed files in that folder will just be reprocessed. Note that the `fileheaders.txt` file will just append after the restart so some file headers will be repeated. It is possible to just manually delete the to-be-reprocessed files from `fileheaders.txt` if you don't want any duplicates.
 
-```
-
-If the process is interrupted at any point, it is possible to restart at a specified subdirectory. WISPR typically saves raw `.dat` files in folders by date, named with date in the format `YYMMDD`, so enter the name of the dated subdirectory as a six digit string to restart there. It will start at the beginning of the directory so any already processed files in that folder will just be reprocessed. Note that the `fileheaders.txt` file will just append after the restart so some file headers will be repeated. It is possible to just manually delete the to-be-reprocessed files from `fileheaders.txt` if you don't want any duplicates.
-
-```{default}
+```matlab
 % restart the process at folder 240919
-convertWispr(CONFIG, 'showProgress', true, 'outExt', '.flac', ...
-    'restartDir', '240919');
+convertWispr(CONFIG, 'restartDir', '240919');
 ```
 
 
