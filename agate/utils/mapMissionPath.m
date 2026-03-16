@@ -228,7 +228,7 @@ if bathyOn
     	end
     end
 
-    % check that bathyFile eists if specified, otherwise prompt to select
+    % check that bathyFile exists if specified, otherwise prompt to select
     if ~exist(bathyFile, 'file')
     	fprintf(1, ['Specified bathyFile does not exist. Select' ...
     		' bathymetry raster file to continue.\n']);
