@@ -84,7 +84,6 @@ end
 
 % check that length .nc files matches length logs/numDives
 % may not if conversion/processing problems with one of the binaries
-% numDives = length(logFileList)-1; % minus the pre-launch test log files
 numDives = max([logFileNums; ncFileNums]); % get max of list of dive nums
 diveList = [1:numDives]'; %#ok<NBRAK1>
 
@@ -129,7 +128,7 @@ for d = loopNums
     if any(logFileNums == d) && any(ncFileNums == d) % do these files exist?
         x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
         ncFileName = fullfile(path_bsLocal, ncFileNames{ncFileNums == d});
-    elseif any(logFileNums == d) % at least log file exists
+    elseif any(logFileNums == d) % at least log file exists, can do partial run
         x = fileread(fullfile(path_bsLocal, logFileNames{logFileNums == d}));
         ncFileName = [];
     else
@@ -154,13 +153,13 @@ for d = loopNums
     idxPer = regexp(sLatDM, '\.', 'once');
     sLatDD = degmin2decdeg([str2double(sLatDM(1:idxPer-3)), ...
         str2double(sLatDM(idxPer-2:end))]);
-     pp.startLatitude(d,1) = sLatDD;
+    pp.startLatitude(d,1) = sLatDD;
     sLonDM = x(idxST + idxComma(4):idxST + idxComma(5) - 2);
     idxPer = regexp(x(idxST + idxComma(4):idxBreak), '\.', 'once');
     sLonDD = degmin2decdeg([str2double(sLonDM(1:idxPer-3)), ...
         str2double(sLonDM(idxPer-2:end))]);
     pp.startLongitude(d,1) = sLonDD;
-	% pp.startGPS{d} = [sLatDD sLonDD];
+    % pp.startGPS{d} = [sLatDD sLonDD]; % old method
 
     % end lat/lon
     idxComma = regexp(x(idxET:end), '\,');
@@ -174,7 +173,7 @@ for d = loopNums
     eLonDD = degmin2decdeg([str2double(eLonDM(1:idxPer-3)), ...
         str2double(eLonDM(idxPer-2:end))]);
     pp.endLongitude(d,1) = eLonDD;
-	% pp.endGPS{d} = [eLatDD eLonDD];
+    % pp.endGPS{d} = [eLatDD eLonDD]; % old method
 
     % actual start and end locations
     % can also get info from nc file but nc files don't always exist
@@ -186,8 +185,8 @@ for d = loopNums
         startLongitude(d,1) = longps(2);
         endLatitude(d,1) = latgps(3);
         endLongitude(d,1) = longps(3);
-		% pp.startGPS{d} = [latgps(2) longps(2)];
-		% pp.endGPS{d} = [latgps(3) longps(3)];
+        % pp.startGPS{d} = [latgps(2) longps(2)];   % old
+        % pp.endGPS{d} = [latgps(3) longps(3)];     % old
     end
 
     % target name
@@ -224,10 +223,10 @@ for d = loopNums
     end
     pp.maxDepth_m(d,1) = round(max(depth)/100);
     % actual distance over ground
-	[~, pp.dog_km(d)] = lldistkm([pp.startLatitude(d) pp.startLongitude(d)], ...
+    [~, pp.dog_km(d)] = lldistkm([pp.startLatitude(d) pp.startLongitude(d)], ...
         [pp.endLatitude(d) pp.endLongitude(d)]);
-	% distance to next target
-	[~, pp.distTGT_km(d)] = lldistkm([pp.endLatitude(d) pp.endLongitude(d)], ...
+    % distance to next target
+    [~, pp.distTGT_km(d)] = lldistkm([pp.endLatitude(d) pp.endLongitude(d)], ...
         [tgtLat tgtLon]);
 
     %% dive flight parameter settings
@@ -430,42 +429,32 @@ for d = loopNums
 
 
     %% battery usage
-    % voltages
-    idx = strfind(x, '$24V_AH');
-    sl = length('$24V_AH');
-    idxComma = regexp(x(idx:end), '\,');
-    idxBreak = regexp(x(idx+sl+1:end),'\n','once') + idx + sl;
-    sVal = str2double(x(idx+idxComma(2):idxBreak-1));
-    pp.ampHrConsumed(d) = sVal;
+    % amp hours and minimum voltages
+    vals = parseLogNValues(x, '$24V_AH', 2);
+    pp.ampHrConsumed(d) = vals(2);
+    pp.minVolt_24(d) = vals(1);
 
-    % minimum voltages
-    sVal = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
-    pp.minVolt_24(d) = sVal;
-    idx = strfind(x, '$10V_AH');
-    idxComma = regexp(x(idx:end), '\,');
-    sVal = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
-    pp.minVolt_10(d) = sVal;
+    vals = parseLogNValues(x, '$10V_AH', 2);
+    pp.minVolt_10(d) = vals(1);
 
     % By Devices *****EXPERIMENTAL******
+    V = 15;
     if CONFIG.sgVer == 66.12 || CONFIG.sgVer == 66.14
         % order of devices = pitch, roll, VBD apogee, VBD surf, VBD valve
-        idx = strfind(x, '$DEVICE_SECS');
-        idxComma = regexp(x(idx:end), '\,');
-        pSec    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
-        rSec    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
-        vSec1   = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
-        vSec2   = str2double(x(idx+idxComma(4):idx+idxComma(5)-2));
-        vSec3   = str2double(x(idx+idxComma(5):idx+idxComma(6)-2));
+        vals = parseLogNValues(x, '$DEVICE_SECS', 5);
+        pSec = vals(1);
+        rSec = vals(2);
+        vSec1 = vals(3);
+        vSec2 = vals(4);
+        vSec3 = vals(5);
 
-        idx = strfind(x, '$DEVICE_MAMPS');
-        idxComma = regexp(x(idx:end), '\,');
-        pMamps    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
-        rMamps    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
-        vMamps1   = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
-        vMamps2   = str2double(x(idx+idxComma(4):idx+idxComma(5)-2));
-        vMamps3   = str2double(x(idx+idxComma(5):idx+idxComma(6)-2));
+        vals = parseLogNValues(x, '$DEVICE_MAMPS', 5);
+        pMamps = vals(1);
+        rMamps = vals(2);
+        vMamps1 = vals(3);
+        vMamps2 = vals(4);
+        vMamps3 = vals(5);
 
-        V = 15;
         pp.pkJ(d,1) = calckJ(pSec, pMamps, V);
         pp.rkJ(d,1) = calckJ(rSec, rMamps, V);
         vkJ1 = calckJ(vSec1, vMamps1, V);
@@ -475,21 +464,20 @@ for d = loopNums
 
     elseif CONFIG.sgVer == 67.00 || CONFIG.sgVer == 67.01
         % order of devices = VBD, pitch, roll
-        idx = strfind(x, '$DEVICE_SECS');
-        idxComma = regexp(x(idx:end), '\,');
-        vSec    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
-        pSec    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
-        rSec    = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
+        vals = parseLogNValues(x, '$DEVICE_SECS', 3);
+        vSec = vals(1);
+        pSec = vals(2);
+        rSec = vals(3);
 
-        idx = strfind(x, '$DEVICE_MAMPS');
-        idxComma = regexp(x(idx:end), '\,');
-        vMamps    = str2double(x(idx+idxComma(1):idx+idxComma(2)-2));
-        pMamps    = str2double(x(idx+idxComma(2):idx+idxComma(3)-2));
-        rMamps    = str2double(x(idx+idxComma(3):idx+idxComma(4)-2));
+        vals = parseLogNValues(x, '$DEVICE_MAMPS', 3);
+        vMamps = vals(1);
+        pMamps = vals(2);
+        rMamps = vals(3);
 
-        pp.pkJ(d,1) = pSec*pMamps*15/1000000;
-        pp.rkJ(d,1) = rSec*rMamps*15/1000000;
-        pp.vkJ(d,1) = vSec*vMamps*15/1000000;
+        pp.pkJ(d,1) = calckJ(pSec, pMamps, V);
+        pp.rkJ(d,1) = calckJ(rSec, rMamps, V);
+        pp.vkJ(d,1) = calckJ(vSec, vMamps, V);
+
     end
 
     %% depth average currents
