@@ -35,8 +35,6 @@
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% SCRATCH STAGE
-
 % make sure agate is on the path!
 addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
 % initializing agate is not necessary for this workflow, but CONFIG could
