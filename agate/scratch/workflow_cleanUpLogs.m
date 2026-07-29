@@ -2,74 +2,74 @@
 %	Example workflow for cleaning up/combining Triton or ERMA logs
 %
 %	Description:
-%		Detailed description here, please
+%		Example/template workflow demonstrating how to clean up cetacean
+%		event logs, either manually or automaticaly identified, for further
+%		processing with other agate tools or with PAMpal. 
+%		Two log formats are covered:
+%
+%		Triton logs: Uses COLLAPSETRITONLOG to compress a raw Triton log
+%		to one entry per event - merging rows where multiple signal
+%		types (e.g., clicks and whistles) were logged under a single
+%		event, and optionally merging separate events that fall within
+%		a specified time gap of one another. TRITONLOGTOPAMPAL is then
+%		used to reformat the collapsed log into the column structure
+%		required to build a PAMpal AcousticStudy event table.
+%
+%		ERMA logs: [TODO - fill in once ERMA workflow functions exist]
+%
+%		This script is intended as a copy-and-edit starting point rather
+%		than a function - update the file paths, log filename, and
+%		event-merging gap for your specific dataset/mission before
+%		running.
 %
 %	Notes
 %
-%	See also
+%	See also COLLAPSETRITONLOG, TRITONLOGTOPAMPAL
 %
 %
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	FirstVersion: 	13 March 2024
-%	Updated:
+%	Updated: 2026 July 29
 %
 %	Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% created this placeholder but have done no work on it. 
+% SCRATCH STAGE
 
-% see glider-mhi repo for example from MHI project - workflow_cleanUpLogs.m
+% make sure agate is on the path!
+addpath(genpath('C:\Users\User.Name\Documents\MATLAB\agate'))
+% initializing agate is not necessary for this workflow, but CONFIG could
+% be used optionally to streamline your working directory/paths
 
+% set path to logs (to be used in file inputs and as save locations below)
+path_logs = 'Z:\triton_logs\';
+% set glider ID (used as prefix for eventIDs, naming)
+glider = 'sgXXX';
 
-% workflow for cleaning up Triton logs for fkw analysis
-%
-% This requires the agate-public repository, access at:
-%                                       (github.com/sfregosi/agate-public)
-%
-% S. Fregosi 15 February 2023
+%% Workflow to work with Triton logs
+% Collapse events with multiple signal types into single events and
+% optionally merge events within some set time (e.g., 15 mins) of eachother
 
-addpath(genpath('C:\Users\Selene.Fregosi\Documents\GitHub\agate-public'));
+% specify log file to process
+logFile = fullfile(path_logs, 'sgXXX_mission_analyst.xlsx');
 
-path_analysis = 'C:\Users\Selene.Fregosi\Documents\GitHub\glider-MHI\analysis\';
-
-glider = 'sg639'; mission = 'MHI_Apr2023'; 
-% glider = 'sg680'; mission = 'MHI_Apr2022';
-% glider = 'sg679'; mission = 'MHI_May2023'; 
-
-% logFileName = [glider '_' mission '_MW.xls'];
-% logFile = fullfile(path_analysis, 'wood', [glider '_' mission '_log_mw'], ...
-% 	logFileName);
-% logFile = ['C:\Users\Selene.Fregosi\Documents\GitHub\glider-MHI\' ...
-%     'analysis\wood\' glider '_MHI_log_mw\', glider '_MHI_log_mw_sf.xls'];
-
-logFileName = [glider '_' mission '_MW_recheck.xls'];
-logFile = fullfile(path_analysis, 'wood', [glider '_' mission '_recheck_mw'], ...
-	logFileName);
+% set max gap between events in minutes
 eventGap = 15;
 
+% collapse log events
 [tl, tlm] = collapseTritonLog(logFile, eventGap);
-save(fullfile(path_analysis, 'fkw', [glider '_' mission '_log_merged.mat']), ...
-	'tl', 'tlm');
 
-% simplify for banter and add glider to eventID string
-eventStr = arrayfun(@(x) num2str(x, '%02.f'), tl.eventNum, 'UniformOutput', 0);
-gc = cell(height(tl), 1);
-gc(:) = {glider};
-tl.eventID = cellfun(@(x,y) [x '_' y], gc, eventStr, 'UniformOutput', 0);
+% simplify format for PAMpal
+% create new simplified table for PAMpal processing
+tls = tritonLogToPampal(tlm, glider);
 
-eventStr = arrayfun(@(x) num2str(x, '%02.f'), tlm.eventNum, 'UniformOutput', 0);
-gc = cell(height(tlm), 1);
-gc(:) = {glider};
-tlm.eventID = cellfun(@(x,y) [x '_' y], gc, eventStr, 'UniformOutput', 0);
+% add the PAMpal eventID to tlm for reference
+tlm.eventID = tls.id; 
 
-tls = tlm(:, [2 3 4 7]);
-tls.Properties.VariableNames = {'start', 'end', 'sp', 'id'};
-tls.start.Format = 'MM/dd/uuuu HH:mm:ss';
-tls.end.Format = 'MM/dd/uuuu HH:mm:ss';
-writetable(tls, fullfile(path_analysis, 'fkw', [glider '_' mission '_log_merged.csv']));
+% save everything
+[~, lfName, ~] = fileparts(logFile);
+save(fullfile(path_logs, [lfName '_collapsed.mat']), 'tl', 'tlm');
+writetable(tls, fullfile(path_logs, [lfName '_collapsed_forPAMpal.csv']));
 
-
-
-
+%% Workflow to do stuff with ERMA logs
