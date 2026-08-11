@@ -1,31 +1,27 @@
-function decimateDir(fsNew, folder)
+function decimateDir(fsNew, folder, path_out)
 % DECIMATEDIR	downsample directory of audio files using DECIMATE
 %
 %	Syntax:
 %		DECIMATEDIR(FSNEW, FOLDER)
+%		DECIMATEDIR(FSNEW, FOLDER, PATH_OUT)
 %
 %	Description:
 %		Decimate a directory of audio files to a defined new sampling rate,
 %		fsNew, or multiple new sample rates, and write new files in new
 %		subdirectory.
 %
-%       This was designed to work on a folder of subfolders of instruments,
-%       e.g., DASBRs following the folder structure on the PIFSC server.
-%       This has an outer folder within which there is a subfolder for each
-%       recorder/deployment
+%       The output directory can be specified, or if that argument is left
+%       blank, an output directory will be created following the format of
+%       [input folder]_decimated_[new sample rate]. Newly decimated files
+%       will have the new sample rate appended to the filename (e.g.,
+%       WISPR_260810_170505.flac will be WISPR_260810_170505_1kHz.flac).
 %
-%       Because of variability in folder structures, this really only works
-%       with a basic folder/subfolder arrangement where there is a folder
-%       such as 'recordings' that contains a subfolder for 'wav' and then
-%       the decimated recordings will be saved in a newly created
-%       'decimated' subfolder with each new sample rate in the name
-%
-%       This was originally a script that was modified for each deployment,
-%       but this function aims to simplify that script. However, this
-%       function can only run on a single folder of sound files. See
+%       This was originally a script that was modified for each deployment.
+%       This function simplifies that script but means the function can
+%       only be run on a single folder of sound files. See separate repo
 %       myUtils/dataProcessing/downsampling for example scripts to deal
 %       with more complicated folder strutures and to loop through multiple
-%       directories of sound files in one script
+%       directories of sound files in one script.
 %
 %       NOTE: previous versions of this function allowed for specifying the
 %       file extension as either .wav or .flac. It now defaults to the same
@@ -34,24 +30,34 @@ function decimateDir(fsNew, folder)
 %       a combined function.
 %
 %	Inputs:
-%       fsNew   [double] or [vector] new sample rate or vector of multiple
-%               new sample rates (e.g., [1000 9600]) in Hz. Original sample
-%               rate must be divisible by new sample rates by an integer
-%       folder 	path to audio files to be decimated
+%       fsNew    [double] or [vector] new sample rate or vector of multiple
+%                new sample rates (e.g., [1000 9600]) in Hz. Original
+%                sample rate must be divisible by new sample rates by an
+%                integer
+%       folder 	 path to audio files to be decimated
+%       path_out (optional) [char] or [cell array] full path(s) to the
+%                folder(s) where decimated files will be written, one per
+%                entry in fsNew and in the same order. Folders are created
+%                if they do not already exist. If empty or not specified,
+%                output folders are created alongside the input folder as
+%                [folder]_decimated_[fsNew]
 %
 %	Outputs:
 %		creates a folder where newly written audio files are stored
 %
 %	Examples:
-%       decimate([10 9600], 'G:/glider/wav');
+%       decimateDir([1000 9600], 'G:/glider/wav');
 %
-%	See also
+%       decimateDir([1000 9600], 'G:/glider/wav', ...
+%           {'G:/glider/wav_decimate_1kHz', 'G:/glider/wav_decimate_9p6kHz'});
+%
+%	See also WAV2FLAC, FLAC2WAV
 %
 %
 %	Authors:
 %		S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Updated:       13 January 2026
+%	Updated:      2026 August 10
 %
 %	Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,6 +66,7 @@ function decimateDir(fsNew, folder)
 arguments
     fsNew   (1,:) double {mustBePositive} = []
     folder  (1,:) char   = ''
+    path_out {mustBeText} = {}
     % ext     (1,:) char   = '.flac'
 end
 
@@ -76,20 +83,27 @@ if isempty(folder) || ~exist(folder, 'dir')
     end
 end
 
-% % normalize extension
-% if isempty(ext)
-%     ext = '.wav';
-% end
-%
-% if ext(1) ~= '.'
-%     ext = ['.' ext];
-% end
+% check output paths, if specified
+if ~isempty(path_out)
+    path_out = cellstr(path_out); % standardize char, string, cellstr inputs
+    path_out = path_out(:);       % force to column to match fsNew
 
+    % must have one output path per new sample rate
+    if numel(path_out) ~= numel(fsNew)
+        error(['Number of output paths (%i) must match number of new ' ...
+            'sample rates (%i).'], numel(path_out), numel(fsNew));
+    end
 
-% fileList = dir(folder);
-% % skip any subfolders or ., ..
-% dirFlags = [fileList.isdir];
-% fileList = fileList(~dirFlags,:);
+    % no empties
+    if any(cellfun(@isempty, path_out))
+        error('One or more specified output paths is empty.');
+    end
+
+    % no duplicates - would overwrite/mix decimated files
+    if numel(unique(path_out)) ~= numel(path_out)
+        error('Specified output paths must be unique.');
+    end
+end
 
 % do the decimation!
 fprintf(1, 'Decimating %s\n', folder);
@@ -123,7 +137,7 @@ if ~isempty(audioFiles)
     infoFirst = audioinfo(fullfile(folder, audioFiles(1,1).name));
     fprintf(1, 'Original sample rate: %0.f Hz\n', infoFirst.SampleRate)
     df = zeros(length(fsNew), 1); % decimation factor(s)
-    path_out = cell(length(fsNew), 1);
+    outDir = cell(length(fsNew), 1);
     fsNewStr = cell(length(fsNew), 1);
     isValid = false(length(fsNew), 1);
     for f = 1:length(fsNew)
@@ -132,7 +146,8 @@ if ~isempty(audioFiles)
         dfN = infoFirst.SampleRate/fsN;
         if rem(dfN, 1) ~= 0
             fprintf(1, ...
-                'Invalid decimation factor:\n  %s\n  fs = %.0f Hz, fsNew = %.0f Hz (not integer) — skipping\n', ...
+                ['Invalid decimation factor:\n  %s\n  fs = %.0f Hz, ', ...
+                'fsNew = %.0f Hz (not integer) — skipping\n'], ...
                 folder, infoFirst.SampleRate, fsN);
             continue
         end
@@ -147,17 +162,25 @@ if ~isempty(audioFiles)
             fsNewStr{f} = [num2str(fsN/1000) 'kHz'];
         end
 
-        pathParts = regexp(folder, filesep, 'split');
-        path_outN = fullfile(pathParts{1:end-1}, ...
-            [pathParts{end} '_decimated_' fsNewStr{f}]);
-        mkdir(path_outN);
-        path_out{f} = path_outN;
+        % use specified output path, or build default alongside input
+        if isempty(path_out)
+            pathParts = regexp(folder, filesep, 'split');
+            outDirN = fullfile(pathParts{1:end-1}, ...
+                [pathParts{end} '_decimated_' fsNewStr{f}]);
+        else
+            outDirN = path_out{f};
+        end
+        if ~exist(outDirN, 'dir')
+            mkdir(outDirN);
+        end
+        outDir{f} = outDirN;
+        fprintf(1, '  output folder: %s\n', outDirN);
     end % fsNew
 
     df        = df(isValid);
     fsNew     = fsNew(isValid);
     fsNewStr  = fsNewStr(isValid);
-    path_out  = path_out(isValid);
+    outDir    = outDir(isValid);
 
     if isempty(df)
         error('No valid decimation factors for folder: %s', folder);
@@ -166,7 +189,7 @@ if ~isempty(audioFiles)
     % decimate and write new files
     for af = 1:length(audioFiles)
         try
-            [~, wfName, fileExt] = fileparts(fullfile(audioFiles(af).folder, ...
+            [~, afName, fileExt] = fileparts(fullfile(audioFiles(af).folder, ...
                 audioFiles(af).name));
             info = audioinfo(fullfile(audioFiles(af).folder, ...
                 audioFiles(af).name));
@@ -179,20 +202,24 @@ if ~isempty(audioFiles)
 
             if info.BitsPerSample ~= infoFirst.BitsPerSample
                 error('Bit depth mismatch in file %s (%d bits ≠ %d bits).', ...
-                    audioFiles(af).name, info.BitsPerSample, infoFirst.BitsPerSample);
+                    audioFiles(af).name, info.BitsPerSample, ...
+                    infoFirst.BitsPerSample);
             end
 
             for g = 1:length(df)
                 dataNew = decimate(double(data), df(g));
                 % write data type based on output bits
                 if infoFirst.BitsPerSample == 16
-                    audiowrite(fullfile(path_out{g}, [wfName '_' fsNewStr{g} fileExt]), ...
-                        int16(dataNew), fsNew(g), 'BitsPerSample', infoFirst.BitsPerSample);
+                    audiowrite(fullfile(outDir{g}, ...
+                        [afName '_' fsNewStr{g} fileExt]), int16(dataNew), ...
+                        fsNew(g), 'BitsPerSample', infoFirst.BitsPerSample);
                 elseif infoFirst.BitsPerSample == 24 || infoFirst.BitsPerSample == 32
-                    audiowrite(fullfile(path_out{g}, [wfName '_' fsNewStr{g} fileExt]), ...
-                        int32(dataNew), fsNew(g), 'BitsPerSample', infoFirst.BitsPerSample);
+                    audiowrite(fullfile(outDir{g}, ...
+                        [afName '_' fsNewStr{g} fileExt]), int32(dataNew), ...
+                        fsNew(g), 'BitsPerSample', infoFirst.BitsPerSample);
                 else
-                    fprintf(1, 'Error: bit size %i not supported.', infoFirst.BitsPerSample)
+                    fprintf(1, 'Error: bit size %i not supported.', ...
+                        infoFirst.BitsPerSample)
                     return
                 end
 
@@ -204,7 +231,7 @@ if ~isempty(audioFiles)
             clear data dataNew
         catch
             fprintf(1, 'ATTENTION: %s - file #%i: %s corrupt\n', ...
-                datetime('now'), af, audioFiles(f,1).name);
+                datetime('now'), af, audioFiles(af, 1).name);
         end
 
     end %loop through audioFiles
