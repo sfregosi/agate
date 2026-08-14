@@ -6,10 +6,10 @@ function tls = tritonLogToEventLog(tlIn, prefix)
 %       TLS = TRITONLOGTOEVENTLOG(TLIN, PREFIX)
 %
 %   Description:
-%       Simplifies and reshapes a Triton log to an event log with the 
+%       Simplifies and reshapes a Triton log to an event log with the
 %       correct formatting for processing with PAMpal into an AcousticStudy
-%       object. It appends a unique event ID to each event, that contains 
-%       the glider's serial (e.g., sg639) and then a sequential number in 
+%       object. It appends a unique event ID to each event, that contains
+%       the glider's serial (e.g., sg639) and then a sequential number in
 %       time. This reorders and renames columns to be just include start,
 %       end, sp (species), and id and it standardizes the datetime format.
 %
@@ -56,7 +56,7 @@ function tls = tritonLogToEventLog(tlIn, prefix)
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%   Updated:   29 July 2026
+%   Updated:   2026 August 12
 %
 %   Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,8 +110,16 @@ end
 % add eventID if needed
 if ~hasEventID
     % no eventID column yet, make one
-    eventStr = arrayfun(@(x) sprintf('%02d', x), src.eventNum, ...
+    % pad zeros based on largest event number, minimum 3 digits
+    maxNum = max(src.eventNum);
+
+    padWidth = max(3, floor(log10(double(maxNum))) + 1);
+    fmt = sprintf('%%0%dd', padWidth);
+    % build id strings
+    eventStr = arrayfun(@(x) sprintf(fmt, x), src.eventNum, ...
         'UniformOutput', false);
+    % eventStr = arrayfun(@(x) sprintf('%02d', x), src.eventNum, ...
+    %     'UniformOutput', false);
     src.eventID = eventStr;
 end
 
