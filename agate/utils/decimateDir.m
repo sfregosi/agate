@@ -1,9 +1,9 @@
-function decimateDir(fsNew, folder, path_out)
+function decimateDir(fsNew, folder, path_out, options)
 % DECIMATEDIR	downsample directory of audio files using DECIMATE
 %
 %	Syntax:
-%		DECIMATEDIR(FSNEW, FOLDER)
 %		DECIMATEDIR(FSNEW, FOLDER, PATH_OUT)
+%		DECIMATEDIR(FSNEW, FOLDER, PATH_OUT, OVERWRITE)
 %
 %	Description:
 %		Decimate a directory of audio files to a defined new sampling rate,
@@ -41,6 +41,13 @@ function decimateDir(fsNew, folder, path_out)
 %                if they do not already exist. If empty or not specified,
 %                output folders are created alongside the input folder as
 %                [folder]_decimated_[fsNew]
+%       ovewrite (optional) [logical] whether to overwrite existing
+%                decimated files. If false (default), files that have
+%                already been decimated (i.e., all expected output files
+%                for a given input file already exist) are skipped. This
+%                enables resuming an interrupted run without redoing
+%                completed files. Set to true to force reprocessing and
+%                overwrite existing output files.
 %
 %	Outputs:
 %		creates a folder where newly written audio files are stored
@@ -50,6 +57,16 @@ function decimateDir(fsNew, folder, path_out)
 %
 %       decimateDir([1000 9600], 'G:/glider/wav', ...
 %           {'G:/glider/wav_decimate_1kHz', 'G:/glider/wav_decimate_9p6kHz'});
+%
+%       % resume an interrupted run, skipping already-decimated files
+%       decimateDir([1000 9600], 'G:/glider/wav', ...
+%           {'G:/glider/wav_decimate_1kHz', 'G:/glider/wav_decimate_9p6kHz'}, ...
+%           overwrite=false);
+%
+%       % force reprocessing/overwrite of all files
+%       decimateDir([1000 9600], 'G:/glider/wav', ...
+%           {'G:/glider/wav_decimate_1kHz', 'G:/glider/wav_decimate_9p6kHz'}, ...
+%           true);
 %
 %	See also WAV2FLAC, FLAC2WAV
 %
@@ -67,6 +84,7 @@ arguments
     fsNew   (1,:) double {mustBePositive} = []
     folder  (1,:) char   = ''
     path_out {mustBeText} = {}
+    options.overwrite (1,1) logical = false
     % ext     (1,:) char   = '.flac'
 end
 
@@ -105,7 +123,7 @@ if ~isempty(path_out)
     end
 end
 
-% do the decimation!
+% print some feedback
 fprintf(1, 'Decimating %s\n', folder);
 fprintf(1, '   Start time: %s\n',datetime('now'));
 
@@ -191,21 +209,38 @@ if ~isempty(audioFiles)
         try
             [~, afName, fileExt] = fileparts(fullfile(audioFiles(af).folder, ...
                 audioFiles(af).name));
-            info = audioinfo(fullfile(audioFiles(af).folder, ...
-                audioFiles(af).name));
-            [data, fs] = audioread(fullfile(audioFiles(af).folder, ...
-                audioFiles(af).name), 'native');
-            % confirm sample rate matches first file
-            if fs ~= infoFirst.SampleRate
-                error('Sample rate mismatch in file %s.', audioFiles(af).name);
+
+            % check if the output files already exist
+            % skip (default) or overwrite if specified 
+            outFiles = cell(length(df), 1);
+            for g = 1:length(df)
+                outFiles{g} = fullfile(outDir{g}, ...
+                    [afName '_' fsNewStr{g} fileExt]);
+            end
+            if ~options.overwrite && ...
+                    all(cellfun(@(x) exist(x, 'file') == 2, outFiles))
+                fprintf(1, '  skipping (already decimated): %s\n', ...
+                    audioFiles(af).name);
+                continue
             end
 
+            % check sample rate and bit depth match that of first file
+            info = audioinfo(fullfile(audioFiles(af).folder, ...
+                audioFiles(af).name));
+            if info.SampleRate ~= infoFirst.SampleRate
+                error('Sample rate mismatch in file %s.', audioFiles(af).name);
+            end
             if info.BitsPerSample ~= infoFirst.BitsPerSample
                 error('Bit depth mismatch in file %s (%d bits ≠ %d bits).', ...
                     audioFiles(af).name, info.BitsPerSample, ...
                     infoFirst.BitsPerSample);
             end
 
+            % if ok, read in file
+            [data, fs] = audioread(fullfile(audioFiles(af).folder, ...
+                audioFiles(af).name), 'native');
+
+            % do decimation
             for g = 1:length(df)
                 dataNew = decimate(double(data), df(g));
                 % write data type based on output bits
