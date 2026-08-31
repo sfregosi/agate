@@ -1,38 +1,35 @@
 function tm = unix2datenum(tu)
-%UNIX2MATLAB	Converts unix time to matlab datenum
+% UNIX2MATLAB	Convert from Unix time (in seconds) to MATLAB datenum
 %
 %   Syntax:
-%	    TM = UNIX2MATLAB(TU)
+%       TM = UNIX2DATENUM(TU)
 %
 %   Description:
-%	    Converts unix time (epoch time, seconds since 1 Jan 1970) to MATLAB
-%       datenum (which is days from 1 Jan 0000)
-%	    Built based on this Stack Overflow answer: 
-%       https://stackoverflow.com/a/12663377/1890309
+%       Conversion between Unix time, in seconds, to MATLAB time as a
+%       datenum
 %
 %   Inputs:
-%       tu   [double] unix epoch time in seconds
+%       tu    [double] unix time in seconds from 1/1/1970 00:00:00 
 %
-%   Outputs:
-%       tm   [double] MATLAB datenum
+%	Outputs:
+%       tm    [double] time as MATLAB datenum (serial days from 1/1/0000)
 %
 %   Examples:
-%       tu = 1737731000;
+%       tu = 1745971200; % 30 April 2025
 %       tm = unix2datenum(tu);
-%       datestr(tm)
 %
-%   See also
+%   See also DATENUM2UNIX
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%    Updated:      2026 August 30
+%   Updated:   2026 August 30
 %
-%	Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
+%   Created with MATLAB ver.: 24.2.0.2740171 (R2024b) Update 1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-tm = datenum('1970', 'yyyy') + tu / 86400;
+tm = datenum('1970', 'yyyy') + tu/86400;
 
 end
 
