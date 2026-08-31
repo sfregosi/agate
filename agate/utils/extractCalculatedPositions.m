@@ -73,7 +73,7 @@ calcNames = {'dive', 'time', 'dateTime', 'latitude', 'longitude', ...
 	'north_displacement_gsm', 'east_displacement_gsm', 'depth', 'temperature', ...
 	'salinity', 'soundVelocity', 'density', 'vertSpeed', 'horzSpeed', 'speed', ...
 	'speed_qc', 'vertSpeed_gsm', 'horzSpeed_gsm', 'speed_gsm', ...
-	'glideAngle', 'glideAngle_gsm'};  %#ok<NASGU> % kept here as the schema reference
+	'glideAngle', 'glideAngle_gsm', 'buoyancy'};  %#ok<NASGU> % kept here as the schema reference
 
 % collect one table per file, then vertcat once at the end -- avoids the
 % pre-allocation guesswork and spaceCheck bookkeeping from before
@@ -106,8 +106,7 @@ for f = 1:length(files)
         % build table for this dive/file
         fileT = table();
 		fileT.dive                    = repmat(f, samples, 1);
-		fileT.time                    = unix2matlab(ncread(fname, timeVar));
-		fileT.dateTime                = datetime(fileT.time, 'ConvertFrom', 'datenum');
+		fileT.time                    = unix2datenum(ncread(fname, timeVar));
 		fileT.latitude                = ncread(fname, 'latitude');
 		fileT.longitude               = ncread(fname, 'longitude');
 		fileT.latitude_gsm            = ncread(fname, 'latitude_gsm');
@@ -130,6 +129,7 @@ for f = 1:length(files)
 		fileT.speed_gsm               = ncread(fname, 'speed_gsm');
 		fileT.glideAngle              = ncread(fname, 'glide_angle');
 		fileT.glideAngle_gsm          = ncread(fname, 'glide_angle_gsm');
+        fileT.buoyancy                = ncread(fname, 'buoyancy');
 
         % add cell
         locCalcTAll{f} = fileT;
@@ -144,6 +144,10 @@ end
 
 % combine all files (skip any empty entries from files that errored above)
 locCalcT = vertcat(locCalcTAll{~cellfun(@isempty, locCalcTAll)});
+
+% add in dateTime col for readability
+locCalcT.dateTime = datetime(locCalcT.time, 'ConvertFrom', 'datenum');
+locCalcT = movevars(locCalcT, 'dateTime', 'After', 'time');
 
 % check by plotting
 if plotOn

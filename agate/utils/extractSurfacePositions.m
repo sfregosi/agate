@@ -1,4 +1,4 @@
-function gpsSurfT = extractSurfacePositions(CONFIG, plotOn)
+unixfunction gpsSurfT = extractSurfacePositions(CONFIG, plotOn)
 % EXTRACTSURFACEPOSITIONS	Extract glider surface GPS locations from nc files
 %
 %   Syntax:
@@ -72,7 +72,7 @@ for f = 1:length(files)
 		timegps = ncread(fname,'log_gps_time');
 
 		gpsSurfT.dive(f)			= f;
-		gpsSurfT.startTime(f)		= unix2matlab(timegps(2));
+		gpsSurfT.startTime(f)		= unix2datenum(timegps(2));
 		gpsSurfT.startDateTime(f)	= datetime(gpsSurfT.startTime(f), ...
 										'ConvertFrom','datenum');
 		gpsSurfT.startLatitude(f)	= latgps(2);

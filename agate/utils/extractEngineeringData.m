@@ -87,7 +87,7 @@ for f = 1:length(files)
 		% build table for this dive/file
 		fileT = table();
 		fileT.dive     = repmat(f, samples, 1);
-		fileT.time     = unix2matlab(ncread(fname, 'time'));
+		fileT.time     = unix2datenum(ncread(fname, 'time'));
 		fileT.pitch    = ncread(fname, 'eng_pitchAng');
 		fileT.roll     = ncread(fname, 'eng_rollAng');
 		fileT.heading  = ncread(fname, 'eng_head');
