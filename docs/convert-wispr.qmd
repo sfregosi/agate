@@ -18,8 +18,12 @@ Currently, the input directory must either be a directory named with the date or
 Output files will have the identical name to the input `.dat` files except with the new extension. *Making the file prefix more flexible is a priority improvement and is under development.*
 
 :::{.callout-tip collapse="true"}
-## FLAC to WAV or WAV to FLAC conversion
-Note: There are many ways to convert between `.flac` and `.wav` files. This page does not describe that process. If you are looking for a simple option, use `wav2flac` and `flac2wav` in either MATLAB with [`myUtils`](https://github.com/sfregosi/myUtils) or in R with [`crputils`](https://github.com/PIFSC-Protected-Species-Division/crputils). 
+## *Need to convert between WAV and FLAC or downsample your files?*
+
+There are many ways to convert between `.flac` and `.wav` files, and to decimate
+to a new sample rate. If you are looking for some simple options, see 
+[General acoustic utilities](acoustic-utilities.qmd).
+
 :::
 
 

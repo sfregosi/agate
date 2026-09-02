@@ -29,7 +29,7 @@ The examples on this page include some plotting, so the ` OPTIONAL - plotting ` 
 % !make sure agate is on the path!
 
 % initialize with specified configuration file, 'agate_config.cnf'
-CONFIG = agate(agate_config.cnf);
+CONFIG = agate('agate_config.cnf');
 
 % OR
 
@@ -53,7 +53,7 @@ mkdir(path_status);
 mkdir(path_bsLocal);
 
 % download basestation files
-downloadBasetationFiles(CONFIG, path_bsLocal)
+downloadBasestationFiles(CONFIG, path_bsLocal)
 ```
 
 <sub>[Back to top](#)</sub>
@@ -96,7 +96,7 @@ In this example, bathymetry is plotted, specified by `CONFIG.map.bathyFile`. Tha
 
 The below example code saves the map both as a `.fig` file and a `.png`. The `.fig` version will be a very large file, if bathymetry is included, but it is useful for reopening in MATLAB and being able to zoom and move around in the plot. The .png is good for a quick easy overview and ease of sharing, but doesn't allow the interactive zooming that a pilot may need. 
 
-High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters.  
+High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependencies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters.  
 
 ```matlab
 % print map **SLOWISH**

@@ -25,15 +25,11 @@ This page is not a detailed list of all available functions and their specific d
     - Visit the [Releases](https://github.com/sfregosi/agate/releases) page and download the latest release source code as a zip or tar.gz file 
     - Unzip the downloaded folder and place within the default MATLAB directory (*e.g.*, `C:\Users\User.Name\Documents\MATLAB\`). You only need the `agate` folder (the `docs` folder contains the files for this website so they can be deleted). 
   - **Option 2:** Clone the repository using GitHub or GitHub Desktop 
-    - This package is actively being developed and the easiest way stay up to date with the latest improvements is to regularly check for updates from GitHub, but this comes with risks as it may be buggy
+    - This is the easiest way stay up to date with the latest improvements to this actively maintained package. However, it requires that you regularly check for updates from GitHub and comes with risks as it may be buggy
     - Click on the green *Code* button and select *Open with GitHub Desktop* 
     - Specify where to clone the cloned local copy. Suggest the default MATLAB directory (*e.g.*, `C:\Users\User.Name\Documents\MATLAB\`)
     - For more help with GitHub see this [Git Started Doc](https://github.com/PIFSC-Protected-Species-Division/PSDOS/blob/main/files/git_started.md)
-  - **Option 3:** Fork the repository using GitHub, then clone your fork via the **Option 2** steps above
-    - This is the best option if you would like to modify the tools and contribute to **agate** but also stay up to date with the latest developer changes
-    - Click on the grey *Fork* button in the upper right and follow the prompts to create a copy of the repository in your personal GitHub account
-    - Follow the **Option 2** steps to clone your fork to your local computer
-    - In the future, use the *Sync fork* button on GitHub to update your fork with any changes in the main repository, while maintaining any of your own modification and use the *Contribute* button to create pull requests so contribute your modifications to the package
+  - **Option 3:** Fork the repository if you'd like to modify the tools and contribute back to **agate** — see the [Contribute](contribute.qmd) page for the full fork-and-clone-and-pull-request workflow.
   - **Option 4:** Download the repository as a zip file
     - This provides the latest functionality before an official release and removes requirement of working with GitHub but will need manual updating
     - Click the green *Code* button at the landing page of the repository and choose *Download ZIP*
@@ -105,8 +101,8 @@ path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles'); % local copy o
 
 % make the dirs if they don't exist
 mkdir(path_bsLocal);
-mkdir(fullfile(CONFIG.path.mission, 'flightStatus'); % where to store status outputs );
-mkdir(fullfile(CONFIG.path.mission, 'profiles')); % where to store post-
+mkdir(fullfile(CONFIG.path.mission, 'flightStatus')); % where to store status outputs );
+mkdir(fullfile(CONFIG.path.mission, 'profiles')); % where to store post-processing
 ```
 
 <sub>[Back to top](#)</sub>
@@ -155,6 +151,11 @@ downloadBasestationFiles(CONFIG)
 
 ```matlab
 %% extract various piloting parameters and values reported by .log file
+
+% define your basestation and flightStatus paths
+path_bsLocal = fullfile(CONFIG.path.mission, 'basestationFiles');
+path_status = fullfile(CONFIG.path.mission, 'flightStatus');
+
 pp = extractPilotingParams(CONFIG, path_bsLocal, path_status, 0);
 % the last argument (0) indicates that you don't want to preload an existing pp 
 % variable that has been saved as a .mat file. Preloading saves time, but should

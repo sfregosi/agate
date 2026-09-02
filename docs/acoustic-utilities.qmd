@@ -1,0 +1,97 @@
+---
+title: "General acoustic utilities"
+subtitle: 'General tools for `.wav` or `.flac` audio files'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
+
+
+
+## WAV to FLAC and FLAC to WAV conversion
+
+__*agate*__'s conversion tools allow conversion from raw `.dat` files to either
+`.wav` or `.flac`. Some users may later want to convert between `.wav` and 
+`.flac`. Rather than reprocessing raw `.dat` files, use `flac.exe` to 
+encode/decode to/from `.flac`. 
+
+There are several ways to do this (free GUIs, command line, MATLAB 
+`audioread`/`audiowrite`). 
+
+A simple and reasonably efficient method is a MATLAB wrapper-type function
+packaged with __*agate*__: `wav2flac` and `flac2wav`. These call `flac.exe` via
+command line but have the added functionality to operate over a directory of 
+files, check for proper paths, and track progress. 
+
+
+```matlab
+% set path to flac software, input directory of WAV files, output directory for FLAC files
+path_flac = 'C:\Users\User.Name\programs\flac-1.5.0-win\Win64\flac';
+
+% to convert from WAV to FLAC
+inDir = 'F:\wavFiles';
+outDir = 'F:\flacFiles\'; % important it ends in slash! Function has built in check for this
+
+wav2flac(path_flac, inDir, outDir)
+
+% to convert from FLAC to WAV
+inDir = 'F:\flacFiles';
+outDir = 'F:\wavFiles\'; % important it ends in slash! Function has built in check for this
+
+flac2wav(path_flac, inDir, outDir)
+
+```
+### R-based conversion tool
+
+If you prefer to use R, a similar wrapper for the command line tool is available
+in the [`crputils`](https://github.com/PIFSC-Protected-Species-Division/crputils)
+package.
+
+<sub>[Back to top](#)</sub>
+
+
+## Downsample (decimate) audio files
+
+The `decimateDir` function can be used to downsample a directory of `.wav` or 
+`.flac` files to one or more lower sample rates at once.
+
+The original sample rate must be evenly divisible by each new sample rate 
+(*i.e.*, the decimation factor must be an integer); `decimateDir` checks this 
+automatically.
+
+By default, output files are written to a new folder alongside the input folder,
+named `[folder]_decimated_[new sample rate]` (*e.g.*, `wav_decimated_1kHz`), 
+with the new sample rate appended to each output filename (*e.g.*, 
+`WISPR_260810_170505.flac` becomes `WISPR_260810_170505_1kHz.flac`). Output 
+folders can also be specified manually — one per requested sample rate.
+
+```matlab
+% downsample a folder of files to two new sample rates at once (1000 Hz and 10 kHz)
+% output folders will be created automatically alongside the input folder
+decimateDir([1000 10000], 'G:/glider/wav');
+
+% OR specify output folders manually, one per new sample rate, in the same order
+decimateDir([1000 10000], 'G:/glider/wav', ...
+    {'G:/glider/wav_decimate_1kHz', 'G:/glider/wav_decimate_10kHz'});
+```
+
+If a run is interrupted partway through, files that have already been decimated
+will be skipped automatically on the next run (based on whether the expected 
+output files already exist). Set `overwrite` to `true` to force reprocessing 
+instead.
+
+```matlab
+% force reprocessing/overwrite of all files, even if already decimated
+decimateDir([1000 10000], 'G:/glider/wav', ...
+    {'G:/glider/wav_decimate_1kHz', 'G:/glider/wav_decimate_10kHz'}, ...
+    overwrite=true);
+```
+
+<sub>[Back to top](#)</sub>
+
+
