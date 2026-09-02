@@ -58,7 +58,7 @@ profileT.startDateTime = NaT(height(profileT), 1);
 profileT.endTime = NaN(height(profileT), 1);
 profileT.endDateTime = NaT(height(profileT), 1);
 profileT.startLatitude = NaN(height(profileT), 1);
-profileT.startLongtitude = NaN(height(profileT), 1);
+profileT.startLongitude = NaN(height(profileT), 1);
 profileT.endLatitude = NaN(height(profileT), 1);
 profileT.endLongitude = NaN(height(profileT), 1);
 
@@ -69,7 +69,7 @@ for f = 1:height(profileT)
     locCalcTmp = locCalcT(locCalcT.dive == profileT.dive(f), :);
     maxIdx = find(locCalcTmp.depth == gpsSurfT.maxDepth_m(profileT.dive(f)), ...
         1, 'last');
-    % get straightline interpolation location at time of max depth
+    % use straightline interpolation to get location at time of max depth
     maxLat = interp1([gpsSurfT.startTime(profileT.dive(f)) gpsSurfT.endTime(profileT.dive(f))], ...
         [gpsSurfT.startLatitude(profileT.dive(f)) gpsSurfT.endLatitude(profileT.dive(f))], ...
         locCalcTmp.time(maxIdx));
