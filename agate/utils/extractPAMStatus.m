@@ -1,6 +1,6 @@
 function [gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(...
     CONFIG, gpsSurfT, locCalcT)
-%EXTRACTPAMSTATUSBYFILE	Extracts PAM system on/off information from sound files
+%EXTRACTPAMSTATUS	Extracts PAM system on/off information from sound files
 %
 %   Syntax:
 %	    [GPSSURFT, LOCCALCT, PAMFILES, PAMBYDIVE] = EXTRACTPAMSTATUS(CONFIG, GPSSURFT, LOCCALCT)
@@ -25,20 +25,27 @@ function [gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(...
 %       a separate 'pamByDive' summary table is also created with dive and
 %       recording system timing info.
 %
+%       The per-sample PAM-status assignment and the per-dive summary are 
+%       vectorized (via local functions INTERVALINDEXFORPOINTS and 
+%       POINTININTERVALS) rather than looped, for speed on large 
+%       deployments. This requires pamFiles.start and 
+%       gpsSurfT.startDateTime each be sorted ascending with 
+%       non-overlapping intervals which should be true but is worth
+%       checking if any weird behavior is observed. 
+%
 %   Inputs:
-%       CONFIG     agate mission configuration file with relevant mission and
-%                  glider information. Minimum CONFIG fields are 'glider',
-%                  'mission', 'path.mission', logger field (either 'pm' or
-%                  'ws') and logger sub fields 'fileLength', 'dateStart',
-%                  'dateFormat', 'outExt'
-%                  See exaxmple config file and config file help for more
-%                  detail on each field:
-%                  https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf
-%                  https://sfregosi.github.io/agate-public/configuration.html#mission-configuration-file
-%       gpsSurfT   [table] glider surface locations exported from
-%                  extractPositionalData
-%       locCalcT   [table] glider fine scale locations exported from
-%                  extractPositionalData
+%       CONFIG     agate mission configuration file with relevant mission 
+%                  and glider information. Minimum CONFIG fields are 
+%                  'glider' and either 'ws' or 'pm' for the acoustic
+%                  logger. For WISPR, ws.dateStart and ws.dateFormat are
+%                  also required. 'ws.fileLength', 'ws.outExt', and 
+%                  'ws.outDir' are optional (user will be prompted if not 
+%                  specified)
+%       gpsSurfT   [table] glider surface locations, from 
+%                  EXTRACTSURFACEPOSITIONS
+%       locCalcT   [table] glider fine scale locations, from 
+%                  EXTRACTCALCULATEDPOSITIONS
+%
 %
 %   Outputs:
 %       gpsSurfT   [table] glider surface locations, from GPS, one per
@@ -68,12 +75,13 @@ function [gpsSurfT, locCalcT, pamFiles, pamByDive] = extractPAMStatus(...
 %
 %   Examples:
 %
-%   See also EXTRACTPOSITIONALDATA
+%   See also EXTRACTSURFACEPOSITIONS, EXTRACTCALCULATEDPOSITIONS, ...
+%       EXTRACTPAMFILEPOSITS, CALCPAMEFFORT
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%    Updated:  30 December 2024
+%    Updated:  2026 August 31
 %
 %    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,60 +259,50 @@ end
 
 %% Specify 1's and 0s per locCalcT row
 % 1 if pam on, 0 if off
+fprintf(1,'%s - assigning PAM status for %d science samples:\n', ...
+    CONFIG.gmStr, height(locCalcT));
 
-locCalcT.pam = zeros(height(locCalcT),1);
-fprintf(1,'%s - assigning PAM status for %d science samples:\n', CONFIG.gmStr, height(locCalcT));
-fprintf(1, '\n%3d', floor((height(locCalcT))/8000));
-for f = 1:height(locCalcT)
-    if strcmp(loggerType, 'WISPR') % drop ms from sample matching
-        sampDT = dateshift(locCalcT.dateTime(f), 'start', 'second', 'nearest');
-    elseif strcmp(loggerType, 'PMARXL')
-        sampDT = locCalcT.dateTime(f);
-    end
-    idx = find(isbetween(sampDT, pamFiles.start, pamFiles.stop), 1);
-    if ~isempty(idx)
-        locCalcT.pam(f) = 1;
-        % 	else % for debugging
-        % 		fprintf(1, 'no idx match %s\n', locCalcT.dateTime(f));
-    end
-    clear idx
-
-    % 	fprintf(1, '.');
-    if rem(f, 100) == 0
-        fprintf(1, '.');
-    end
-    if rem(f, 8000) == 0
-        fprintf(1, '\n%3d', floor((height(locCalcT) - f)/8000));
-    end
+if strcmp(loggerType, 'WISPR') % drop ms from sample matching
+    sampDT = dateshift(locCalcT.dateTime, 'start', 'second', 'nearest');
+else % PMARXL
+    sampDT = locCalcT.dateTime;
 end
-fprintf(1, '\n');
 
-% % plotting test
-%  plotDiveProfile(locCalcT)
+locCalcT.pam = double(pointInIntervals(sampDT, pamFiles.start, pamFiles.stop));
 
+fprintf(1, '%s: %i of %i samples had PAM on\n', CONFIG.gmStr, ...
+    sum(locCalcT.pam), height(locCalcT));
 
-%% duration per dive
+%% calc duration per dive
 
-% set up the output table
+% set up output table
 pamByDive = table;
 pamByDive.dive       = gpsSurfT.dive;
 pamByDive.diveStart  = gpsSurfT.startDateTime;
 pamByDive.diveStop   = gpsSurfT.endDateTime;
-pamByDive.numFiles   = nan(height(pamByDive), 1);
-pamByDive.pamDur_sec = nan(height(pamByDive), 1);
-pamByDive.pamStart   = NaT(height(pamByDive),  1);
-pamByDive.pamStop    = NaT(height(pamByDive),1);
 
-for f = 1:height(pamByDive)
-    [r, ~] = find(isbetween(pamFiles.start, pamByDive.diveStart(f), ...
-        pamByDive.diveStop(f)));
-    if ~isempty(r)
-        pamByDive.numFiles(f) = length(r);
-        pamByDive.pamDur_sec(f) = seconds(sum(pamFiles.dur(r)));
-        pamByDive.pamStart(f) = pamFiles.start(r(1));
-        pamByDive.pamStop(f) = pamFiles.stop(r(end));
-    end
-end
+% assign each pam file to the dive whose [diveStart diveStop] contains its
+% start time (NaN if it doesn't fall within any dive)
+diveIdx = intervalIndexForPoints(pamFiles.start, pamByDive.diveStart, ...
+    pamByDive.diveStop);
+matched = ~isnan(diveIdx);
+nDives = height(pamByDive);
+
+matchedDur = pamFiles.dur(matched);
+matchedPos = (1:numel(matchedDur))';   % plain numeric positions -- satisfies accumarray's type check
+
+pamByDive.numFiles = accumarray(diveIdx(matched), 1, [nDives, 1], @sum, NaN);
+pamByDive.pamDur_sec = accumarray(diveIdx(matched), matchedPos, [nDives, 1], ...
+    @(ii) seconds(sum(matchedDur(ii))), NaN);
+
+% first/last file's start/stop per dive -- relies on pamFiles being
+% sorted chronologically so x(1)/x(end) are truly first/last in time
+startNum = accumarray(diveIdx(matched), datenum(pamFiles.start(matched)), ...
+    [nDives, 1], @(x) x(1), NaN);
+stopNum = accumarray(diveIdx(matched), datenum(pamFiles.stop(matched)), ...
+    [nDives, 1], @(x) x(end), NaN);
+pamByDive.pamStart = datetime(startNum, 'ConvertFrom', 'datenum');
+pamByDive.pamStop  = datetime(stopNum, 'ConvertFrom', 'datenum');
 
 % calc time between the dive start and the pam start, pam stop/dive stop
 pamByDive.lagStart = pamByDive.pamStart - pamByDive.diveStart;
@@ -317,5 +315,94 @@ gpsSurfT.pamStart = pamByDive.pamStart;
 gpsSurfT.pamStop = pamByDive.pamStop;
 
 
+
+% locCalcT.pam = zeros(height(locCalcT),1);
+% fprintf(1,'%s - assigning PAM status for %d science samples:\n', CONFIG.gmStr, height(locCalcT));
+% fprintf(1, '\n%3d', floor((height(locCalcT))/8000));
+% for f = 1:height(locCalcT)
+%     if strcmp(loggerType, 'WISPR') % drop ms from sample matching
+%         sampDT = dateshift(locCalcT.dateTime(f), 'start', 'second', 'nearest');
+%     elseif strcmp(loggerType, 'PMARXL')
+%         sampDT = locCalcT.dateTime(f);
+%     end
+%     idx = find(isbetween(sampDT, pamFiles.start, pamFiles.stop), 1);
+%     if ~isempty(idx)
+%         locCalcT.pam(f) = 1;
+%         % 	else % for debugging
+%         % 		fprintf(1, 'no idx match %s\n', locCalcT.dateTime(f));
+%     end
+%     clear idx
+% 
+%     % 	fprintf(1, '.');
+%     if rem(f, 100) == 0
+%         fprintf(1, '.');
+%     end
+%     if rem(f, 8000) == 0
+%         fprintf(1, '\n%3d', floor((height(locCalcT) - f)/8000));
+%     end
+% end
+% fprintf(1, '\n');
+% 
+% % % plotting test
+% %  plotDiveProfile(locCalcT)
+
+
+% %% duration per dive
+% 
+% % set up the output table
+% pamByDive = table;
+% pamByDive.dive       = gpsSurfT.dive;
+% pamByDive.diveStart  = gpsSurfT.startDateTime;
+% pamByDive.diveStop   = gpsSurfT.endDateTime;
+% pamByDive.numFiles   = nan(height(pamByDive), 1);
+% pamByDive.pamDur_sec = nan(height(pamByDive), 1);
+% pamByDive.pamStart   = NaT(height(pamByDive),  1);
+% pamByDive.pamStop    = NaT(height(pamByDive),1);
+% 
+% for f = 1:height(pamByDive)
+%     [r, ~] = find(isbetween(pamFiles.start, pamByDive.diveStart(f), ...
+%         pamByDive.diveStop(f)));
+%     if ~isempty(r)
+%         pamByDive.numFiles(f) = length(r);
+%         pamByDive.pamDur_sec(f) = seconds(sum(pamFiles.dur(r)));
+%         pamByDive.pamStart(f) = pamFiles.start(r(1));
+%         pamByDive.pamStop(f) = pamFiles.stop(r(end));
+%     end
+% end
+% 
+% % calc time between the dive start and the pam start, pam stop/dive stop
+% pamByDive.lagStart = pamByDive.pamStart - pamByDive.diveStart;
+% pamByDive.lagStop = pamByDive.diveStop - pamByDive.pamStop;
+% 
+% % append to gpsSurfT and save
+% gpsSurfT.pamDur_sec = pamByDive.pamDur_sec;
+% gpsSurfT.pamNumFiles = pamByDive.numFiles;
+% gpsSurfT.pamStart = pamByDive.pamStart;
+% gpsSurfT.pamStop = pamByDive.pamStop;
+
+
 end
 
+function idx = intervalIndexForPoints(queryTimes, intervalStart, intervalStop)
+%INTERVALINDEXFORPOINTS  Vectorized lookup of which interval (if any) each
+% queryTime falls in. Requires intervalStart sorted ascending with
+% non-overlapping [intervalStart, intervalStop] pairs. Returns NaN for
+% query times that fall in no interval (before the first interval, or in
+% a gap between intervals). 'extrap' is required here, not optional --
+% without it, query times after the LAST interval's start (e.g. every
+% file recorded during the final dive) fall outside interp1's known
+% domain and return NaN instead of resolving to the last interval.
+cand = interp1(datenum(intervalStart), 1:numel(intervalStart), ...
+    datenum(queryTimes), 'previous', 'extrap');
+idx = nan(size(queryTimes));
+valid = ~isnan(cand);
+inBounds = false(size(queryTimes));
+inBounds(valid) = queryTimes(valid) <= intervalStop(cand(valid));
+idx(valid & inBounds) = cand(valid & inBounds);
+end
+
+function inInterval = pointInIntervals(queryTimes, intervalStart, intervalStop)
+%POINTININTERVALS  Vectorized true/false test of whether each queryTime
+% falls within any interval. See INTERVALINDEXFORPOINTS for assumptions.
+inInterval = ~isnan(intervalIndexForPoints(queryTimes, intervalStart, intervalStop));
+end
