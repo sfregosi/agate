@@ -1,0 +1,28 @@
+# lychee link checker config — https://github.com/lycheeverse/lychee
+
+# Don't fail the whole run on these — treat as warnings instead
+accept = [200, 429]
+
+# Retry flaky external hosts before giving up
+max_retries = 3
+retry_wait_time = 5
+
+# Timeout per request (seconds)
+timeout = 20
+
+# Skip anything matching these patterns
+exclude = [
+    # private Google Drive test-data link — will 401/403 for an anonymous bot
+    "drive\\.google\\.com",
+
+    # mailto links aren't real HTTP links
+    "^mailto:",
+
+    # localhost / example placeholders sometimes used in docs snippets
+    "^https?://localhost",
+    "^https?://127\\.0\\.0\\.1",
+]
+
+# Don't check links inside fenced code blocks (e.g. MATLAB code samples)
+exclude_all_private = false
+include_verbatim = false
