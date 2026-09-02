@@ -3,7 +3,8 @@ function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
 %CALCPAMEFFORT	Calculates acoustic recording effort by minute, hour, day
 %
 %   Syntax:
-%	    [GPSSURFT, LOCCALCT, pamFiles] = CALCPAMEFFORT(CONFIG, GPSSURFT, PAMFILES, PAMBYDIVE, EXPLIMITS)
+%	    [PAMBYMIN, PAMMINPERHOUR, PAMMINPERDAY, PAMHRPERDAY] = ...
+%           CALCPAMEFFORT(CONFIG, GPSSURFT, PAMFILES, PAMBYDIVE, EXPLIMITS)
 %
 %   Description:
 %       Summarizes recording effort in several ways by creating tables of
@@ -18,24 +19,30 @@ function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
 %       for all of them. Optionally can be left out and the bins will just
 %       populate from the first sound file to the end of the last file
 %
+%       By-minute PAM status and hour/day binning arevectorized (via local
+%       functions POINTININTERVALS and BINSUM)rather than looped, for speed
+%       on multi-week deployments. Thisrequires pamByDive.diveStart and 
+%       pamFiles.start each be sorted ascending with non-overlapping 
+%       intervals, which should be true for any deployment, but is worth 
+%       checking if any weird behavior is observed. 
+%
+%       A minute is marked NaN if not in a dive, then 1 if PAM was on,
+%       with the PAM-on check applied second (so it can overwrite a NaN).
+%       This means that if PAM was on at the surface it would still be
+%       marked as 1. **This maybe should be changed!**
+%
 %   Inputs:
-%       CONFIG     agate mission configuration file with relevant mission and
-%                  glider information. Minimum CONFIG fields are 'glider',
-%                  'mission', 'path.mission', logger field (either 'pm' or
-%                  'ws') and logger sub fields 'fileLength', 'dateStart',
-%                  'dateFormat'
-%                  See exaxmple config file and config file help for more
-%                  detail on each field: 
-%                  https://github.com/sfregosi/agate-public/blob/main/agate/settings/agate_config_example.cnf
-%                  https://sfregosi.github.io/agate-public/configuration.html#mission-configuration-file
+%       CONFIG     agate mission configuration file with relevant mission 
+%                  and glider information. Minimum CONFIG fields are 
+%                  'glider'
 %       gpsSurfT   [table] glider surface locations exported from
-%                  extractPositionalData
+%                  EXTRACTSURFACEPOSITIONS
 %       pamFiles   [table] name, start and stop time and duration of all
-%                  recorded sound files, created with extractPAMStatus
+%                  recorded sound files, created with EXTRACTPAMSTATUS
 %       pamByDive  [table] summary of recording start and stop, number of
 %                  files for each dive. Includes dive start and stop times
 %                  and offset of start and stop of pam relative to dive
-%                  times, created with extractPAMStatus
+%                  times, created with EXTRACTPAMSTATUS
 %       expLimits  [vector] two datetimes defining the start and end of an
 %                  'experiment' to set limits of the maximum possible
 %                  recording times
@@ -55,13 +62,13 @@ function [pamByMin, pamMinPerHour, pamMinPerDay, pamHrPerDay] = ...
 %
 %   Examples:
 %
-%   See also EXTRACTPAMSTATUS
+%   See also EXTRACTPAMSTATUS, EXTRACTPAMFILEPOSITS,
+%   EXTRACTSURFACEPOSITIONS
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%    FirstVersion:   ??
-%    Updated:        12 July 2024
+%    Updated:        2026 August 31
 %
 %    Created with MATLAB ver.: 9.13.0.2166757 (R2022b) Update 4
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,7 +80,6 @@ end
 
 % build empty table for whole deployment
 dm = (expLimits(1):minutes(1):expLimits(2))';
-
 pamByMin = table;
 pamByMin.min = dm;
 
@@ -97,36 +103,27 @@ pamHrPerDay.day = ddh;
 
 fprintf(1,'Calculating PAM status by min: %s\n', CONFIG.glider)
 
-% pamCheck = [pamByDive.pamStart pamByDive.pamEnd]; % this works when not duty cycling
-pamCheck = [pamFiles.start pamFiles.stop];
-diveCheck = [pamByDive.diveStart pamByDive.diveStop];
+% by Minute -- NaN if not deployed/at surface, 0 if PAM off, 1 if PAM on.
+% NOTE: assumes pamByDive.diveStart and pamFiles.start are each sorted
+% ascending with non-overlapping intervals
+% is start of this min within a dive and is pam on this minute?
+inDive = pointInIntervals(dm, pamByDive.diveStart, pamByDive.diveStop);
+inPam  = pointInIntervals(dm, pamFiles.start, pamFiles.stop);
+% set output all to 0s, then NaN if not in a dive and 1 if not in a file
+pam = zeros(height(pamByMin), 1); 
+pam(~inDive) = nan;
+pam(inPam) = 1;   % overwrites NaN too -- same order-dependence as the original
+pamByMin.pam = pam;
 
-% by Minute - NaN if not deployed or at surface, 0 if PAM OFF, 1 if ON
-for f = 1:length(dm)
-    dc = dm(f);
-    % is this minute within a dive?
-    [rD, ~] = find(isbetween(dc, diveCheck(:,1), diveCheck(:,2)));
-    if isempty(rD) % if not, put NaN
-        pamByMin.pam(f,1) = nan;
-    end
-    % is PAM on in this minute?
-    [rP, ~] = find(isbetween(dc, pamCheck(:,1), pamCheck(:,2)));
-    if ~isempty(rP)
-        pamByMin.pam(f,1) = 1;
-    end
-end
 fprintf(1, '%s: %i minutes with PAM on\n', CONFIG.glider, ...
 	sum(pamByMin.pam, 'omitnan'));
-% this is not perfect...not always full minutes (at end of a recording 
-% and misses some partial minutes (At the start of a recording) 
+% this is not perfect...not always full minutes (at end of a recording
+% and misses some partial minutes (at the start of a recording)
 
 % by Hour
-for f = 1:length(dh)
-    dc = dh(f);
-    hourTmp = pamByMin.pam(isbetween(pamByMin.min, dc, ...
-		dc + minutes(59) + seconds(59)));
-    pamMinPerHour.pam(f,1) = sum(hourTmp, 'omitnan');
-end
+edgesH = [dh; dh(end) + hours(1)];
+binH = discretize(pamByMin.min, edgesH);
+pamMinPerHour.pam = binSum(pamByMin.pam, binH, height(pamMinPerHour));
 pamMinPerHour.pam(pamMinPerHour.pam == 0) = nan; % if all zeros, make nan
 fprintf(1, '%s: %i partial hours with PAM on, total %.2f hours\n', ...
 	CONFIG.glider, sum(~isnan(pamMinPerHour.pam)), ...
@@ -134,20 +131,15 @@ fprintf(1, '%s: %i partial hours with PAM on, total %.2f hours\n', ...
 
 % by Day
 %   Minutes per day
-for f = 1:length(ddm)
-    dc = ddm(f);
-    dayTmp = pamByMin.pam(isbetween(pamByMin.min, dc, ...
-		dc + minutes(1439) + seconds(59)));
-    pamMinPerDay.pam(f,1) = sum(dayTmp, 'omitnan');
-end
+edgesDm = [ddm; ddm(end) + days(1)];
+binDm = discretize(pamByMin.min, edgesDm);
+pamMinPerDay.pam = binSum(pamByMin.pam, binDm, height(pamMinPerDay));
 pamMinPerDay.pam(pamMinPerDay.pam == 0) = nan;
+
 %   Hours per day
-for f = 1:length(ddh)
-    dc = ddh(f);
-    dayTmp = pamMinPerHour.pam(isbetween(pamMinPerHour.hour, dc, ...
-		dc + minutes(1439) + seconds(59)));
-    pamHrPerDay.pam(f,1) = round(sum(dayTmp, 'omitnan')/60, 2);
-end
+edgesDh = [ddh; ddh(end) + days(1)];
+binDh = discretize(pamMinPerHour.hour, edgesDh);
+pamHrPerDay.pam = round(binSum(pamMinPerHour.pam, binDh, height(pamHrPerDay)) / 60, 2);
 pamHrPerDay.pam(pamHrPerDay.pam == 0) = nan;
 
 fprintf(1, '%s: %i partial days with PAM on, total %.2f days\n', ...
@@ -158,3 +150,24 @@ end
 
 
 
+function inInterval = pointInIntervals(queryTimes, intervalStart, intervalStop)
+% POINTININTERVALS  Vectorized test of whether each queryTime falls
+% within any [intervalStart, intervalStop] pair. Requires intervalStart
+% sorted ascending with non-overlapping intervals.
+idx = interp1(datenum(intervalStart), 1:numel(intervalStart), ...
+    datenum(queryTimes), 'previous');
+inInterval = false(size(queryTimes));
+valid = ~isnan(idx);
+inInterval(valid) = queryTimes(valid) <= intervalStop(idx(valid));
+end
+
+function binSums = binSum(vals, binIdx, numBins)
+% BINSUM  Sum vals (0/1/NaN) into numBins groups defined by binIdx,
+% treating NaN as 0 (equivalent to sum(...,'omitnan') per bin -- NaN
+% never contributes to a sum either way) and assigning 0 to any bin with
+% no data, matching the original loop's behavior before each caller's
+% "0 -> NaN" cleanup step.
+vals(isnan(vals)) = 0;
+valid = ~isnan(binIdx);
+binSums = accumarray(binIdx(valid), vals(valid), [numBins, 1]);
+end
