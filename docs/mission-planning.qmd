@@ -75,7 +75,7 @@ Waypoint names can be generated one of three ways:
 
 **1. alphanumeric**: specify a character string (alpha) prefix in the function call and alphanumeric names will be created automatically. *A string `'WP'` is the default option.*
 
-**2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate\example_workflows\ExampleTrackWaypointNames.txt`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/exampleTrackWaypointNames.txt)
+**2. file**: list the desired waypoint names within a simple `.txt` file, with one name per line and the number of waypoint names must equal the number of waypoints in the `.kml`; the function will prompt to select the file. An example can be found in [`agate\example_workflows\exampleTrackWaypointNames.txt`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/exampleTrackWaypointNames.txt)
 
 **3. manual**: waypoint names are manually entered in the Command window within the function call
 
@@ -114,7 +114,7 @@ The `mapPlannedTrack` function will create a simple map of the planned track wit
 
 NOTE: This function sets the arguments using *name-value* pairs because most of them are optional. So each is defined by the name of the argument in single quotes (e.g., `'bathy'`) followed by a comma and then the value for the argument (e.g., `'C:\bathyFile.tiff'`). Use `doc mapPlannedTrack` to see all possible arguments.
 
-A bathymetric basemap is optional and is toggled on or off with the `bathy` argument. Bathymetry will be plotted if `bathy` is set to 1 or to a fullfile path to a bathymetry `.tiff` file. The specified file must cover the area of the track. If set to 1 it will first look for a file specified in the configuration file (`CONFIG.map.bathyFile`) otherwise it will prompt to select a file. See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
+A bathymetric basemap is optional and is toggled on or off with the `bathy` argument. Bathymetry will be plotted if `bathy` is set to 1 or to a fullfile path to a bathymetry `.tiff` file. The specified file must cover the area of the track. If set to 1 it will first look for a file specified in the configuration file (`CONFIG.map.bathyFile`) otherwise it will prompt to select a file. See [Dependencies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
 
 This function is useful for plotting a single track. If you want to plot multiple tracks in a single figure, use `createBaseMap` and add the tracks manually. See more on this on the [Map Help](map-help.qmd) page.
 
@@ -152,7 +152,7 @@ savefig(fullfile(CONFIG.path.mission, [CONFIG.gmStr '_plannedTrack_' ...
 
 It can be useful to have a profile of the bathymetry the planned track will traverse, to highlight periods where the glider's target dive depth may need to be adjusted more shallow, or can be extended deeper. 
 
-See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
+See [Dependencies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
 
 An indicator line (dashed red line) will be plotted at 990 m as the default (max `$D_TGT` for Seagliders) but can be specified to a different value with the `yLine` argument. 
 

@@ -19,7 +19,7 @@ An example configuration file is located in the `agate/settings` folder: [`agate
 
 The configuration file has settings for the glider and mission, paths to relevant input and output folders, map extent and plotting settings, and acoustic system settings. Lines starting with `%` are comments. 
 
-The top section is [required](#required-configuration-settings) to initialize __*agate*__ and use the most basic functions. The remaining sections are optional depending on what __*agate*__ functionality is desired, including interfacing with the [basestation](), working with [acoustic]() data outputs, and [plotting maps](). Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
+The top section is [required](#required-configuration-settings) to initialize __*agate*__ and use the most basic functions. The remaining sections are optional depending on what __*agate*__ functionality is desired, including interfacing with the [basestation](#basestation-configuration-file), working with acoustic data outputs, and plotting maps. Save this file with a unique name for each glider and mission. Descriptions of each configuration item are included in the example file as comments. 
 
 To suggest additional configuration items, please open an [issue](https://github.com/sfregosi/agate/issues/new){target='_blank'}.
 
@@ -132,7 +132,7 @@ CONFIG.map.scaleMinor = [0:12.5:25];
 
 For piloting related plots:
 
-If piloting plots are being regenerated after each dive, it can be useful to assign them each figure numbers and locations so they are just 'refreshed' rather than having new plots created each time resulting in a very cluttered desktop! Each piloting plot has a default order that can be modified with the `[0 1 2 3 4 5 6 7 8 9]` section of the `CONFIG.plots.figNumList`. The The position of each plot can also be defined and loaded (allowing for these positions to be saved between missions or to have options when viewing on a laptop or multiple screens). For help setting up a `figPositions.mat` see the [Plotting page](plotting.qmd#piloting-plots).
+If piloting plots are being regenerated after each dive, it can be useful to assign them each figure numbers and locations so they are just 'refreshed' rather than having new plots created each time resulting in a very cluttered desktop! Each piloting plot has a default order that can be modified with the `[0 1 2 3 4 5 6 7 8 9]` section of the `CONFIG.plots.figNumList`. The position of each plot can also be defined and loaded (allowing for these positions to be saved between missions or to have options when viewing on a laptop or multiple screens). For help setting up a `figPositions.mat` see the [Plotting page](plotting.qmd#piloting-plots).
 
 ```matlab
 % piloting plot settings
@@ -166,40 +166,5 @@ CONFIG.bs.password = 'PsWrD';
 CONFIG.bs.publicKeyFile  = 'C:/Users/User.Name/.ssh/myPublicKey.pub';
 CONFIG.bs.privateKeyFile = 'C:/Users/User.Name/.ssh/myPrivateKey';
 ```
-
-<sub>[Back to top](#)</sub>
-
-<!-- ## Acoustic conversion configuration files -->
-
-<!-- A conversion configuration file is necessary for converting raw acoustic data to .wav or .flac formats. There are different configuration files for the PMAR and for the WISPR systems. They provide information on conversion settings and file paths. The conversion configuration file is specified within the mission configuration file, and so is parsed by the initial `agate` call and the mission configuration.  -->
-
-
-<!-- ### PMAR conversion configuration file -->
-
-<!-- An example configuration file is located in the `agate/settings` folder: [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/pmarConvert_example.cnf) -->
-
-<!-- Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `pm` structure. All the changeable parameters are listed/grouped at the top, but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.  -->
-
-
-<!-- - `CONFIG.pm.inDir`: path to raw PMAR `.dat` files. These can be within subdirectories by dive (the default write method of PMAR) -->
-<!-- - `CONFIG.pm.outDir`: path to folder to save converted `.wav` files -->
-<!-- - `CONFIG.outTemplate`: filename template for the converted files. It must have a `%s` that becomes a date/time stamp, and an appropriate file extension (`.wav` or `.flac`) -->
-<!-- - `CONFIG.pm.showProgress`: set to `true` to display progress in the Command Window -->
-<!-- - `CONFIG.pm.restartDir`: location to start processing. Set to `''` (empty) to start at the beginning and process all directories. Otherwise, specify a single dive/phase directory (e.g., 'pm0006a') to start at that point in the mission. This is used if there are errors so you don't have to start over at the beginning -->
-<!-- - `CONFIG.pm.decim`: set a decimation factor (integer), or set to `0` for no decimation -->
-<!-- - `CONFIG.pm.relativeCutoffFreq`: if decimating, need to set a value from 0 to 1 to specifiy a filter cut off (relative to Nyquist). This is only used if `CONFIG.pm.decim > 2` -->
-<!-- - `CONFIG.pm.forceSRate`: set to force the output sample rate to the specified sample rate. This is necessary for PMAR because the sample rate can vary slightly from file to file (by a decimal Hz) which can lead to later analysis issues (e.g., making LTSAs)  -->
-
-
-<!-- <sub>[Back to top](#)</sub> -->
-
-<!-- ### WISPR conversion configuration file -->
-
-<!-- **UNDER CONSTRUCTION** -->
-
-<!-- An example configuration file is located in the `agate/settings` folder: [`wisprConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/wisprConvert_example.cnf) -->
-
-<!-- Lines starting with `%` are comments. All parameters are added to the existing `CONFIG` structure, under a nested `ws` structure. All the changeable parameters are listed/grouped at the top,but there is additional detail about each parameter as comments below. These detailed descriptions include some additional example inputs and the default settings.  -->
-
 
 <sub>[Back to top](#)</sub>

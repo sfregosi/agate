@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use agate software, please cite it as below."
+title: "agate: Acoustic Glider Analysis Tools and Environment"
+type: software
+authors:
+  - family-names: Fregosi
+    given-names: Selene
+    orcid: "https://orcid.org/0000-0002-2685-3736"
+    affiliation: "Marine Mammal Institute, Oregon State University and 
+    NOAA Pacific Islands Fisheries Science Center"
+repository-code: "https://github.com/sfregosi/agate"
+url: "https://sfregosi.github.io/agate/"
+license: GPL-3.0
+version: 0.3.20260902
+date-released: 2026-09-09
+keywords:
+  - passive acoustic monitoring
+  - ocean gliders
+  - Seaglider
+  - bioacoustics
+  - marine mammals
+  - MATLAB
+# ADD CITATION EVENTUALLY
+# preferred-citation:
+#   type: article
+#   title: "agate: Acoustic Glider Analysis Tools and Environment"
+#   authors:
+#     - family-names: Fregosi
+#       given-names: Selene
+#   journal: "Journal of Open Source Software"
+#   year: 2026
+#   volume: X
+#   issue: X
+#   start: 1
+#   doi: 10.21105/joss.XXXXX
+#   url: "https://doi.org/10.21105/joss.XXXXX"

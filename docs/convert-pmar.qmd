@@ -1,0 +1,51 @@
+---
+title: "Convert raw PMAR files"
+subtitle: 'Guide for converting raw PMAR `.dat` files to `.wav` or `.flac`'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(fontawesome)
+```
+
+__*agate*__ includes utilities for converting raw PMARXL acoustic files (`.dat`)
+into a more easily readable `.wav` format. An example workflow is provided in 
+the `agate\example_workflows` folder and detailed instructions are below.
+
+
+## Dependency references
+
+A function-ized and modified version of the `convertPmar.m` script and 
+associated function `pmarIn` (written by Dave Mellinger and available in the 
+Mathworks File Exchange: [convertPmar](https://www.mathworks.com/matlabcentral/fileexchange/107245-convert-seaglider-pmar-xl-sound-files-to-wav-format)) are included in __*agate*__. 
+
+## Example workflow
+
+The script and function have been modified and combined to work within 
+__*agate*__. The input CONFIG files are populated from a PMAR-specific 
+configuration (.cnf) file. An example can be found in the agate/settings folder.
+
+See [`workflow_convertPMAR.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_convertPMAR.m) in the `example_workflows` folder for a simple 
+example workflow for converting a mission's PMAR `.dat` files to `.wav`. 
+
+Like other workflows in __*agate*__ it must first be initialized with a 
+mission-level configuration file (*e.g.*, 
+[`agate_config_example.cnf`]( https://github.com/sfregosi/agate/blob/main/agate/settings/agate_config_example.cnf)).
+Only the top `REQUIRED` and `CONFIG.pm` settings in the `OPTIONAL - acoustics` 
+sections of the configuration file are needed for file conversion. 
+
+Additionally, a PMAR conversion configuration file (*e.g.*, [`pmarConvert_example.cnf`](https://github.com/sfregosi/agate/blob/main/agate/settings/pmarConvert_example.cnf)) is needed. This contains the specific paths and is where you 
+can set your desired conversion settings. Detailed descriptions of each 
+parameter setting are in the example configuration file.
+
+
+
+<sub>[Back to top](#)</sub>
+
+*Need to convert between WAV and FLAC or downsample your files? See 
+[General acoustic utilities](acoustic-utilities.qmd).*
+
+

@@ -49,20 +49,28 @@ CONFIG = agate;
 %% (1) Extract positional data
 % This step can take some time to process through all .nc files
 
-[gpsSurfT, locCalcT] = extractPositionalData(CONFIG, 1);
-% 0 in plotOn argument will not plot 'check' figures, but change to 1 to
-% plot basic figures for output checking
+% GPS surface locations for each dive
+gpsSurfT = extractSurfacePositions(CONFIG, 1);
+% The last argument, `plotOn` can be set to 1 to plot "check" figures or 0 to skip
 
 % save as .mat and .csv
 save(fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr, '_gpsSurfaceTable.mat']), 'gpsSurfT');
+    [CONFIG.gmStr, '_gpsSurfaceTable.mat']), 'gpsSurfT');
 writetable(gpsSurfT,fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr, '_gpsSurfaceTable.csv']))
+    [CONFIG.gmStr, '_gpsSurfaceTable.csv']))
+
+% Calculated/dead-reckoned underwater positions
+locCalcT = extractCalculatedPositions(CONFIG, 1);
+% `plotOn` is set to 1, change to 0 to skip check figures
+
+% Turn on debugging if there are dive-specific errors that need investigating
+% debugOn = true;
+% locCalcT = extractCalculatedPositions(CONFIG, 1, debugOn);
 
 save(fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr, '_locCalcT.mat']),'locCalcT');
+    [CONFIG.gmStr, '_locCalcT.mat']),'locCalcT');
 writetable(locCalcT, fullfile(CONFIG.path.mission, 'profiles', ...
-	[CONFIG.gmStr, '_locCalcT.csv']));
+    [CONFIG.gmStr, '_locCalcT.csv']));
 
 %% (2) Simplify positional data for packaging for NCEI
 

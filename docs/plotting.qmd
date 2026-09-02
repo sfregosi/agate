@@ -25,7 +25,7 @@ No configuration file yet? Go back to [Get started - Create configuration files]
 % ensure agate is on the path
 
 % initialize with specified configuration file, 'agate_config.cnf'
-CONFIG = agate(agate_config.cnf);
+CONFIG = agate('agate_config.cnf');
 
 % initialize with prompt to select configuration file
 CONFIG = agate;
@@ -52,7 +52,7 @@ save(fullfile(CONFIG.path.mission, 'flightStatus', ['diveTracking_' CONFIG.glide
 
 The below section of plots is useful during active piloting. 
 
-To configure default positions for each of these plots, create a cell array with 4-element locations for each plot. They defined `[left edge, bottom edge, width, height]` in pixels. It can then be saved for later use. The path to this file is defined in the [configuration file](configuration.qmd#optinal-plotting-settings. 
+To configure default positions for each of these plots, create a cell array with 4-element locations for each plot. They defined `[left edge, bottom edge, width, height]` in pixels. It can then be saved for later use. The path to this file is defined in the [configuration file](configuration.qmd#optinal-plotting-settings). 
 
 For example:
 
@@ -139,11 +139,11 @@ plotVoltagePackUse_norm(CONFIG, pp)
 
 The map will include the waypoints and track from the [`targets` file](mission-planning.qmd#create-targets-file-from-kml) and will plot the surface positions of each dive (yellow dots), with red lines connecting surface positions, currents plotted as blue vector arrows, and the next target waypoint with a green circle.
 
-Map extent (latitude and longitude limits), the location of the north arrow, and the location and scale of the scale bar are all set within the [mission configuration file](configuration.html#optional-plotting-settings), with example values below. `CONFIG.latLim` and `CONFIG.map.lonLim` are required to make the map; the north arrow and scale bar are optional and if those settings do not exist in `CONFIG` they will not be included in the plot. 
+Map extent (latitude and longitude limits), the location of the north arrow, and the location and scale of the scale bar are all set within the [mission configuration file](configuration.html#optional-plotting-settings), with example values below. `CONFIG.map.latLim` and `CONFIG.map.lonLim` are required to make the map; the north arrow and scale bar are optional and if those settings do not exist in `CONFIG` they will not be included in the plot. 
 
 In this example, bathymetry is plotted, specified by `CONFIG.map.bathyFile`. That last argument can be left out to not plot bathymetry (which can be slow depending on the resolution of the selected bathymetry raster). If the last argument is set to `1`, a prompt will appear to select the correct bathymetry file. 
 
-High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependecies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
+High resolution bathymetry TIFF files can be downloaded from  [NCEI](https://www.ncei.noaa.gov/products/etopo-global-relief-model). See [Dependencies - Basemap rasters](index.html#basemap-rasters) for more info on how to select and download bathymetry rasters. 
 
 ```matlab
 targetsFile = fullfile(CONFIG.path.mission, 'targets');
@@ -176,6 +176,19 @@ mapMissionPath(CONFIG, pp, 'targetsFile', targetsFile, 'bathy', 0);
 ### Dive profile
 
 ### Sound speed profile
+
+The `plotSoundSpeedProfile` function can create standardized sound speed 
+profiles for each mission.
+
+```matlab
+% load locCalcT if not already loaded
+load(fullfile(CONFIG.path.mission, 'profiles', ...
+  [CONFIG.glider, '_', CONFIG.mission, '_locCalcT.mat']))
+
+% plot sound speed profile
+plotSoundSpeedProfile(CONFIG, locCalcT);
+
+```
 
 ## Analysis plots
 
