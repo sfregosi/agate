@@ -30,13 +30,13 @@ function [tl, tlm] = collapseTritonLog(logFile, eventGap)
 %   Examples:
 %       [tl, tlm] = collapseTritonLog('E:\sg639_MHI_log_mw.xlsx', 15);
 %
-%   See also TRITONLOGTOPAMPAL
+%   See also TRITONLOGTOEVENTLOG
 %
 %
 %   Authors:
 %       S. Fregosi <selene.fregosi@gmail.com> <https://github.com/sfregosi>
 %
-%	Updated:        2026 July 28
+%	Updated:        2026 September 3
 %
 %	Created with MATLAB ver.: 9.9.0.1524771 (R2020b) Update 2
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,10 +105,13 @@ elseif eventGap > 0
         % set up extended event start and stop times
         startPlus = tlt.start(tlmIdx) - minutes(eventGap);
         stopPlus = tlt.stop(tlmIdx) + minutes(eventGap);
-        % check if any rows overlap with this extended event time
-        startYes = find(isbetween(tlt.start, startPlus, stopPlus));
+
+        % check if any rows overlap with this extended event time (same species only)
+        startYes = find(isbetween(tlt.start, startPlus, stopPlus) & ...
+            strcmp(tlt.species, tlt.species(tlmIdx)));
         startYes = startYes(startYes ~= tlmIdx); % ignore actual event
-        stopYes = find(isbetween(tlt.stop, startPlus, stopPlus));
+        stopYes = find(isbetween(tlt.stop, startPlus, stopPlus) & ...
+            strcmp(tlt.species, tlt.species(tlmIdx)));
         stopYes = stopYes(stopYes ~= tlmIdx); % ignore actual event
 
         % do stuff depending on outcome
