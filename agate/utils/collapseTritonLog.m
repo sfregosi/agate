@@ -43,8 +43,8 @@ function [tl, tlm] = collapseTritonLog(logFile, eventGap)
 
 % check arguments (note this argument checker requires 2019b or later)
 arguments
-	logFile (1,:) char = ''
-	eventGap (1,1) double {mustBeNonnegative} = 0
+    logFile (1,:) char = ''
+    eventGap (1,1) double {mustBeNonnegative} = 0
 end
 
 % check file exists and if not prompt to select
@@ -175,20 +175,17 @@ elseif eventGap > 0
             % start stuff
             % copy this entry to tlm
             tlm(tlmIdx,:) = tlt(tlmIdx, :);
-            % check where the overlap happens
-            if tlt.start(yesIdx) > tlm.stop(tlmIdx)
-                % next entry starts before end of this entry
-                % so replace end time with end time of next entry
+            % always extend to the later stop time and merge call types
+            if tlt.stop(yesIdx) > tlm.stop(tlmIdx)
                 tlm.stop(tlmIdx) = tlt.stop(yesIdx);
-                tlm.call{tlmIdx} = unique([tlt.call{tlmIdx}(:);
-                    tlt.call{yesIdx}(:)]);
             end
+            tlm.call{tlmIdx} = unique([tlt.call{tlmIdx}(:);
+                tlt.call{yesIdx}(:)]);
             % remove the overlapping entry
             tlt(yesIdx,:) = [];
             % update tlt to match tlm
             tlt(tlmIdx,:) = tlm(tlmIdx,:);
-            advance = true; % advance, unless multi match below
-
+            advance = true;
         elseif strcmp(type, 'stopOverlap')
             % stop stuff
             % don't need to recopy the test entry, going to modify existing
@@ -205,13 +202,13 @@ elseif eventGap > 0
                 tlm.call{yesIdx} = unique([tlt.call{yesIdx}(:);
                     tlt.call{tlmIdx}(:)]);
             else
-        		error('collapseTritonLog:stopOverlapUnresolved', ...
-        			['Unresolved ''stopOverlap'' case at tlt row %i (eventNum %i, ' ...
-        			'yesIdx %i, matched eventNum %i). yesIdx is not earlier than ' ...
-        			'tlmIdx, which is not yet handled - inspect this event ' ...
-        			'manually. Please contact the agate developer for help.'], ...
-        			tlmIdx, tlt.eventNum(tlmIdx), yesIdx, tlt.eventNum(yesIdx));
-        	end
+                error('collapseTritonLog:stopOverlapUnresolved', ...
+                    ['Unresolved ''stopOverlap'' case at tlt row %i (eventNum %i, ' ...
+                    'yesIdx %i, matched eventNum %i). yesIdx is not earlier than ' ...
+                    'tlmIdx, which is not yet handled - inspect this event ' ...
+                    'manually. Please contact the agate developer for help.'], ...
+                    tlmIdx, tlt.eventNum(tlmIdx), yesIdx, tlt.eventNum(yesIdx));
+            end
             tlt(tlmIdx,:) = [];
             tlt(yesIdx,:) = tlm(yesIdx,:);
             advance = false; % never advance
@@ -237,14 +234,14 @@ elseif eventGap > 0
             advance = true; % advance, unless multi match below
 
         elseif strcmp(type, 'bothOverlap')
-        	error('collapseTritonLog:bothOverlapUnresolved', ...
-        		['Unresolved ''bothOverlap'' case at tlt row %i (eventNum %i, ' ...
-        		'start %s, stop %s). Overlapping start indices: %s; stop ' ...
-        		'indices: %s. This case has not been encountered yet and its ' ...
-        		'merge logic is not worked out - inspect this event manually. ' ...
+            error('collapseTritonLog:bothOverlapUnresolved', ...
+                ['Unresolved ''bothOverlap'' case at tlt row %i (eventNum %i, ' ...
+                'start %s, stop %s). Overlapping start indices: %s; stop ' ...
+                'indices: %s. This case has not been encountered yet and its ' ...
+                'merge logic is not worked out - inspect this event manually. ' ...
                 'Please contact the agate developer for help.'], ...
-        		tlmIdx, tlt.eventNum(tlmIdx), string(tlt.start(tlmIdx)), ...
-        		string(tlt.stop(tlmIdx)), mat2str(startYes), mat2str(stopYes));
+                tlmIdx, tlt.eventNum(tlmIdx), string(tlt.start(tlmIdx)), ...
+                string(tlt.stop(tlmIdx)), mat2str(startYes), mat2str(stopYes));
         end % process depending on type
 
         % if length > 1, change advance to false
