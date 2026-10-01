@@ -19,3 +19,5 @@ jobs:
         with:
           args: --verbose --no-progress --config lychee.toml 'README.md' './docs/**/*.qmd' './docs/**/*.md'
           fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
