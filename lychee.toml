@@ -24,6 +24,10 @@ exclude = [
     # localhost / example placeholders sometimes used in docs snippets
     "^https?://localhost",
     "^https?://127\\.0\\.0\\.1",
+
+    "mathworks\\.com",       # blocks bots; all 5 File Exchange links
+    "docs\\.google\\.com",   # private doc requires auth (401)
+    "digilent\\.com",        # blocking bots (403)
 ]
 
 # Don't check links inside fenced code blocks (e.g. MATLAB code samples)
