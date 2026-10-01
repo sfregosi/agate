@@ -18,6 +18,9 @@ exclude = [
     # mailto links aren't real HTTP links
     "^mailto:",
 
+    # DOI resolver rate-limits bots even for valid DOIs
+    "doi\\.org",
+
     # localhost / example placeholders sometimes used in docs snippets
     "^https?://localhost",
     "^https?://127\\.0\\.0\\.1",
