@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "README.md"
   workflow_dispatch:
 
 jobs:
@@ -16,5 +17,5 @@ jobs:
       - name: Link Checker
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --verbose --no-progress --config lychee.toml './docs/**/*.qmd' './docs/**/*.md'
+          args: --verbose --no-progress --config lychee.toml 'README.md' './docs/**/*.qmd' './docs/**/*.md'
           fail: true
