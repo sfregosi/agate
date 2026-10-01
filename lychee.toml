@@ -4,7 +4,7 @@
 # 200 = OK — standard successful response
 # 301 = Moved Permanently — link redirects to a new URL but still resolves (e.g., trailing slash)
 # 429 = Too Many Requests — bot rate-limiting (common on GitHub, DOI resolvers, etc.)
-accept = [200, 301, 429]
+accept = [200, 429]
 
 # Retry flaky external hosts before giving up
 max_retries = 3
