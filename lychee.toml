@@ -28,6 +28,8 @@ exclude = [
     "mathworks\\.com",       # blocks bots; all 5 File Exchange links
     "docs\\.google\\.com",   # private doc requires auth (401)
     "digilent\\.com",        # blocking bots (403)
+
+    "github\\.com/username",   # placeholder in function/script templates in contribute.qmd
 ]
 
 # Don't check links inside fenced code blocks (e.g. MATLAB code samples)
