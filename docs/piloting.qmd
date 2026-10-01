@@ -13,7 +13,7 @@ library(fontawesome)
 
 This page is meant to demonstrate some suggested workflows and examples of how the piloting functions may be used in an active mission to help the pilot download basestation files, create monitoring plots, and monitor mission progress.
 
-All code on this page combined in the [`workflow_downloadScript.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_downloadScript.m) in the `agate\example_workflows` folder. 
+All code on this page combined in the [`workflow_downloadScript.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_downloadScript.m) in the `agate\example_workflows` folder. 
 
 Details for each piloting function (inputs, outputs, etc) are available within the standard MATLAB-type documentation in the header of each function and include a detailed description, info on input and output arguments, and examples. These details can be pulled up by typing `doc function` or `help function` within the MATLAB Command Window.
 

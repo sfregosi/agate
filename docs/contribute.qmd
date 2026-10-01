@@ -32,12 +32,13 @@ There is a *Feature request* template just for this purpose.
 
 ### If you'd like to add a feature or fix a bug yourself...
 
-[Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) 
+[Fork](hhttps://docs.github.com/en/pull-requests/how-tos/work-with-forks/fork-a-repo)
+
 the `agate` repository. This will create a copy of the repository in your own 
 GitHub account. You can clone this fork to your local machine to work with the 
 toolbox and make changes directly to the code, but also continue to pull changes
 from the primary repository to stay up to date. Then, when you have a feature 
-you'd like to contribute back to the main repository, you can use a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to incorporate those changes. 
+you'd like to contribute back to the main repository, you can use a [pull request](https://docs.github.com/en/pull-requests/how-tos/create-pull-requests/creating-a-pull-request) to incorporate those changes. 
 
 We are happy to help get folks set up with this process, so please reach out 
 with any questions! 

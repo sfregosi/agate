@@ -23,7 +23,7 @@ This package is under active development and version controlled on
 [stable release](https://github.com/sfregosi/agate/releases) for reliability,
 or clone the repository directly for the latest functionality.
 
-**Documentation:** [sfregosi.github.io/agate](https://sfregosi.github.io/agate)
+**Documentation:** [sfregosi.github.io/agate](https://sfregosi.github.io/agate/)
 *(under construction — feedback welcome!)*
 
 **MATLAB compatibility:** developed and tested primarily on R2024b, with some

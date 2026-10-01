@@ -22,16 +22,16 @@ effort and status can be calculated and appended to the position data (using
 This page covers four example workflows found in the `agate\example_workflows` 
 folder:
 
-- [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m): Extracts glider surface and dead-reckoned sampling locations, 
+- [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_processPositionalData.m): Extracts glider surface and dead-reckoned sampling locations, 
 environmental data and piloting/orientation data into tables for future 
 analysis. Saves as `.mat` and `.csv`. Also creates NCEI-ready location and CTD 
 data tables. [Jump to section](#process-positional-data)
-- [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m): Assesses acoustic effort in space and time adding a *pam* column to the location
+- [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_acousticEffort.m): Assesses acoustic effort in space and time adding a *pam* column to the location
 tables,  extracting location and depth for each sound file, and quanitfying 
 effort at a few time scales. [Jump to section](#calculate-acoustic-effort)
-- [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m): Create a summary table with timing, distance, and acoustic effort for multiple 
+- [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_missionSummaries.m): Create a summary table with timing, distance, and acoustic effort for multiple 
 gliders [Jump to section](#generate-mission-summaries) 
-- [`workflow_plotMultipleGliders.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_plotMultipleGliders.m): [Jump to section](#plot-multiple-glider-tracks)
+- [`workflow_plotMultipleGliders.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_plotMultipleGliders.m): [Jump to section](#plot-multiple-glider-tracks)
 
 Type `doc function` or `help function` in the Command Window to view the full 
 documentation for each function including detailed descriptions, input and 
@@ -65,7 +65,7 @@ CONFIG = agate;
 
 ### Process positional data
 
-The code in this section follows along with the [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_processPositionalData.m). 
+The code in this section follows along with the [`workflow_processPositionalData.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_processPositionalData.m). 
 
 <sub>[Back to top](#)</sub>
 
@@ -217,7 +217,7 @@ exportgraphics(gcf, fullfile(CONFIG.path.mission, 'profiles', ...
 
 ### Calculate acoustic effort
 
-The code in this section follows along with the [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_acousticEffort.m). 
+The code in this section follows along with the [`workflow_acousticEffort.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_acousticEffort.m). 
 
 It requires the sound files to be in `.wav` or `.flac` format. See 
 [Convert raw WISPR files](convert-wispr.qmd) for help converting from original 
@@ -347,7 +347,7 @@ save(fullfile(CONFIG.path.mission, 'profiles', ...
 
 ### Generate mission summaries
 
-The code in this section follows along with the [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/tree/main/agate/example_workflows/workflow_missionSummaries.m). It is expecting the data inputs/outputs to follow the folder structure described
+The code in this section follows along with the [`workflow_missionSummaries.m`](https://github.com/sfregosi/agate/blob/main/agate/example_workflows/workflow_missionSummaries.m). It is expecting the data inputs/outputs to follow the folder structure described
 in the [Set up folder structure](get-started.html#set-up-folder-structure) 
 section of the Get Started page. 
 
