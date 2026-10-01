@@ -33,6 +33,8 @@ exclude = [
     "digilent\\.com",        # blocking bots (403)
 
     "github\\.com/username",   # placeholder in function/script templates in contribute.qmd
+
+    "github\\.com/.*/issues/new",   # requires browser login; link is valid
 ]
 
 # Don't check links inside fenced code blocks (e.g. MATLAB code samples)
